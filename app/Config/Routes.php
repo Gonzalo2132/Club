@@ -19,6 +19,13 @@ $routes->get('/clientes/borrar/(:num)', 'Clientes::borrar/$1');
 $routes->get('/clientes/editar/(:num)', 'Clientes::editar/$1');
 $routes->post('/clientes/actualizar/(:num)', 'Clientes::actualizar/$1');
 
+//zonas
+$routes->get('/zonas/nuevo', 'Zonas::nuevo');
+$routes->post('/zonas/guardar', 'Zonas::guardar');
+$routes->get('/zonas/borrar/(:num)', 'Zonas::borrar/$1');
+$routes->get('/zonas/editar/(:num)', 'Zonas::editar/$1');
+$routes->post('/zonas/actualizar/(:num)', 'Zonas::actualizar/$1');
+
 
 
 
