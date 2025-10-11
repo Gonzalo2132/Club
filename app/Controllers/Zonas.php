@@ -22,8 +22,8 @@ class Zonas extends BaseController
         //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
 
         $context = ['zonas'=>$zonas,
-                        'titulo'=>"zonas",
-                        'pagname'=>"Gestion/zonas"];
+                        'titulo'=>"Zonas",
+                        'pagname'=>"Gestión/Zonas"];
 
 
         
@@ -35,7 +35,7 @@ class Zonas extends BaseController
 //esta funcion "nuevo "muestra el header el footer y la vista que va a tener el formulario
     public function nuevo(){
         //este context es para cambiar el titulo de la pagina que esta esperando el header
-        $context = ['titulo' => "nueva zona",
+        $context = ['titulo' => "Nueva zona",
                     'pagname' => 'Gestión/Nueva zona'];
 
         echo view ('panel/header',$context);
@@ -59,7 +59,7 @@ class Zonas extends BaseController
         public function editar($id){
             $zona = $this->zonas->where('id', $id)->findAll();
             $context = ['zona'=>$zona,
-                    'titulo' => "edicion zona",
+                    'titulo' => "Edición zona",
                     'pagname' => 'Gestión/Edición zona'];
 
 

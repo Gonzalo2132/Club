@@ -5,7 +5,7 @@ echo $titulo;
 <br>
 <a class="btn btn-primary" href="<?php 
 echo base_url();
-?>public/zonas/nuevo">+ Nuevo Cliente</a>
+?>public/zonas/nuevo">+ Nueva zona</a>
 <br>
 <br>
 <table class="table table-hover"id="id_listado_zonas">

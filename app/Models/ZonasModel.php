@@ -43,9 +43,3 @@ class ZonasModel extends Model
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
 }
-/*
-public function getCantidadClientes($clientes)
-{
-    $this->db->query('SELECT COUNT(*) FROM clientes');
-    
-}*/
