@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ClientesModel extends Model
+class SociosModel extends Model
 {
-    protected $table      = 'clientes';
+    protected $table      = 'socios';
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
@@ -14,7 +14,7 @@ class ClientesModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['denominacion', 'domicilio', 'email','estatus'];
+    protected $allowedFields = ['nombre', 'apellido', 'domicilio', 'telefono', 'fecha_nac', 'dni', 'email','activo', 'id_zona'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -46,6 +46,6 @@ class ClientesModel extends Model
 /*
 public function getCantidadClientes($clientes)
 {
-    $this->db->query('SELECT COUNT(*) FROM clientes');
+    $this->db->query('SELECT COUNT(*) FROM ');
     
 }*/
