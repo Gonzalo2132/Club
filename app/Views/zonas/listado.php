@@ -8,7 +8,7 @@ echo base_url();
 ?>public/zonas/nuevo">+ Nueva zona</a>
 <br>
 <br>
-<table class="table table-hover"id="id_listado_zonas">
+<table class="table table-hover"id="contenido-lista">
     <thead>
         <th>#</th>
         <th>denominación</th>
