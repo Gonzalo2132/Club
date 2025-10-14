@@ -61,34 +61,32 @@
 
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="<?php echo base_url()?>public/clientes">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/socios">
             <i class="fas fa-fw fa-cog"></i>
-            <span>Clientes</span>
+            <span>Socios</span>
         </a>
-       
+        
     </li>
 
-    <!-- Nav Item - Utilities Collapse Menu -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-            aria-expanded="true" aria-controls="collapseUtilities">
-            <i class="fas fa-fw fa-wrench"></i>
-            <span>Proveedores</span>
+       <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/zonas">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Zonas</span>
         </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-            data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <h6 class="collapse-header">Custom Utilities:</h6>
-                <a class="collapse-item" href="utilities-color.html">Colors</a>
-                <a class="collapse-item" href="utilities-border.html">Borders</a>
-                <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                <a class="collapse-item" href="utilities-other.html">Other</a>
-            </div>
-        </div>
+        
+    </li>
+
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/usuarios">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Usuarios</span>
+        </a>
+        
     </li>
 
     <!-- Divider -->
     <hr class="sidebar-divider">
+
 
     <!-- Heading -->
     <div class="sidebar-heading">
