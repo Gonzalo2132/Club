@@ -63,7 +63,7 @@
     <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
    <script>
         $(document).ready(function() {
-            $('#id_listado_clientes').DataTable();
+            $('#contenido-lista').DataTable();
         });
     </script>
    </body>
