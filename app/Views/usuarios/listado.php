@@ -8,7 +8,7 @@ echo base_url();
 ?>public/usuarios/nuevo">+ Nuevo usuario</a>
 <br>
 <br>
-<table class="table table-hover"id="id_listado_usuarios">
+<table class="table table-hover"id="contenido-lista">
     <thead>
         <th>#</th>
         <th>Nombre</th>
