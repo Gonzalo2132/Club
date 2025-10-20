@@ -2,42 +2,12 @@
 
 namespace App\Controllers;
 
-use App\Models\ClientesModel; //Acá asignamos que usamos el modelo designado
-
-
-
 class Panel extends BaseController
 {
-    protected $clientes; //Esto es para que la variable en cuestion este definida
-
-    public function __construct() { //La función constructora
-        $this->clientes = new ClientesModel();
-    }
-
     public function index()
     {
-        
-    
-
-        //Construyo el context
-        //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
-        $t_clientes  = $this->clientes->countAll();
-
-
         $context = ['titulo' => 'Tablero',
-    't_clientes'=>$t_clientes
-
 ];
-
-
-        /*consulta sql para contabilizar registros: SELECT COUNT(*) AS total_registros
-         FROM tu_tabla;*/
-
-        ////nueva implementacion
-/*
-        $clientes = $this->session->userdata('clientes'); 
-        $cantidad_clientes =$this->ClientesModel->getCantidadClientes($clientes);
-      */
 
         echo view('panel/header', $context);
         echo view('panel/contenido');
