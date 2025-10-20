@@ -25,13 +25,13 @@ class Socios extends BaseController
         $context = [
             'socios' => $socios,
             'titulo' => "gestion de socios",
-            'pagname' => "Gestion/clientes"
+            'pagname' => "Gestion/socios"
         ];
 
 
 
         echo view('panel/header', $context);
-        echo view('clientes/listado', $context);
+        echo view('socios/listado', $context);
         echo view('panel/footer');
     }
     //esta funcion "nuevo "muestra el header el footer y la vista que va a tener el formulario
@@ -81,7 +81,7 @@ class Socios extends BaseController
 
 
         echo view('panel/header', $context);
-        echo view('clientes/editar');
+        echo view('socios/editar');
         echo view('panel/footer');
     }
     public function actualizar($id)
@@ -100,6 +100,6 @@ class Socios extends BaseController
                 'id_zona' => $this->request->getPost('id_zona')
             ]
         );
-        return redirect()->to(base_url() . 'public/clientes/');
+        return redirect()->to(base_url() . 'public/socios/');
     }
 }
