@@ -14,7 +14,6 @@ echo base_url();
         <th>Nombre</th>
         <th>Apellido</th>
         <th>Nombre de Usuario</th>
-        <th>Clave</th>
         <th>D.N.I.</th>
      
     </thead>
@@ -28,7 +27,6 @@ foreach ($usuarios as $usuario) {
     echo '<td>' . $usuario['nombre'] . '</td>';
     echo '<td>' . $usuario['apellido'] . '</td>';
     echo '<td>' . $usuario['username'] . '</td>';
-    echo '<td>' . $usuario['clave'] . '</td>';
     echo '<td>' . $usuario['dni'] . '</td>';
     
         echo '<td>
