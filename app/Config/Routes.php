@@ -39,5 +39,11 @@ $routes->get('/socios/borrar/(:num)', 'Socios::borrar/$1');
 $routes->get('/socios/editar/(:num)', 'Socios::editar/$1');
 $routes->post('/socios/actualizar/(:num)', 'Socios::actualizar/$1');
 
+//cajas
+$routes->get('/cajas/nuevo', 'Cajas::nuevo');
+$routes->post('/cajas/guardar', 'Cajas::guardar');
+$routes->get('/cajas/borrar/(:num)', 'Cajas::borrar/$1');
+$routes->get('/cajas/editar/(:num)', 'Cajas::editar/$1');
+$routes->post('/caajs/actualizar/(:num)', 'Cajas::actualizar/$1');
 
 
