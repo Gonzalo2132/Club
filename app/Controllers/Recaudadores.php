@@ -10,7 +10,8 @@ class Recaudadores extends BaseController
 {
     protected $recaudadores; //Esto es para que la variable en cuestion este definida
 
-    public function __construct() { //La función constructora
+    public function __construct()
+    { //La función constructora
         $this->recaudadores = new RecaudadoresModel();
     }
 
