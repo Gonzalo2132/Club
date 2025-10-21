@@ -39,5 +39,11 @@ $routes->get('/socios/borrar/(:num)', 'Socios::borrar/$1');
 $routes->get('/socios/editar/(:num)', 'Socios::editar/$1');
 $routes->post('/socios/actualizar/(:num)', 'Socios::actualizar/$1');
 
+//recaudadores
+$routes->get('/recaudadores/nuevo', 'Recaudadores::nuevo');
+$routes->post('/recaudadores/guardar', 'Recaudadores::guardar');
+$routes->get('/recaudadores/borrar/(:num)', 'Recaudadores::borrar/$1');
+$routes->get('/recaudadores/editar/(:num)', 'Recaudadores::editar/$1');
+$routes->post('/recaudadores/actualizar/(:num)', 'Recaudadores::actualizar/$1');
 
 
