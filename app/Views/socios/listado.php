@@ -8,7 +8,7 @@ echo base_url();
 ?>public/socios/nuevo">+ Nuevo socio</a>
 <br>
 <br>
-<table class="table table-hover"id="id_listado_socios">
+<table class="table table-hover"id="contenido-lista">
     <thead>
         <th>#</th>
         <th>Nombre</th>

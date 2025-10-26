@@ -8,7 +8,7 @@ use App\Models\SociosModel; //Acá asignamos que usamos el modelo designado
 
 class Socios extends BaseController
 {
-    protected $socios; //Esto es para que la variable en cuestion este definida
+    protected $socios; //Esto es para que la variable en cuestión esté definida
 
     public function __construct()
     { //La función constructora
@@ -17,14 +17,14 @@ class Socios extends BaseController
 
     public function index($estatus = 1)
     {
-        //Esto seria una consulta,  "Select * from socios"
+        //Esto serñia una consulta,  "Select * from socios"
         $socios = $this->socios->where('estatus', $estatus)->findAll();
         //Construyo el context
         //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
 
         $context = [
             'socios' => $socios,
-            'titulo' => "gestion de socios",
+            'titulo' => "gestión de socios",
             'pagname' => "Gestion/socios"
         ];
 
@@ -34,10 +34,10 @@ class Socios extends BaseController
         echo view('socios/listado', $context);
         echo view('panel/footer');
     }
-    //esta funcion "nuevo "muestra el header el footer y la vista que va a tener el formulario
+    //esta función "nuevo "muestra el header el footer y la vista que va a tener el formulario
     public function nuevo()
     {
-        //este context es para cambiar el titulo de la pagina que esta esperando el header
+        //este context es para cambiar el título de la página que está esperando el header
         $context = [
             'titulo' => "nuevo Socio",
             'pagname' => 'Gestión/Nuevo Socio'
@@ -74,7 +74,7 @@ class Socios extends BaseController
         $socio = $this->socios->where('id', $id)->findAll();
         $context = [
             'socio' => $socio,
-            'titulo' => "edicion socio",
+            'titulo' => "Edición socio",
             'pagname' => 'Gestión/Edición socio'
         ];
 
@@ -86,7 +86,7 @@ class Socios extends BaseController
     }
     public function actualizar($id)
     {
-        //primer parametro es el where en este caso $id
+        //primer parámetro es el where en este caso $id
         $this->socios->update(
             $id,
             [
