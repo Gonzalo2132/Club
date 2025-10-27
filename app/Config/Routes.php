@@ -15,12 +15,14 @@ $routes->get('/proveedores', 'Proveedores::index');
 
 
 //zonas
+$routes->get('/zonas', 'Zonas::index');
 $routes->get('/zonas/nuevo', 'Zonas::nuevo');
 $routes->post('/zonas/guardar', 'Zonas::guardar');
 $routes->get('/zonas/borrar/(:num)', 'Zonas::borrar/$1');
 $routes->get('/zonas/editar/(:num)', 'Zonas::editar/$1');
 $routes->post('/zonas/actualizar/(:num)', 'Zonas::actualizar/$1');
 
+$routes->get('/usuarios', 'Usuarios::index');
 $routes->get('/usuarios/nuevo', 'Usuarios::nuevo');
 $routes->post('/usuarios/guardar', 'Usuarios::guardar');
 $routes->get('/usuarios/borrar/(:num)', 'Usuarios::borrar/$1');
@@ -28,6 +30,7 @@ $routes->get('/usuarios/editar/(:num)', 'Usuarios::editar/$1');
 $routes->post('/usuarios/actualizar/(:num)', 'Usuarios::actualizar/$1');
 
 //socios
+$routes->get('/socios', 'Socios::index');
 $routes->get('/socios/nuevo', 'Socios::nuevo');
 $routes->post('/socios/guardar', 'Socios::guardar');
 $routes->get('/socios/borrar/(:num)', 'Socios::borrar/$1');
@@ -49,3 +52,6 @@ $routes->get('/recaudadores/editar/(:num)', 'Recaudadores::editar/$1');
 $routes->post('/recaudadores/actualizar/(:num)', 'Recaudadores::actualizar/$1');
 
 
+//login
+$routes->get('/login', 'Login::index');
+$routes->post('/login/validar', 'Login::validar');

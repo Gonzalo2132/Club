@@ -33,11 +33,12 @@ class Usuarios extends BaseController
         echo view ('panel/footer');
     }
     public function guardar(){
+        $hash = password_hash($this->request->getPost('clave'), PASSWORD_DEFAULT);
         $this->usuarios->save(
             ['nombre'=>$this->request->getPost('nombre'),
             'apellido'=>$this->request->getPost('apellido'),
             'username'=>$this->request->getPost('username'),
-            'clave'=>$this->request->getPost('clave'),
+            'clave'=>$hash,
             'dni'=>$this->request->getPost('dni')
             ]
         );
