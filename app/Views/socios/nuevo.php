@@ -27,7 +27,7 @@ echo base_url();
     <input class="form-control" type="text" name="email" id="email" placeholder="Ingrese email">
 
     <label class="form-control" for="zona">Zona</label>
-    <input class="form-control" type="text" name="zona" id="zona" placeholder="Ingrese zona">
+    <input class="form-control" type="text" name="id_zona" id="id_zona" placeholder="Ingrese zona">
 
 
     <input class="btn btn-success" type="submit" value="Guardar">

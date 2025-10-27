@@ -15,10 +15,10 @@ class Socios extends BaseController
         $this->socios = new SociosModel();
     }
 
-    public function index($estatus = 1)
+    public function index($activo = 1)
     {
         //Esto serñia una consulta,  "Select * from socios"
-        $socios = $this->socios->where('estatus', $estatus)->findAll();
+        $socios = $this->socios->where('activo', $activo)->findAll();
         //Construyo el context
         //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
 
@@ -39,7 +39,7 @@ class Socios extends BaseController
     {
         //este context es para cambiar el título de la página que está esperando el header
         $context = [
-            'titulo' => "nuevo Socio",
+            'titulo' => "Nuevo Socio",
             'pagname' => 'Gestión/Nuevo Socio'
         ];
 
