@@ -11,7 +11,9 @@ echo base_url();
 <table class="table table-hover"id="contenido-lista">
     <thead>
         <th>#</th>
-        <th>denominación</th>
+        <th>Denominación</th>
+        <th>Estado</th>
+
         
 
     </thead>
@@ -23,6 +25,8 @@ foreach ($zonas as $zona) {
     echo '<tr>';
     echo '<td>' . $zona['id'] . '</td>';
     echo '<td>' . $zona['denominacion'] . '</td>';
+    echo '<td>' . $zona['activo'] . '</td>';
+
     
         echo '<td>
         <a class ="btn btn-warning"
