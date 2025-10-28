@@ -14,13 +14,14 @@ echo base_url();
         <th>Nombre</th>
         <th>Apellido</th>
         <th>D.N.I.</th>
+        <th>Acciones</th>
      
     </thead>
     <tbody>
 
 
 <?php
-foreach (recaudadores as $recaudador) {
+foreach ($recaudadores as $recaudador) {
     echo '<tr>';
     echo '<td>' . $recaudador['id'] . '</td>';
     echo '<td>' . $recaudador['nombre'] . '</td>';
@@ -32,7 +33,7 @@ foreach (recaudadores as $recaudador) {
          href="' . base_url() . 'public/recaudadores/editar/' . $recaudador['id'] . '">Editar
          </a>
         <a class ="btn btn-danger"
-         href="' . base_url() . 'public/recaudador/borrar/' . $recaudador['id'] . '">Borrar
+         href="' . base_url() . 'public/recaudadores/borrar/' . $recaudador['id'] . '">Borrar
          </a>
 
         </td>';
