@@ -14,13 +14,14 @@ echo base_url();
         <th>Denominación</th>
         <th>Descripcion</th>
         <th>codigo interno</th>
-        
+        <th></th>
+
 
     </thead>
     <tbody>
 
 
-<?php
+        <?php
 foreach ($cajas as $caja) {
     echo '<tr>';
     echo '<td>' . $caja['id'] . '</td>';
