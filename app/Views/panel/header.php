@@ -84,6 +84,22 @@
         
     </li>
 
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/recaudadores">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Recaudadores</span>
+        </a>
+        
+    </li>
+    
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/caja">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Cajas</span>
+        </a>
+        
+    </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider">
 
