@@ -93,7 +93,7 @@
     </li>
     
         <li class="nav-item">
-        <a class="nav-link collapsed" href="<?php echo base_url()?>public/caja">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/cajas">
             <i class="fas fa-fw fa-cog"></i>
             <span>Cajas</span>
         </a>
