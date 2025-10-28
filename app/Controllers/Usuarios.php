@@ -59,19 +59,31 @@ class Usuarios extends BaseController
             echo view ('usuarios/editar');
             echo view ('panel/footer');
         }
-        public function actualizar($id){
-            $this->usuarios->update($id,
-            ['nombre'=>$this->request->getPost('nombre'),
-            'apellido'=>$this->request->getPost('apellido'),
-            'username'=>$this->request->getPost('username'),
-            'clave'=>$this->request->getPost('clave'),
-            'dni'=>$this->request->getPost('dni')
-            
-            ]
-        );
-                    return redirect()->to(base_url().'public/usuarios/');
+        public function actualizar($id)
+{
+    
+    $data = [
+        'nombre' => $this->request->getPost('nombre'),
+        'apellido' => $this->request->getPost('apellido'),
+        'username' => $this->request->getPost('username'),
+        'dni' => $this->request->getPost('dni')
+    ];
 
-        }
+    
+    $clave_nueva = $this->request->getPost('clave');
+
+    //Verificar si se ingresó una nueva contraseña
+    if (!empty($clave_nueva)) {
+        
+        $hash = password_hash($clave_nueva, PASSWORD_DEFAULT);
+        $data['clave'] = $hash; 
+    }
+    
+
+    $this->usuarios->update($id, $data);
+
+    return redirect()->to(base_url() . 'public/usuarios/');
+}
       
     }
     

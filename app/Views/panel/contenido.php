@@ -13,7 +13,7 @@
                         
                     <!-- contenido de cantidad de clientes -->
 <?php
-echo $t_clientes;
+//echo $t_clientes;
 ?>
                     </div>
                 </div>

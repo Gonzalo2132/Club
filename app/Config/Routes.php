@@ -45,6 +45,7 @@ $routes->get('/cajas/editar/(:num)', 'Caja::editar/$1');
 $routes->post('/cajas/actualizar/(:num)', 'Caja::actualizar/$1');
 
 //recaudadores
+$routes->get('/recaudadores', 'Recaudadores::index');
 $routes->get('/recaudadores/nuevo', 'Recaudadores::nuevo');
 $routes->post('/recaudadores/guardar', 'Recaudadores::guardar');
 $routes->get('/recaudadores/borrar/(:num)', 'Recaudadores::borrar/$1');
