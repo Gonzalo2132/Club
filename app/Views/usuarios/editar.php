@@ -18,7 +18,7 @@ echo base_url();
     placeholder="Ingrese el nombre de Usuario" value="<?php echo $usuario[0]['username'];?>">
 
     <label class="form-control" for="clave">Clave/contraseña</label>
-    <input class="form-control" type="text" name="clave" id="clave" 
+    <input class="form-control" type="password" name="clave" id="clave" 
     placeholder="Ingrese Clave" value="<?php echo $usuario[0]['clave'];?>">
 
     <label class="form-control" for="dni">D.N.I.</label>

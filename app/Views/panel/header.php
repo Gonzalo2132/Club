@@ -34,11 +34,11 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-        <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
-        </div>
-        <div class="sidebar-brand-text mx-3">Gestión</div>
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url('/') ?>">
+    <div class="sidebar-brand-icon">
+        <img src="<?= base_url('public/img/sarmiento_icon.png') ?>" alt="Logo" style="width: 40px; height: 40px; border-radius: 50%;">
+    </div>
+    <div class="sidebar-brand-text mx-3">Gestión de socios C.A.S</div>
     </a>
 
     <!-- Divider -->
@@ -80,6 +80,22 @@
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/usuarios">
             <i class="fas fa-fw fa-cog"></i>
             <span>Usuarios</span>
+        </a>
+        
+    </li>
+
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/recaudadores">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Recaudadores</span>
+        </a>
+        
+    </li>
+    
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/caja">
+            <i class="fas fa-fw fa-cog"></i>
+            <span>Cajas</span>
         </a>
         
     </li>
