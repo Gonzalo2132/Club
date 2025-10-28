@@ -9,6 +9,10 @@ echo base_url();
     <input class="form-control" type="text" name="denominacion" id="denominacion" 
     placeholder="" value="<?php echo $caja[0]['denominacion'];?>">
 
+    <label class="form-control" for="descripcion">Descripción</label>
+    <input class="form-control" type="text" name="descripcion" id="descripcion" 
+    placeholder="" value="<?php echo $caja[0]['descripcion'];?>">
+
     <label class="form-control" for="codigointerno">Codigo Interno</label>
     <input class="form-control" type="text" name="codigointerno" id="codigointerno" 
     placeholder="" value="<?php echo $caja[0]['codigointerno'];?>">

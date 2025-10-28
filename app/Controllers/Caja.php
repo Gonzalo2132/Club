@@ -6,12 +6,12 @@ use App\Models\CajasModel; //Acá asignamos que usamos el modelo designado
 
 
 
-class Cajas extends BaseController
+class Caja extends BaseController
 {
     protected $cajas; //Esto es para que la variable en cuestion este definida
 
     public function __construct() { //La función constructora
-        $this->cajas = new CaajsModel();
+        $this->cajas = new CajasModel();
     }
 
     public function index($activo = 1)
@@ -21,14 +21,14 @@ class Cajas extends BaseController
         //Construyo el context
         //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
 
-        $context = ['cajas'=>$zonas,
+        $context = ['cajas'=>$cajas,
                         'titulo'=>"Caja",
                         'pagname'=>"Gestión/Cajas"];
 
 
         
         echo view('panel/header', $context);
-        echo view('cajas/listado', $context);
+        echo view('caja/listado', $context);
         echo view('panel/footer');
  
     }
@@ -39,12 +39,13 @@ class Cajas extends BaseController
                     'pagname' => 'Gestión/Nueva caja'];
 
         echo view ('panel/header',$context);
-        echo view ('cajas/nuevo');
+        echo view ('caja/nuevo');
         echo view ('panel/footer');
     }
     public function guardar(){
         $this->cajas->save(
             ['denominacion'=>$this->request->getPost('denominacion'),
+            'descripcion'=>$this->request->getPost('descripcion'),
             'codigointerno'=>$this->request->getPost('codigointerno')
         
             ]
@@ -53,8 +54,8 @@ class Cajas extends BaseController
 
         }
         public function borrar($id){
-            $this->zonas->update($id,['activo'=>0]);
-            return redirect()->to(base_url().'public/cajas/');
+            $this->cajas->update($id, ['activo' => 0]);
+            return redirect()->to(base_url() . 'public/cajas/');
 
         }
         public function editar($id){
@@ -66,13 +67,14 @@ class Cajas extends BaseController
 
         
             echo view ('panel/header',$context);
-            echo view ('cajas/editar');
+            echo view ('caja/editar');
             echo view ('panel/footer');
         }
         public function actualizar($id){
             //primer parametro es el where en este caso $id
             $this->cajas->update($id,
             ['denominacion'=>$this->request->getPost('denominacion'),
+            'descripcion'=>$this->request->getPost('descripcion'),
             'codigointerno'=>$this->request->getPost('codigointerno')
         
             ]

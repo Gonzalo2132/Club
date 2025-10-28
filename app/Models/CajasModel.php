@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ZonasModel extends Model
+class CajasModel extends Model
 {
-    protected $table      = 'caja';
+    protected $table      = 'cajas';
     protected $primaryKey = 'id';
 
     protected $useAutoIncrement = true;
@@ -14,7 +14,7 @@ class ZonasModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['denominacion', 'codigointerno'];
+    protected $allowedFields = ['denominacion', 'descripcion','codigointerno'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

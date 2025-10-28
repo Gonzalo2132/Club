@@ -8,10 +8,11 @@ echo base_url();
 ?>public/cajas/nuevo">+ Nueva caja</a>
 <br>
 <br>
-<table class="table table-hover"id="contenido-lista">
+<table class="table table-hover" id="contenido-lista">
     <thead>
         <th>#</th>
-        <th>denominación</th>
+        <th>Denominación</th>
+        <th>Descripcion</th>
         <th>codigo interno</th>
         
 
@@ -24,6 +25,7 @@ foreach ($cajas as $caja) {
     echo '<tr>';
     echo '<td>' . $caja['id'] . '</td>';
     echo '<td>' . $caja['denominacion'] . '</td>';
+    echo '<td>' . $caja['descripcion'] . '</td>';
     echo '<td>' . $caja['codigointerno'] . '</td>';
     
         echo '<td>
