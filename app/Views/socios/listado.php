@@ -19,6 +19,7 @@ echo base_url();
         <th>D.N.I.</th>
         <th>Email</th>
         <th>Zona</th>
+        <th>Acciones</th>
      
     </thead>
     <tbody>
@@ -35,7 +36,7 @@ foreach ($socios as $socio) {
     echo '<td>' . $socio['fecha_nac'] . '</td>';
     echo '<td>' . $socio['dni'] . '</td>';
     echo '<td>' . $socio['email'] . '</td>';
-    echo '<td>' . $socio['zona'] . '</td>';
+    echo '<td>' . $socio['id_zona'] . '</td>';
     
         echo '<td>
         <a class ="btn btn-warning"

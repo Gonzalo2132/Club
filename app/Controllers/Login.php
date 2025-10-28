@@ -14,27 +14,44 @@ class Login extends BaseController
 
     public function index()
     {
-        echo view('login/login');
+
+        $context = [
+            'titulo' => "Iniciar Sesión",
+            'pagname' => "Gestion/login",
+        ];
+        echo view('panel/header', $context);
+        echo view('login/index', $context);
+        echo view('panel/footer');
     }
 
-    public function validar(){
+    public function validar()
+    {
         $usuario = $this->request->getPost('username');
         $password = $this->request->getPost('clave');
         $datosusuario = $this->usuarios->where('username', $usuario)->first();
 
-        if ($datosusuario != null){
-            if(password_verify($password,$datosusuario['clave'],)){
+        if ($datosusuario != null) {
+            if (password_verify($password, $datosusuario['clave'])) {
                 $data_session = [
                     'id_usuario' => $datosusuario['id'],
                     'usuario' => $datosusuario['username']
                 ];
                 $session = session();
                 $session->set($data_session);
-                return redirect()->to(base_url().'public/panel/');
-            }else{
-                echo "Las credenciales no son correctas";}
-        }else{
-            echo "Las credenciales no son correctas";
+                return redirect()->to(base_url() . 'public/panel/');
+            } else {
+                echo "<script>
+                    alert('Usuario o contraseña incorrectos');
+                    window.location.href='" . base_url() . "public/login';
+                  </script>";
+                exit;
+            }
+        } else {
+            echo "<script>
+                    alert('Usuario o contraseña incorrectos');
+                    window.location.href='" . base_url() . "public/login';
+                  </script>";
+            exit;
         }
     }
 }

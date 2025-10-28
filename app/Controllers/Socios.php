@@ -39,7 +39,7 @@ class Socios extends BaseController
     {
         //este context es para cambiar el título de la página que está esperando el header
         $context = [
-            'titulo' => "nuevo Socio",
+            'titulo' => "Nuevo Socio",
             'pagname' => 'Gestión/Nuevo Socio'
         ];
 

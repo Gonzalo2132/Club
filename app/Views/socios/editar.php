@@ -34,8 +34,8 @@ echo base_url();
     placeholder="dd/mm/AAAA" value="<?php echo $socio[0]['email'];?>">
 
     <label class="form-control" for="zona">Zona</label>
-    <input class="form-control" type="text" name="zona" id="zona" 
-    placeholder="dd/mm/AAAA" value="<?php echo $socio[0]['zona'];?>">
+    <input class="form-control" type="text" name="id_zona" id="id_zona" 
+    placeholder="dd/mm/AAAA" value="<?php echo $socio[0]['id_zona'];?>">
 
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="
