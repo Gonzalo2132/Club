@@ -19,7 +19,7 @@ echo base_url();
 
     <label class="form-control" for="clave">Clave/contraseña</label>
     <input class="form-control" type="password" name="clave" id="clave" 
-    placeholder="Ingrese Clave" value="<?php echo $usuario[0]['clave'];?>">
+    placeholder="SOLO ingrese una Clave SI DESEA CAMBIARLA, de lo contrario, DEJE VACÍO este campo">
 
     <label class="form-control" for="dni">D.N.I.</label>
     <input class="form-control" type="text" name="dni" id="dni" 
