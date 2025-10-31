@@ -19,7 +19,6 @@ class Login extends BaseController
             'titulo' => "Iniciar Sesión",
             'pagname' => "Gestion/login",
         ];
-        echo view('panel/header', $context);
         echo view('login/index', $context);
         echo view('panel/footer');
     }
@@ -53,5 +52,12 @@ class Login extends BaseController
                   </script>";
             exit;
         }
+    }
+
+    public function logout()
+    {
+        $sesion = session();
+        $sesion->destroy();
+        return redirect()->to(base_url() . 'public/login');
     }
 }

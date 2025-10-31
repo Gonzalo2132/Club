@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\SociosModel; //Acá asignamos que usamos el modelo designado
+use App\Models\ZonasModel; //Acá asignamos que usamos el modelo designado
 
 
 
@@ -13,6 +14,7 @@ class Socios extends BaseController
     public function __construct()
     { //La función constructora
         $this->socios = new SociosModel();
+        $this->zonas = new ZonasModel();
     }
 
     public function index($activo = 1)
@@ -35,12 +37,14 @@ class Socios extends BaseController
         echo view('panel/footer');
     }
     //esta función "nuevo "muestra el header el footer y la vista que va a tener el formulario
-    public function nuevo()
+    public function nuevo($activo = 1)
     {
         //este context es para cambiar el título de la página que está esperando el header
+        $zonas = $this->zonas->where('activo', $activo)->findAll();
         $context = [
             'titulo' => "Nuevo Socio",
-            'pagname' => 'Gestión/Nuevo Socio'
+            'pagname' => 'Gestión/Nuevo Socio',
+            'zonas' => $zonas
         ];
 
         echo view('panel/header', $context);
@@ -71,11 +75,14 @@ class Socios extends BaseController
     }
     public function editar($id)
     {
+        $status=1;
         $socio = $this->socios->where('id', $id)->findAll();
+        $zonas = $this->zonas->where('activo',$status)->findall();
         $context = [
             'socio' => $socio,
             'titulo' => "Edición socio",
-            'pagname' => 'Gestión/Edición socio'
+            'pagname' => 'Gestión/Edición socio',
+            'zonas' => $zonas
         ];
 
 

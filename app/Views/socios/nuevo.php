@@ -27,7 +27,13 @@ echo base_url();
     <input class="form-control" type="text" name="email" id="email" placeholder="Ingrese email">
 
     <label class="form-control" for="zona">Zona</label>
-    <input class="form-control" type="text" name="id_zona" id="id_zona" placeholder="Ingrese zona">
+    <select class="form-control" id="id_zona" name="id_zona">
+        <?php
+        foreach ($zonas as $zona) {
+            echo '<option value="' . $zona['id'] . '">' . $zona['denominacion'] . '</option>';
+        }
+        ?>
+    </select>
 
 
     <input class="btn btn-success" type="submit" value="Guardar">
