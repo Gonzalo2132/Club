@@ -13,6 +13,8 @@ echo base_url();
         <th>#</th>
         <th>Denominación</th>
         <th>Estado</th>
+        <th></th>
+
 
         
 
