@@ -15,7 +15,7 @@ echo base_url();
     <input class="form-control" type="text" name="username" id="username" placeholder="Ingrese un nombre de usuario">
 
     <label class="form-control" for="clave">Clave</label>
-    <input class="form-control" type="text" name="clave" id="clave" placeholder="Ingrese una Clave">
+    <input class="form-control" type="password" name="clave" id="clave" placeholder="Ingrese una Clave">
 
     <label class="form-control" for="dni">D.N.I.</label>
     <input class="form-control" type="text" name="dni" id="dni" placeholder="Ingrese DNI">
