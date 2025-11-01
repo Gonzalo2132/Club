@@ -3,7 +3,7 @@
            <footer class="sticky-footer bg-white">
                <div class="container my-auto">
                    <div class="copyright text-center my-auto">
-                       <span>Copyright &copy; Alesio Nuñez</span>
+                       <span>Copyright &copy; Creado por Tecnicatura Superior en Análisis y Desarrollo de Software"- Gaspar L. Benavento</span>
                    </div>
                </div>
            </footer>
