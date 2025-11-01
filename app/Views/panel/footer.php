@@ -3,7 +3,7 @@
            <footer class="sticky-footer bg-white">
                <div class="container my-auto">
                    <div class="copyright text-center my-auto">
-                       <span>Copyright &copy; Alesio Nuñez</span>
+                       <span>Copyright &copy; Instituto Superior "Gaspar L. Benavento" Tec. Análisis y Desarrollo de Software 2025</span>
                    </div>
                </div>
            </footer>
