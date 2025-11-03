@@ -17,6 +17,10 @@ class Recaudadores extends BaseController
 
     public function index($activo = 1)
     {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         //Esto serñia una consulta,  "Select * from socios"
         $recaudadores = $this->recaudadores->where('activo', $activo)->findAll();
         //Construyo el context
@@ -37,6 +41,10 @@ class Recaudadores extends BaseController
     //esta función "nuevo "muestra el header el footer y la vista que va a tener el formulario
     public function nuevo()
     {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         //este context es para cambiar el título de la página que está esperando el header
         $context = [
             'titulo' => "Nuevo Recaudador",
@@ -49,23 +57,35 @@ class Recaudadores extends BaseController
     }
     public function guardar()
     {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         $this->recaudadores->save(
             [
                 'nombre' => $this->request->getPost('nombre'),
                 'apellido' => $this->request->getPost('apellido'),
                 'dni' => $this->request->getPost('dni'),
-                
+
             ]
         );
         return redirect()->to(base_url() . 'public/recaudadores/');
     }
     public function borrar($id)
     {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         $this->recaudadores->update($id, ['activo' => 0]);
         return redirect()->to(base_url() . 'public/recaudadores/');
     }
     public function editar($id)
     {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         $recaudador = $this->recaudadores->where('id', $id)->findAll();
         $context = [
             'recaudador' => $recaudador,
@@ -81,6 +101,10 @@ class Recaudadores extends BaseController
     }
     public function actualizar($id)
     {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         //primer parámetro es el where en este caso $id
         $this->recaudadores->update(
             $id,

@@ -10,80 +10,111 @@ class Caja extends BaseController
 {
     protected $cajas; //Esto es para que la variable en cuestion este definida
 
-    public function __construct() { //La función constructora
+    public function __construct()
+    { //La función constructora
         $this->cajas = new CajasModel();
     }
 
     public function index($activo = 1)
     {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         //Esto seria una consulta,  "Select * from clientes"
         $cajas = $this->cajas->where('activo', $activo)->findAll();
         //Construyo el context
         //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
 
-        $context = ['cajas'=>$cajas,
-                        'titulo'=>"Caja",
-                        'pagname'=>"Gestión/Cajas"];
+        $context = [
+            'cajas' => $cajas,
+            'titulo' => "Caja",
+            'pagname' => "Gestión/Cajas"
+        ];
 
 
-        
+
         echo view('panel/header', $context);
         echo view('caja/listado', $context);
         echo view('panel/footer');
- 
     }
-//esta funcion "nuevo "muestra el header el footer y la vista que va a tener el formulario
-    public function nuevo(){
+    //esta funcion "nuevo "muestra el header el footer y la vista que va a tener el formulario
+    public function nuevo()
+    {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         //este context es para cambiar el titulo de la pagina que esta esperando el header
-        $context = ['titulo' => "Nueva caja",
-                    'pagname' => 'Gestión/Nueva caja'];
+        $context = [
+            'titulo' => "Nueva caja",
+            'pagname' => 'Gestión/Nueva caja'
+        ];
 
-        echo view ('panel/header',$context);
-        echo view ('caja/nuevo');
-        echo view ('panel/footer');
+        echo view('panel/header', $context);
+        echo view('caja/nuevo');
+        echo view('panel/footer');
     }
-    public function guardar(){
+    public function guardar()
+    {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         $this->cajas->save(
-            ['denominacion'=>$this->request->getPost('denominacion'),
-            'descripcion'=>$this->request->getPost('descripcion'),
-            'codigointerno'=>$this->request->getPost('codigointerno')
-        
+            [
+                'denominacion' => $this->request->getPost('denominacion'),
+                'descripcion' => $this->request->getPost('descripcion'),
+                'codigointerno' => $this->request->getPost('codigointerno')
+
             ]
         );
-        return redirect()->to(base_url().'public/cajas/');
-
-        }
-        public function borrar($id){
-            $this->cajas->update($id, ['activo' => 0]);
-            return redirect()->to(base_url() . 'public/cajas/');
-
-        }
-        public function editar($id){
-            $caja = $this->cajas->where('id', $id)->findAll();
-            $context = ['caja'=>$caja,
-                    'titulo' => "Edición caja",
-                    'pagname' => 'Gestión/Edición caja'];
-
-
-        
-            echo view ('panel/header',$context);
-            echo view ('caja/editar');
-            echo view ('panel/footer');
-        }
-        public function actualizar($id){
-            //primer parametro es el where en este caso $id
-            $this->cajas->update($id,
-            ['denominacion'=>$this->request->getPost('denominacion'),
-            'descripcion'=>$this->request->getPost('descripcion'),
-            'codigointerno'=>$this->request->getPost('codigointerno')
-        
-            ]
-        );
-                    return redirect()->to(base_url().'public/cajas/');
-
-
-        }
-
-       
+        return redirect()->to(base_url() . 'public/cajas/');
     }
-    
+    public function borrar($id)
+    {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $this->cajas->update($id, ['activo' => 0]);
+        return redirect()->to(base_url() . 'public/cajas/');
+    }
+    public function editar($id)
+    {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $caja = $this->cajas->where('id', $id)->findAll();
+        $context = [
+            'caja' => $caja,
+            'titulo' => "Edición caja",
+            'pagname' => 'Gestión/Edición caja'
+        ];
+
+
+
+        echo view('panel/header', $context);
+        echo view('caja/editar');
+        echo view('panel/footer');
+    }
+    public function actualizar($id)
+    {
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        //primer parametro es el where en este caso $id
+        $this->cajas->update(
+            $id,
+            [
+                'denominacion' => $this->request->getPost('denominacion'),
+                'descripcion' => $this->request->getPost('descripcion'),
+                'codigointerno' => $this->request->getPost('codigointerno')
+
+            ]
+        );
+        return redirect()->to(base_url() . 'public/cajas/');
+    }
+}

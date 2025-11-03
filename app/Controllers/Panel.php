@@ -6,9 +6,9 @@ class Panel extends BaseController
 {
     public function index()
     {
-        //if (!isset($this->sesion->id_usuario)) {
-          //  return redirect()->to(base_url() . 'public/login');
-        //}
+        if (!isset($this->session->id_usuario)) {
+          return redirect()->to(base_url() . 'public/login');
+        }
 
         $context = [
             'titulo' => 'Tablero',
@@ -25,9 +25,9 @@ class Panel extends BaseController
 
     public function nuevo()
     {
-        //if (!isset($this->sesion->id_usuario)) {
-            //return redirect()->to(base_url() . 'public/login');
-        //}
+        if (!isset($this->session->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
         $context['titulo'] = "Panel"; //los valores de contexto pueden ser cualquier tipo de dato, siempre tiene que tener
         $context['subtitulo'] = "Este es el panel de control";
         $context['pagname'] = "Panel de control";
