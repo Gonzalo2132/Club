@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 class Panel extends BaseController
 {
+    
     public function __construct()
     { //La función constructora
 

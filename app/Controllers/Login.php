@@ -58,6 +58,6 @@ class Login extends BaseController
     {
         $sesion = session();
         $sesion->destroy();
-        return redirect()->to(base_url() . 'login');
+        return redirect()->to(base_url() . 'public/login');
     }
 }
