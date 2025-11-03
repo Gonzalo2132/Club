@@ -4,6 +4,9 @@
                <div class="container my-auto">
                    <div class="copyright text-center my-auto">
                        <span>Copyright &copy; Creado por Tecnicatura Superior en Análisis y Desarrollo de Software"- Gaspar L. Benavento</span>
+                       <img src="<?= base_url('public/img/instituto_icon.png') ?>" 
+                          alt="Logo" 
+                          style="height:30px; margin-right:10px; vertical-align:middle;">
                    </div>
                </div>
            </footer>

@@ -1,4 +1,8 @@
-
+<?php
+#echo $titulo;
+?>
+<br>
+<br>
 <a class="btn btn-primary" href="<?php 
 echo base_url();
 ?>public/usuarios/nuevo">+ Nuevo usuario</a>

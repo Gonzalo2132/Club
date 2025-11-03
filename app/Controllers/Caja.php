@@ -22,7 +22,7 @@ class Caja extends BaseController
         //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
 
         $context = ['cajas'=>$cajas,
-                        'titulo'=>"Caja",
+                        'titulo'=>"Cajas",
                         'pagname'=>"Gestión/Cajas"];
 
 
