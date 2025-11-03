@@ -34,8 +34,20 @@ echo base_url();
     placeholder="dd/mm/AAAA" value="<?php echo $socio[0]['email'];?>">
 
     <label class="form-control" for="zona">Zona</label>
-    <input class="form-control" type="text" name="id_zona" id="id_zona" 
-    placeholder="dd/mm/AAAA" value="<?php echo $socio[0]['id_zona'];?>">
+    <select class="form-control" id="id_zona" name="id_zona">
+        <?php 
+        foreach($zonas as $zona){ ?>
+
+            <option value="<?php echo $zona['id']; ?>" 
+                <?php
+                    if($zona['id']==$socio[0]['id_zona']){
+                        echo 'selected';
+                    }
+                ?>
+            ><?php echo $zona['denominacion']; ?></option>
+       
+        <?php }?>
+    </select>
 
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="
