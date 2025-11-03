@@ -12,10 +12,10 @@ class UsuariosModel extends Model
     protected $useAutoIncrement = true;
 
     protected $returnType     = 'array';
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
 
     protected $allowedFields = ['nombre','apellido', 'username', 'clave',
-                                'dni', 'activo'];
+                                'dni', 'activo', 'fecha_borrado'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -25,7 +25,7 @@ class UsuariosModel extends Model
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+    protected $deletedField  = 'fecha_borrado';
 
     protected $validationRules      = [];
     protected $validationMessages   = [];

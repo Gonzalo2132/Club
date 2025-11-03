@@ -70,7 +70,7 @@ class Usuarios extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->usuarios->update($id, ['activo' => 0]);
+        $this->usuarios->delete($id);
         return redirect()->to(base_url() . 'public/usuarios/');
     }
     public function editar($id)
