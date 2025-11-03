@@ -4,10 +4,15 @@ namespace App\Controllers;
 
 class Panel extends BaseController
 {
+    public function __construct()
+    { //La función constructora
+
+        $this->sesion = session();
+    }
     public function index()
     {
-        if (!isset($this->session->id_usuario)) {
-          return redirect()->to(base_url() . 'public/login');
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
         }
 
         $context = [
@@ -25,7 +30,7 @@ class Panel extends BaseController
 
     public function nuevo()
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
         $context['titulo'] = "Panel"; //los valores de contexto pueden ser cualquier tipo de dato, siempre tiene que tener

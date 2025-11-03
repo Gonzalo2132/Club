@@ -13,11 +13,12 @@ class Caja extends BaseController
     public function __construct()
     { //La función constructora
         $this->cajas = new CajasModel();
+        $this->sesion = session();
     }
 
     public function index($activo = 1)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -39,7 +40,7 @@ class Caja extends BaseController
     //esta funcion "nuevo "muestra el header el footer y la vista que va a tener el formulario
     public function nuevo()
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -55,7 +56,7 @@ class Caja extends BaseController
     }
     public function guardar()
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -71,7 +72,7 @@ class Caja extends BaseController
     }
     public function borrar($id)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -80,7 +81,7 @@ class Caja extends BaseController
     }
     public function editar($id)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -99,7 +100,7 @@ class Caja extends BaseController
     }
     public function actualizar($id)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 

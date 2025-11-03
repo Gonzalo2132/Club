@@ -15,11 +15,12 @@ class Socios extends BaseController
     { //La función constructora
         $this->socios = new SociosModel();
         $this->zonas = new ZonasModel();
+        $this->sesion = session();
     }
 
     public function index($activo = 1)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -43,7 +44,7 @@ class Socios extends BaseController
     //esta función "nuevo "muestra el header el footer y la vista que va a tener el formulario
     public function nuevo($activo = 1)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -61,7 +62,7 @@ class Socios extends BaseController
     }
     public function guardar()
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -82,7 +83,7 @@ class Socios extends BaseController
     }
     public function borrar($id)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -91,7 +92,7 @@ class Socios extends BaseController
     }
     public function editar($id)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -113,7 +114,7 @@ class Socios extends BaseController
     }
     public function actualizar($id)
     {
-        if (!isset($this->session->id_usuario)) {
+        if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
