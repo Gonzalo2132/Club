@@ -30,7 +30,7 @@ class Socios extends BaseController
 
         $context = [
             'socios' => $socios,
-            'titulo' => "gestión de socios",
+            'titulo' => "Gestión de Socios",
             'pagname' => "Gestion/socios"
         ];
 

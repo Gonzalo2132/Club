@@ -26,11 +26,9 @@ class Caja extends BaseController
         //Construyo el context
         //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
 
-        $context = [
-            'cajas' => $cajas,
-            'titulo' => "Caja",
-            'pagname' => "Gestión/Cajas"
-        ];
+        $context = ['cajas'=>$cajas,
+                        'titulo'=>"Cajas",
+                        'pagname'=>"Gestión/Cajas"];
 
 
 

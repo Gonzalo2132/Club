@@ -28,7 +28,7 @@ class Recaudadores extends BaseController
 
         $context = [
             'recaudadores' => $recaudadores,
-            'titulo' => "Gestión de recaudadores",
+            'titulo' => "Gestión de Recaudadores",
             'pagname' => "Gestion/recaudadores"
         ];
 
