@@ -15,10 +15,15 @@ class Socios extends BaseController
     { //La función constructora
         $this->socios = new SociosModel();
         $this->zonas = new ZonasModel();
+        $this->sesion = session();
     }
 
     public function index($activo = 1)
     {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         //Esto serñia una consulta,  "Select * from socios"
         $socios = $this->socios->where('activo', $activo)->findAll();
         //Construyo el context
@@ -39,6 +44,10 @@ class Socios extends BaseController
     //esta función "nuevo "muestra el header el footer y la vista que va a tener el formulario
     public function nuevo($activo = 1)
     {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         //este context es para cambiar el título de la página que está esperando el header
         $zonas = $this->zonas->where('activo', $activo)->findAll();
         $context = [
@@ -53,6 +62,10 @@ class Socios extends BaseController
     }
     public function guardar()
     {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         $this->socios->save(
             [
                 'nombre' => $this->request->getPost('nombre'),
@@ -70,14 +83,22 @@ class Socios extends BaseController
     }
     public function borrar($id)
     {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         $this->socios->update($id, ['activo' => 0]);
         return redirect()->to(base_url() . 'public/socios/');
     }
     public function editar($id)
     {
-        $status=1;
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $status = 1;
         $socio = $this->socios->where('id', $id)->findAll();
-        $zonas = $this->zonas->where('activo',$status)->findall();
+        $zonas = $this->zonas->where('activo', $status)->findall();
         $context = [
             'socio' => $socio,
             'titulo' => "Edición socio",
@@ -93,6 +114,10 @@ class Socios extends BaseController
     }
     public function actualizar($id)
     {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
         //primer parámetro es el where en este caso $id
         $this->socios->update(
             $id,
