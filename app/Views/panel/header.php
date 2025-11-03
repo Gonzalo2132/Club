@@ -11,6 +11,8 @@
 
     <title>Gestion Socios CAS</title>
 
+    <link rel="icon" type="image/png" href="<?= base_url('public/img/sarmiento_icon.png') ?>">
+
     <!-- Custom fonts for this template-->
     <link href="<?php echo base_url( ); ?>public/js/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
@@ -23,6 +25,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+ 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
 </head>
 
@@ -34,11 +38,11 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="<?= base_url('/') ?>">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center">
     <div class="sidebar-brand-icon">
         <img src="<?= base_url('public/img/sarmiento_icon.png') ?>" alt="Logo" style="width: 40px; height: 40px; border-radius: 50%;">
     </div>
-    <div class="sidebar-brand-text mx-3">Gestión de socios C.A.S</div>
+    <div class="sidebar-brand-text mx-3">Gestión de Socios C.A.S</div>
     </a>
 
     <!-- Divider -->
@@ -46,9 +50,9 @@
 
     <!-- Nav Item - Dashboard -->
     <li class="nav-item active">
-        <a class="nav-link">
+        <a href="<?php echo base_url()?>public/panel" class="nav-link">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
+            <span>Panel</span></a>
     </li>
 
     <!-- Divider -->
@@ -62,7 +66,7 @@
     <!-- Nav Item - Pages Collapse Menu -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/socios">
-            <i class="fas fa-fw fa-cog"></i>
+           <i class="bi bi-person-rolodex"></i>
             <span>Socios</span>
         </a>
         
@@ -70,7 +74,7 @@
 
        <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/zonas">
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="bi bi-map-fill"></i>
             <span>Zonas</span>
         </a>
         
@@ -78,7 +82,7 @@
 
         <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/usuarios">
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="bi bi-people-fill"></i>
             <span>Usuarios</span>
         </a>
         
@@ -86,7 +90,8 @@
 
         <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/recaudadores">
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="bi bi-geo-alt-fill"></i>
+
             <span>Recaudadores</span>
         </a>
         
@@ -94,7 +99,7 @@
     
         <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/cajas">
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="bi bi-box-fill"></i>
             <span>Cajas</span>
         </a>
         
@@ -171,7 +176,7 @@
                 <i class="fa fa-bars"></i>
             </button>
 
-            <!-- Topbar Search -->
+            <!-- Topbar Search 
             <form
                 class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                 <div class="input-group">
@@ -183,7 +188,7 @@
                         </button>
                     </div>
                 </div>
-            </form>
+            </form>-->
 
             <!-- Topbar Navbar -->
             <ul class="navbar-nav ml-auto">
@@ -210,6 +215,7 @@
                             </div>
                         </form>
                     </div>
+                    
                 </li>
 
                 <!-- Nav Item - Alerts 
@@ -335,7 +341,7 @@
                 <li class="nav-item dropdown no-arrow">
                     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                        <span class="mr-2 d-none d-lg-inline text-gray-600 small"><!-- usuario usuario --><?php echo session()->get('usuario'); ?></span>
                         <img class="img-profile rounded-circle"
                             src="<?php echo base_url(); ?>public/img/undraw_profile.svg">
                     </a>
