@@ -9,6 +9,7 @@ use App\Models\ZonasModel; //Acá asignamos que usamos el modelo designado
 class Zonas extends BaseController
 {
     protected $zonas; //Esto es para que la variable en cuestion este definida
+    protected $sesion;
 
     public function __construct()
     { //La función constructora

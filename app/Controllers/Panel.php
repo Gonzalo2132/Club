@@ -12,6 +12,7 @@ class Panel extends BaseController
     protected $socios;
     protected $recaudadores;
     protected $zonas;
+    protected $sesion;
     public function __construct() { //La función constructora
         
         $this->usuarios = new UsuariosModel();

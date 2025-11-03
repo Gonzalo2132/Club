@@ -9,6 +9,7 @@ use App\Models\RecaudadoresModel; //Acá asignamos que usamos el modelo designad
 class Recaudadores extends BaseController
 {
     protected $recaudadores; //Esto es para que la variable en cuestión esté definida
+    protected $sesion;
 
     public function __construct()
     { //La función constructora

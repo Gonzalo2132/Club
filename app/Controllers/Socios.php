@@ -10,6 +10,8 @@ use App\Models\ZonasModel; //Acá asignamos que usamos el modelo designado
 class Socios extends BaseController
 {
     protected $socios; //Esto es para que la variable en cuestión esté definida
+    protected $zonas;
+    protected $sesion;
 
     public function __construct()
     { //La función constructora
@@ -87,7 +89,8 @@ class Socios extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->socios->update($id, ['activo' => 0]);
+        //$this->socios->update($id, ['activo' => 0]);
+        $this->socios->delete($id);
         return redirect()->to(base_url() . 'public/socios/');
     }
     public function editar($id)

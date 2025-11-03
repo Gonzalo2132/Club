@@ -7,6 +7,7 @@ use App\Models\UsuariosModel;
 class Usuarios extends BaseController
 {
     protected $usuarios;
+    protected $sesion;
     public function __construct()
     {
         $this->usuarios = new UsuariosModel();

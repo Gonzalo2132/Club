@@ -9,6 +9,7 @@ use App\Models\CajasModel; //Acá asignamos que usamos el modelo designado
 class Caja extends BaseController
 {
     protected $cajas; //Esto es para que la variable en cuestion este definida
+    protected $sesion;
 
     public function __construct()
     { //La función constructora
