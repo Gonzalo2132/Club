@@ -57,3 +57,4 @@ $routes->post('/recaudadores/actualizar/(:num)', 'Recaudadores::actualizar/$1');
 //login
 $routes->get('/login', 'Login::index');
 $routes->post('/login/validar', 'Login::validar');
+$routes->get('/login/logout', 'Login::logout');

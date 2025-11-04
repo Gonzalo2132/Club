@@ -35,7 +35,6 @@
                             <button type="submit" class="btn btn-primary btn-user btn-block">
                                 Ingresar
                             </button>
-                            <a class="btn btn-danger btn-user btn-block" href="<?php echo base_url(); ?>public/panel">Cancelar</a>
 
                         </form>
                     </div>

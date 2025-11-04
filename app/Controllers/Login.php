@@ -37,7 +37,7 @@ class Login extends BaseController
                 ];
                 $session = session();
                 $session->set($data_session);
-                return redirect()->to(base_url() . 'public/panel/');
+                return redirect()->to(base_url() . 'public/panel');
             } else {
                 echo "<script>
                     alert('Usuario o contraseña incorrectos');
