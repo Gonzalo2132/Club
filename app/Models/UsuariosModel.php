@@ -15,7 +15,7 @@ class UsuariosModel extends Model
     protected $useSoftDeletes = true;
 
     protected $allowedFields = ['nombre','apellido', 'username', 'clave',
-                                'dni', 'activo', 'fecha_borrado'];
+                                'dni', 'activo','fecha_alta', 'fecha_edicion', 'fecha_borrado'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -23,8 +23,8 @@ class UsuariosModel extends Model
     
     protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $createdField  = 'fecha_alta';
+    protected $updatedField  = 'fecha_edicion';
     protected $deletedField  = 'fecha_borrado';
 
     protected $validationRules      = [];
