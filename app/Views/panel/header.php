@@ -80,13 +80,7 @@
         
     </li>
 
-        <li class="nav-item">
-        <a class="nav-link collapsed" href="<?php echo base_url()?>public/usuarios">
-            <i class="bi bi-people-fill"></i>
-            <span>Usuarios</span>
-        </a>
         
-    </li>
 
         <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/recaudadores">
@@ -101,6 +95,13 @@
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/cajas">
             <i class="bi bi-box-fill"></i>
             <span>Cajas</span>
+        </a>
+        
+    </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/usuarios">
+            <i class="bi bi-people-fill"></i>
+            <span>Usuarios</span>
         </a>
         
     </li>

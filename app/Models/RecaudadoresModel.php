@@ -12,9 +12,9 @@ class RecaudadoresModel extends Model
     protected $useAutoIncrement = true;
 
     protected $returnType     = 'array';
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['nombre','apellido','dni', 'activo'];
+    protected $allowedFields = ['nombre','apellido','dni', 'activo', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
@@ -22,9 +22,9 @@ class RecaudadoresModel extends Model
     
     protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+    protected $createdField  = 'fecha_alta';
+    protected $updatedField  = 'fecha_edicion';
+    protected $deletedField  = 'fecha_borrado';
 
     protected $validationRules      = [];
     protected $validationMessages   = [];
