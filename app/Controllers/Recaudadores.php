@@ -79,7 +79,7 @@ class Recaudadores extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->recaudadores->update($id, ['activo' => 0]);
+        $this->recaudadores->delete($id);
         return redirect()->to(base_url() . 'public/recaudadores/');
     }
     public function editar($id)
