@@ -99,6 +99,14 @@
         
     </li>
     <li class="nav-item">
+        <a class="nav-link collapsed" href="<?php echo base_url()?>public/liquidaciones">
+            <i class="bi bi-currency-dollar"></i>
+            <span>Liquidaciones</span>
+        </a>
+        
+    </li>
+
+    <li class="nav-item">
         <a class="nav-link collapsed" href="<?php echo base_url()?>public/usuarios">
             <i class="bi bi-people-fill"></i>
             <span>Usuarios</span>

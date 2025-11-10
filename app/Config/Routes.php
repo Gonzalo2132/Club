@@ -53,6 +53,13 @@ $routes->get('/recaudadores/borrar/(:num)', 'Recaudadores::borrar/$1');
 $routes->get('/recaudadores/editar/(:num)', 'Recaudadores::editar/$1');
 $routes->post('/recaudadores/actualizar/(:num)', 'Recaudadores::actualizar/$1');
 
+$routes->get('/liquidaciones', 'Liquidaciones::index');
+$routes->get('/liquidaciones/nuevo', 'Liquidaciones::nuevo');
+$routes->post('/liquidaciones/guardar', 'Liquidaciones::guardar');
+$routes->get('/liquidaciones/borrar/(:num)', 'Liquidaciones::borrar/$1');
+$routes->get('/liquidaciones/editar/(:num)', 'Liquidaciones::editar/$1');
+$routes->post('/liquidaciones/actualizar/(:num)', 'Liquidaciones::actualizar/$1');
+
 
 //login
 $routes->get('/login', 'Login::index');
