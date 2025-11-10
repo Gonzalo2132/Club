@@ -12,7 +12,7 @@ class LiquidacionesModel extends Model
     protected $useAutoIncrement = true;
 
     protected $returnType     = 'array';
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
 
     protected $allowedFields = ['nombre', 'monto','activo', 'fecha_vencimiento'];
 
