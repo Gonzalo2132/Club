@@ -14,6 +14,8 @@ echo base_url();
         <th>Nombre</th>
         <th>Apellido</th>
         <th>D.N.I.</th>
+        <th>Teléfono</th>
+        <th>Caja</th>
         <th>Acciones</th>
      
     </thead>
@@ -27,6 +29,9 @@ foreach ($recaudadores as $recaudador) {
     echo '<td>' . $recaudador['nombre'] . '</td>';
     echo '<td>' . $recaudador['apellido'] . '</td>';
     echo '<td>' . $recaudador['dni'] . '</td>';
+    echo '<td>' . $recaudador['telefono'] . '</td>';
+    echo '<td>' . $recaudador['id_caja'] . '</td>';
+
     
         echo '<td>
         <a class ="btn btn-warning"

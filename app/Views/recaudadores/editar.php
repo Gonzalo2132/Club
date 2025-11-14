@@ -17,6 +17,28 @@ echo base_url();
     <input class="form-control" type="text" name="dni" id="dni"
         placeholder="Ingrese D.N.I" value="<?php echo $recaudador[0]['dni']; ?>">
 
+    <label class="form-control" for="telefono">Teléfono</label>
+    <input class="form-control" type="text" name="telefono" id="telefono" 
+    placeholder="Ingrese número de teleófono " value="<?php echo $recaudador[0]['telefono']; ?>">
+
+    <label class="form-control" for="caja">Zona</label>
+    <select class="form-control" id="id_caja" name="id_caja">
+        <?php 
+        foreach($caja as $cajas){ ?>
+
+            <option value="<?php echo $cajas['id']; ?>" 
+                <?php
+                    if($cajas['id']==$recaudador[0]['id_caja']){
+                        echo 'selected';
+                    }
+                ?>
+            ><?php echo $cajas['denominacion']; ?></option>
+       
+        <?php }?>
+    </select>
+
+
+
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="
 <?php

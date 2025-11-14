@@ -14,6 +14,18 @@ echo base_url();
     <label class="form-control" for="dni">D.N.I.</label>
     <input class="form-control" type="text" name="dni" id="dni" placeholder="Ingrese DNI">
 
+    <label class="form-control" for="telefono">Teléfono</label>
+    <input class="form-control" type="text" name="telefono" id="telefono" placeholder="Ingrese número de teleófono ">
+
+    <label class="form-control" for="caja">caja</label>
+    <select class="form-control" id="id_caja" name="id_caja">
+        <?php
+        foreach ($caja as $cajas) {
+            echo '<option value="' . $cajas['id'] . '">' . $cajas['denominacion'] . '</option>';
+        }
+        ?>
+    </select>
+
 
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="

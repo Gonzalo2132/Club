@@ -2,18 +2,20 @@
 
 namespace App\Controllers;
 
-use App\Models\RecaudadoresModel; //Acá asignamos que usamos el modelo designado
-
+use App\Models\RecaudadoresModel;
+use App\Models\CajasModel;
 
 
 class Recaudadores extends BaseController
 {
-    protected $recaudadores; //Esto es para que la variable en cuestión esté definida
+    protected $recaudadores;
+    protected $cajas;
     protected $sesion;
 
     public function __construct()
     { //La función constructora
         $this->recaudadores = new RecaudadoresModel();
+        $this->cajas = new CajasModel();
         $this->sesion = session();
     }
 
@@ -23,11 +25,7 @@ class Recaudadores extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        //Esto serñia una consulta,  "Select * from socios"
         $recaudadores = $this->recaudadores->where('activo', $activo)->findAll();
-        //Construyo el context
-        //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
-
         $context = [
             'recaudadores' => $recaudadores,
             'titulo' => "Gestión de Recaudadores",
@@ -41,16 +39,16 @@ class Recaudadores extends BaseController
         echo view('panel/footer');
     }
     //esta función "nuevo "muestra el header el footer y la vista que va a tener el formulario
-    public function nuevo()
+    public function nuevo($activo = 1)
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
-
-        //este context es para cambiar el título de la página que está esperando el header
+        $cajas = $this->cajas->where('activo', $activo)->findAll();
         $context = [
             'titulo' => "Nuevo Recaudador",
-            'pagname' => 'Gestión/Nuevo Recaudador'
+            'pagname' => 'Gestión/Nuevo Recaudador',
+            'caja' => $cajas
         ];
 
         echo view('panel/header', $context);
@@ -68,6 +66,9 @@ class Recaudadores extends BaseController
                 'nombre' => $this->request->getPost('nombre'),
                 'apellido' => $this->request->getPost('apellido'),
                 'dni' => $this->request->getPost('dni'),
+                'telefono'=> $this->request->getPost('telefono'),
+                'id_caja' => $this->request->getPost('id_caja')
+
 
             ]
         );
@@ -87,12 +88,16 @@ class Recaudadores extends BaseController
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
-
+        $status = 1;
         $recaudador = $this->recaudadores->where('id', $id)->findAll();
+        $cajas = $this->cajas->where('activo', $status)->findAll();
         $context = [
             'recaudador' => $recaudador,
             'titulo' => "Edición recaudador",
-            'pagname' => 'Gestión/Edición recaudador'
+            'pagname' => 'Gestión/Edición recaudador',
+            'caja' => $cajas
+
+
         ];
 
 
@@ -113,7 +118,10 @@ class Recaudadores extends BaseController
             [
                 'nombre' => $this->request->getPost('nombre'),
                 'apellido' => $this->request->getPost('apellido'),
-                'dni' => $this->request->getPost('dni')
+                'dni' => $this->request->getPost('dni'),
+                'telefono'=> $this->request->getPost('telefono'),
+                'id_caja' => $this->request->getPost('id_caja')
+
             ]
         );
         return redirect()->to(base_url() . 'public/recaudadores/');

@@ -14,7 +14,7 @@ class RecaudadoresModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['nombre','apellido','dni', 'activo', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
+    protected $allowedFields = ['nombre','apellido','dni', 'telefono', 'activo', 'id_caja', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
