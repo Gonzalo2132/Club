@@ -397,6 +397,8 @@
                                                 <ul class="list-unstyled mt-2">
                                                     <li><i class="fas fa-chalkboard-teacher text-success"></i> Prof.
                                                         Delfor Castro</li>
+                                                    <li><i class="fas fa-chalkboard-teacher text-success"></i> Prof.
+                                                        Lisandro Casanova</li>
                                                     
                                                 </ul>
                                             </div>
