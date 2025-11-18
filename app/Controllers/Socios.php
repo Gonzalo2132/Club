@@ -28,11 +28,16 @@ class Socios extends BaseController
 
         //Esto serñia una consulta,  "Select * from socios"
         $socios = $this->socios->where('activo', $activo)->findAll();
+
+        //Traer todas las zonas
+        $zonas = $this->zonas->where('activo',1)->findAll();
+
         //Construyo el context
         //['llave' => valor, 'llave2'=>valor2, etc] llave = nombre variable
 
         $context = [
             'socios' => $socios,
+            'zonas' => $zonas,
             'titulo' => "Gestión de Socios",
             'pagname' => "Gestion/socios"
         ];

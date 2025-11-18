@@ -18,7 +18,7 @@ echo base_url();
     <input class="form-control" type="text" name="telefono" id="telefono" placeholder="Ingrese un teléfono">
 
     <label class="form-control" for="fecha_nac">Fecha de Nacimiento</label>
-    <input class="form-control" type="text" name="fecha_nac" id="fecha_nac" placeholder="dd/mm/AAAA">
+    <input class="form-control" type="date" name="fecha_nac" id="fecha_nac" placeholder="dd/mm/AAAA">
 
     <label class="form-control" for="dni">D.N.I.</label>
     <input class="form-control" type="text" name="dni" id="dni" placeholder="Ingrese DNI">

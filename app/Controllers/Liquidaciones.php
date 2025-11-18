@@ -3,16 +3,22 @@
 namespace App\Controllers;
 
 use App\Models\LiquidacionesModel;
+use App\Models\SociosModel;
+use App\Models\PagosModel;
 
 class Liquidaciones extends BaseController
 {
-    protected $liquidaciones; 
+    protected $liquidaciones;
     protected $sesion;
+    protected $socios;
+    protected $pagos;
 
     public function __construct()
-    { 
+    {
         $this->liquidaciones = new LiquidacionesModel();
         $this->sesion = session();
+        $this->socios = new SociosModel();
+        $this->pagos = new PagosModel();
     }
 
     public function index($activo = 1)
@@ -21,9 +27,9 @@ class Liquidaciones extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        
+
         $liquidaciones = $this->liquidaciones->where('activo', $activo)->findAll();
-        
+
         $context = [
             'liquidaciones' => $liquidaciones,
             'titulo' => "Gestión de Liquidaciones",
@@ -101,7 +107,7 @@ class Liquidaciones extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-       $this->liquidaciones->update(
+        $this->liquidaciones->update(
             $id,
             [
                 'nombre' => $this->request->getPost('nombre'),
@@ -110,5 +116,55 @@ class Liquidaciones extends BaseController
             ]
         );
         return redirect()->to(base_url() . 'public/liquidaciones/');
+    }
+
+    //Función para traer las liquidaciones por socios
+    public function listado_socio($idSocio)
+    {
+        // Validar sesión
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        // Validar socio
+        $socio = $this->socios->find($idSocio);
+        if (!$socio) {
+            return redirect()->to(base_url('public/socios'))
+                ->with('error', 'El socio no existe');
+        }
+
+        $fechaAlta = $socio['fecha_alta'];
+
+        // Liquidaciones desde la fecha de alta
+        $liquidaciones = $this->liquidaciones
+            ->where('fecha_vencimiento >=', $fechaAlta)
+            ->findAll();
+
+        // Pagos del socio
+        $pagos = $this->pagos
+            ->where('id_socio', $idSocio)
+            ->findAll();
+
+        // Armar historial
+        $historial = [];
+        foreach ($liquidaciones as $liq) {
+            $pago = array_filter($pagos, fn($p) => $p['id_liquidacion'] == $liq['id']);
+            $historial[] = [
+                'liquidacion' => $liq,
+                'pago' => $pago ? reset($pago) : null,
+                'estado' => $pago ? 'Pagado' : 'Pendiente'
+            ];
+        }
+
+        $context = [
+            'titulo' => "Liquidaciones del socio",
+            'historial' => $historial,
+            'idSocio' => $idSocio,
+            'socio' => $socio
+        ];
+
+        echo view('panel/header', $context);
+        echo view('liquidaciones/listado_socio', $context);
+        echo view('panel/footer');
     }
 }

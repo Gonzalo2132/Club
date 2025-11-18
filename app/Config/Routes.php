@@ -59,9 +59,14 @@ $routes->post('/liquidaciones/guardar', 'Liquidaciones::guardar');
 $routes->get('/liquidaciones/borrar/(:num)', 'Liquidaciones::borrar/$1');
 $routes->get('/liquidaciones/editar/(:num)', 'Liquidaciones::editar/$1');
 $routes->post('/liquidaciones/actualizar/(:num)', 'Liquidaciones::actualizar/$1');
+$routes->get('/liquidaciones/listado_socio/(:num)', 'Liquidaciones::listado_socio/$1');
 
 
 //login
 $routes->get('/login', 'Login::index');
 $routes->post('/login/validar', 'Login::validar');
 $routes->get('/login/logout', 'Login::logout');
+
+//Pagos
+$routes->get('/pagos/nuevo/(:num)/(:num)', 'Pagos::nuevo/$1/$2');
+$routes->post('/pagos/guardar', 'Pagos::guardar');
