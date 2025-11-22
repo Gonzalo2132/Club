@@ -6,7 +6,7 @@ echo base_url();
 " method="post">
 
     <label class="form-label" for="denominacion">Denominación</label>
-    <input class="form-control" type="text" name="denominacion" id="denominacion" placeholder="">4
+    <input class="form-control" type="text" name="denominacion" id="denominacion" placeholder="">
 
     <label class="form-label" for="descripcion">Descripcion</label>
     <input class="form-control" type="text" name="descripcion" id="descripcion" placeholder="">
