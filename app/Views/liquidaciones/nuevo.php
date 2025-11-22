@@ -9,7 +9,7 @@ echo base_url();
     <input class="form-control" type="text" name="nombre" id="nombre" placeholder="">
 
     <label class="form-label" for="monto">Monto</label>
-    <input class="form-control" type="text" name="monto" id="monto" placeholder="">
+    <input class="form-control" type="number" name="monto" id="monto" placeholder="">
 
     <label class="form-label" for="fecha_vencimiento">Fecha de Vencimiento</label>
     <input class="form-control" type="date" name="fecha_vencimiento" id="fecha_vencimiento" placeholder="dd/mm/AAAA">

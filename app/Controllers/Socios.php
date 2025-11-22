@@ -39,7 +39,7 @@ class Socios extends BaseController
             'socios' => $socios,
             'zonas' => $zonas,
             'titulo' => "Gestión de Socios",
-            'pagname' => "Gestion/socios"
+            'pagname' => "Gestión/socios"
         ];
 
 

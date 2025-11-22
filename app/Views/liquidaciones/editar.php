@@ -10,7 +10,7 @@ echo base_url();
     placeholder="" value="<?php echo $liquidacion[0]['nombre'];?>">
 
     <label class="form-label" for="monto">Monto</label>
-    <input class="form-control" type="text" name="monto" id="monto" 
+    <input class="form-control" type="number" name="monto" id="monto" 
     placeholder="" value="<?php echo $liquidacion[0]['monto'];?>">
 
     <label class="form-label" for="fecha_vencimiento">Fecha de Vencimiento</label>

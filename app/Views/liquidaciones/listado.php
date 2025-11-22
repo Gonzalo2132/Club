@@ -29,7 +29,7 @@ foreach ($liquidaciones as $liquidacion) {
     echo '<tr>';
     echo '<td>' . $liquidacion['id'] . '</td>';
     echo '<td>' . $liquidacion['nombre'] . '</td>';
-    echo '<td>' . $liquidacion['monto'] . '</td>';
+    echo '<td>$' . $liquidacion['monto'] . '</td>';
     echo '<td>' . date('d/m/Y', strtotime($liquidacion['fecha_vencimiento'])) . '</td>';
 
     
