@@ -5,13 +5,13 @@ echo base_url();
 ?>public/cajas/guardar
 " method="post">
 
-    <label class="form-control" for="denominacion">Denominación</label>
+    <label class="form-label" for="denominacion">Denominación</label>
     <input class="form-control" type="text" name="denominacion" id="denominacion" placeholder="">4
 
-    <label class="form-control" for="descripcion">Descripcion</label>
+    <label class="form-label" for="descripcion">Descripcion</label>
     <input class="form-control" type="text" name="descripcion" id="descripcion" placeholder="">
 
-    <label class="form-control" for="codigointerno">Codigo Interno</label>
+    <label class="form-label" for="codigointerno">Codigo Interno</label>
     <input class="form-control" type="text" name="codigointerno" id="codigointerno" placeholder="">
 
 

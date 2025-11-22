@@ -26,8 +26,13 @@ class Recaudadores extends BaseController
         }
 
         $recaudadores = $this->recaudadores->where('activo', $activo)->findAll();
+
+        //traer todas las cajas
+        $cajas = $this->cajas->where('activo',1)->findAll();
+
         $context = [
             'recaudadores' => $recaudadores,
+            'cajas' => $cajas,
             'titulo' => "Gestión de Recaudadores",
             'pagname' => "Gestion/recaudadores"
         ];

@@ -5,7 +5,7 @@ echo base_url();
 ?>public/zonas/guardar
 " method="post">
 
-    <label class="form-control" for="denominacion">Denominación</label>
+    <label class="form-label" for="denominacion">Denominación</label>
     <input class="form-control" type="text" name="denominacion" id="denominacion" placeholder="">
 
     

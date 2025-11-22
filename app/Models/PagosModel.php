@@ -16,6 +16,7 @@ class PagosModel extends Model
 
     protected $allowedFields = ['id_socio', 'id_liquidacion', 'id_caja', 'monto', 'fecha_pago', 
                                 'fecha_alta', 'fecha_borrado', 'fecha_edicion'];
+                                
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

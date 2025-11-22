@@ -12,7 +12,6 @@ echo base_url();
     <thead>
         <th>#</th>
         <th>Denominación</th>
-        <th>Estado</th>
         <th></th>
 
 
@@ -27,8 +26,6 @@ foreach ($zonas as $zona) {
     echo '<tr>';
     echo '<td>' . $zona['id'] . '</td>';
     echo '<td>' . $zona['denominacion'] . '</td>';
-    echo '<td>' . $zona['activo'] . '</td>';
-
     
         echo '<td>
         <a class ="btn btn-warning"

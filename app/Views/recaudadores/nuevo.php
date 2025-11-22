@@ -5,19 +5,19 @@ echo base_url();
 ?>public/recaudadores/guardar
 " method="post">
 
-    <label class="form-control" for="nombre">Nombre</label>
+    <label class="form-label" for="nombre">Nombre</label>
     <input class="form-control" type="text" name="nombre" id="nombre" placeholder="Ingrese nombre">
 
-    <label class="form-control" for="apellido">Apellido</label>
+    <label class="form-label" for="apellido">Apellido</label>
     <input class="form-control" type="text" name="apellido" id="apellido" placeholder="Ingrese apellido">
 
-    <label class="form-control" for="dni">D.N.I.</label>
+    <label class="form-label" for="dni">D.N.I.</label>
     <input class="form-control" type="text" name="dni" id="dni" placeholder="Ingrese DNI">
 
-    <label class="form-control" for="telefono">Teléfono</label>
+    <label class="form-label" for="telefono">Teléfono</label>
     <input class="form-control" type="text" name="telefono" id="telefono" placeholder="Ingrese número de teleófono ">
 
-    <label class="form-control" for="caja">caja</label>
+    <label class="form-label" for="caja">caja</label>
     <select class="form-control" id="id_caja" name="id_caja">
         <?php
         foreach ($caja as $cajas) {

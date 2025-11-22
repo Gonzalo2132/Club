@@ -30,7 +30,15 @@ foreach ($recaudadores as $recaudador) {
     echo '<td>' . $recaudador['apellido'] . '</td>';
     echo '<td>' . $recaudador['dni'] . '</td>';
     echo '<td>' . $recaudador['telefono'] . '</td>';
-    echo '<td>' . $recaudador['id_caja'] . '</td>';
+    $cajaNombre = '';
+            foreach ($cajas as $caja) {
+                if ($caja['id'] == $recaudador['id_caja']) {
+                    $cajaNombre = $caja['denominacion'];
+                    break;
+                }
+            }
+            echo '<td>' . $cajaNombre . '</td>';
+    //echo '<td>' . $recaudador['id_caja'] . '</td>';
 
     
         echo '<td>

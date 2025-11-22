@@ -11,28 +11,29 @@
 <br><br>
 
 <!-- Formulario para registrar un nuevo pago -->
-<form method="post" action="<?= base_url('public/pagos/guardar') ?>">
+<form action="
+<?php
+echo base_url();
+
+?>public/pagos/guardar
+" method="post">
     <input type="hidden" name="id_socio" value="<?= $socio['id'] ?>">
     <input type="hidden" name="id_liquidacion" value="<?= $liquidacion['id'] ?>">
 
-    <div class="form-group">
-        <label>Monto</label>
-        <input type="text" name="monto" class="form-control" required>
-    </div>
+    <label class="form-label" for="monto">Teléfono</label>
+    <input class="form-control" type="text" name="monto" id="monto" placeholder="Ingrese un monto">
 
-    <div class="form-group">
-        <label>Fecha de pago</label>
-        <input type="date" name="fecha_pago" class="form-control" required>
-    </div>
+    <label class="form-label" for="fecha_pago">Fecha de Pago</label>
+    <input class="form-control" type="date" name="fecha_pago" id="fecha_pago" placeholder="dd/mm/AAAA">
 
-    <div class="form-group">
-        <label>Forma de Pago</label>
-        <select name="id_caja" class="form-control" required>
-            <?php foreach ($cajas as $c): ?>
-                <option value="<?= $c['id'] ?>"><?= $c['denominacion'] ?></option>
-            <?php endforeach; ?>
-        </select>
-    </div>
+    <label class="form-label" for="id_caja">Forma de Pago</label>
+    <select class="form-control" id="id_caja" name="id_caja">
+        <?php
+        foreach ($cajas as $c) {
+            echo '<option value="' . $c['id'] . '">' . $c['denominacion'] . '</option>';
+        }
+        ?>
+    </select>
 
     <br>
     <button type="submit" class="btn btn-success">Registrar pago</button>
