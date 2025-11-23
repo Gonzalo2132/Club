@@ -6,7 +6,7 @@
 <h3>Pago de liquidación: <?= $liquidacion['nombre'] ?></h3>
 <p>Socio: <?= $socio['nombre'].' '.$socio['apellido'] ?></p>
 <p>Monto base: <?= $liquidacion['monto'] ?></p>
-<p>Fecha de vencimiento: <?= $liquidacion['fecha_vencimiento'] ?></p>
+<p>Fecha de vencimiento: <?= date('d/m/Y', strtotime($liquidacion['fecha_vencimiento'])) ?></p>
 
 <br><br>
 
@@ -20,7 +20,7 @@ echo base_url();
     <input type="hidden" name="id_socio" value="<?= $socio['id'] ?>">
     <input type="hidden" name="id_liquidacion" value="<?= $liquidacion['id'] ?>">
 
-    <label class="form-label" for="monto">Teléfono</label>
+    <label class="form-label" for="monto">Monto</label>
     <input class="form-control" type="text" name="monto" id="monto" placeholder="Ingrese un monto">
 
     <label class="form-label" for="fecha_pago">Fecha de Pago</label>
