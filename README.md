@@ -1,60 +1,67 @@
-# CodeIgniter 4 Framework
+# Sistema de Gestión de Socios Club Atlético Sarmiento.
 
-## What is CodeIgniter?
+Proyecto desarrollado con **CodeIgniter 4** como parte de la Práctica Profesionalizante de la Tecnicatura Superior en Análisis y Desarrollo de Software.  
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+Su objetivo es automatizar la administración de socios, zonas, recaudadores, cajas, pagos, usuarios y liquidaciones del Club Atlético Sarmiento con seguimiento de estado de cada pago.
 
-This repository holds the distributable version of the framework.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+---
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## 📌 Contexto
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+Este sistema surge de la necesidad institucional de:
 
-## Important Change with index.php
+- 👥 Organizar la información de socios, pagos y sus zonas.
+- 💼 Asignar recaudadores a cada zona.
+- 📑 Generar liquidaciones periódicas con fecha de vencimiento.
+- 💵 Registrar pagos y controlar estados (pendiente / realizado).
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+---
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## 🚀 Funcionalidades principales
 
-**Please** read the user guide for a better explanation of how CI4 works!
+- 🔐 **Login de usuarios** para acceso seguro.  
+- 👤 **Gestión de socios**: alta, baja y modificación.  
+- 🌍 **Gestión de zonas y recaudadores**: asignación y control.  
+- 📊 **Liquidaciones**: creación, listado y seguimiento.  
+- 💳 **Pagos**: registro de montos y actualización de estados.  
+- 📜 **Historial**: consulta de liquidaciones y pagos realizados.  
 
-## Repository Management
+---
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+## ⚙️ Requisitos técnicos
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+- 🐘 PHP 8.2.12  
+- 🖥️ XAMPP o servidor compatible  
+- 🗄️ MySQL/MariaDB  
+- 🛠️ Framework CodeIgniter 4  
 
-## Contributing
+---
 
-We welcome contributions from the community.
+## 📖 Instalación y uso
 
-Please read the [*Contributing to CodeIgniter*](https://github.com/codeigniter4/CodeIgniter4/blob/develop/CONTRIBUTING.md) section in the development repository.
+1. 📥 Clonar el repositorio desde GitHub.
+2. ⚙️ Configurar el archivo App.php en app/Config con la URL en $baseURL y Database.php con los datos de la base de datos.  
+3. ▶️ Acceder vía localhost/club/public.
+4. 🔑 Iniciar sesión en el sistema y comenzar a operar.
 
-## Server Requirements
+---
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+## 👥 Equipo
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+Proyecto elaborado por:
+Estudiantes de la Tecnicatura Superior en Análisis y Desarrollo de Software:
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+- 👥 Almada, Santiago.
+- 👥 Balista, Berenice.
+- 👥 Feling, Danilo.
+- 👥 Mansilla, Diego.
+- 👥 Nuñez, Alesio.
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+Docentes a Cargo:
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+- 👨‍🏫 Casanova, Lisandro (Docente Práctica Profesionalizante III).
+- 👨‍🏫 Castro, Delfor (Docente Programación III).
+
+Institución
+
+- 🏫 Instituto Superior "Gaspar L. Benavento.
