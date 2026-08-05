@@ -21,7 +21,7 @@ class UsuariosModel extends Model
     protected bool $updateOnlyChanged = true;
 
     
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'fecha_alta';
     protected $updatedField  = 'fecha_edicion';

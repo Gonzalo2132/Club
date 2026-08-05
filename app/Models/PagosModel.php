@@ -12,7 +12,7 @@ class PagosModel extends Model
     protected $useAutoIncrement = true;
 
     protected $returnType     = 'array';
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
 
     protected $allowedFields = ['id_socio', 'id_liquidacion', 'id_caja', 'monto', 'fecha_pago', 
                                 'fecha_alta', 'fecha_borrado', 'fecha_edicion'];
@@ -22,7 +22,7 @@ class PagosModel extends Model
     protected bool $updateOnlyChanged = true;
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'fecha_creado';
     protected $updatedField  = 'fecha_borrado';

@@ -77,7 +77,7 @@ class Caja extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->cajas->update($id, ['activo' => 0]);
+        $this->cajas->delete($id);
         return redirect()->to(base_url() . 'public/cajas/');
     }
     public function editar($id)

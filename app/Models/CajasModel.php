@@ -12,7 +12,7 @@ class CajasModel extends Model
     protected $useAutoIncrement = true;
 
     protected $returnType     = 'array';
-    protected $useSoftDeletes = false;
+    protected $useSoftDeletes = true;
 
     protected $allowedFields = ['denominacion', 'descripcion','codigointerno'];
 
@@ -20,11 +20,11 @@ class CajasModel extends Model
     protected bool $updateOnlyChanged = true;
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
+    protected $createdField  = 'fecha_alta';
+    protected $updatedField  = 'fecha_edicion';
+    protected $deletedField  = 'fecha_borrado';
 
     // Validation
     protected $validationRules      = [];

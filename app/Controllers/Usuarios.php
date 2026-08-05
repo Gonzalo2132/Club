@@ -16,10 +16,10 @@ class Usuarios extends BaseController
 
     public function index($activo = 1)
     {
-        if (!isset($this->sesion->id_usuario)) {
+       if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
-
+    
         $usuarios = $this->usuarios->where('activo', $activo)->findAll();
 
         $context = [
@@ -67,7 +67,7 @@ class Usuarios extends BaseController
     }
     public function borrar($id)
     {
-        if (!isset($this->sesion->id_usuario)) {
+       if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -76,7 +76,7 @@ class Usuarios extends BaseController
     }
     public function editar($id)
     {
-        if (!isset($this->sesion->id_usuario)) {
+       if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
@@ -97,7 +97,7 @@ class Usuarios extends BaseController
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
-
+   
 
         $data = [
             'nombre' => $this->request->getPost('nombre'),

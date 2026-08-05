@@ -27,10 +27,10 @@ class Panel extends BaseController
 
     public function index()
     {
-       if(!isset($this->sesion->id_usuario)){
+    /*   if(!isset($this->sesion->id_usuario)){
         return redirect()->to(base_url() .'public/login');
         }
-
+     */
         //Esto seria una consulta,  "Select * from clientes"
         $usuarios = $this->usuarios->findAll();
         $socios = $this->socios->findAll();
@@ -57,9 +57,10 @@ class Panel extends BaseController
 
     public function nuevo()
     {
-        if(!isset($this->sesion->id_usuario)){
+   /*     if(!isset($this->sesion->id_usuario)){
         return redirect()->to(base_url() .'public/login');
         }
+    */    
         $contex['titulo'] = "Panel"; //los valores de contexto pueden ser cualquier tipo de dato, siempre tiene que tener
         $contex['subtitulo'] = "Este es el panel de control";
         $contex['pagname'] = "Panel de control";
