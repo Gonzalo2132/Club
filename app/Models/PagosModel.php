@@ -14,8 +14,7 @@ class PagosModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['id_socio', 'id_liquidacion', 'id_caja', 'monto', 'fecha_pago', 
-                                'fecha_alta', 'fecha_borrado', 'fecha_edicion'];
+    protected $allowedFields = ['id_socio', 'id_liquidacion', 'id_caja', 'forma_pago', 'monto', 'fecha_pago'];
                                 
 
     protected bool $allowEmptyInserts = false;
@@ -24,9 +23,9 @@ class PagosModel extends Model
     // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
-    protected $createdField  = 'fecha_creado';
-    protected $updatedField  = 'fecha_borrado';
-    protected $deletedField  = 'fecha_edicion';
+    protected $createdField  = 'fecha_alta';
+    protected $updatedField  = 'fecha_edicion';
+    protected $deletedField  = 'fecha_borrado';
 
     // Validation
     protected $validationRules      = [];

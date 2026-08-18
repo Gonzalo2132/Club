@@ -25,14 +25,21 @@ echo base_url();
 
     <label class="form-label" for="fecha_pago">Fecha de Pago</label>
     <input class="form-control" type="date" name="fecha_pago" id="fecha_pago" placeholder="dd/mm/AAAA">
-
-    <label class="form-label" for="id_caja">Forma de Pago</label>
+   
+    <label class="form-label" for="id_caja">Caja</label>
     <select class="form-control" id="id_caja" name="id_caja">
         <?php
         foreach ($cajas as $c) {
             echo '<option value="' . $c['id'] . '">' . $c['denominacion'] . '</option>';
         }
         ?>
+    </select>
+
+    <label class="form-label" for="forma_pago">Forma de Pago</label>
+    <select class="form-control" id="forma_pago" name="forma_pago">
+        <option value="Efectivo">Efectivo</option>
+        <option value="Tarjeta">Tarjeta</option>
+        <option value="Transferencia">Transferencia</option>
     </select>
 
     <br>

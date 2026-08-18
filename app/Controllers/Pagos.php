@@ -65,6 +65,7 @@ class Pagos extends BaseController
             'id_socio' => $this->request->getPost('id_socio'),
             'id_liquidacion' => $this->request->getPost('id_liquidacion'),
             'id_caja' => $this->request->getPost('id_caja'), // 👈 directo del select
+	    'forma_pago' => $this->request->getPost('forma_pago'),
             'monto' => $this->request->getPost('monto'),
             'fecha_pago' => $this->request->getPost('fecha_pago'),
             'activo' => 1

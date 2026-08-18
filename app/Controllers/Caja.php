@@ -120,6 +120,33 @@ class Caja extends BaseController
 
         }
 
-       
-    }
+    public function rendicionCuentas()
+    {
+        $db = \Config\Database::connect();
     
+        $caja_zonaId = 2; // ID de la caja del cobrador
+        $caja_CentralId = 1; // ID de la caja central
+        $montoARendir = $this->request->getPost('monto');
+
+        $db->transStart(); // Iniciamos la transacción
+
+        // 1. Debitar (sacar) de Caja Pepito
+        $db->query("UPDATE cajas SET saldo = saldo - ? WHERE id = ?", [$montoARendir, $caja_zonaId]);
+        $db->query("INSERT INTO movimientos_cajas (caja_id, tipo, monto, concepto) VALUES (?, 'egreso', ?, 'Rendición a Caja Central')", [$caja_zonaId, $montoARendir]);
+
+        // 2. Acreditar (entrar) a Caja Central
+        $db->query("UPDATE cajas SET saldo = saldo + ? WHERE id = ?", [$montoARendir, $caja_CentralId]);
+        $db->query("INSERT INTO movimientos_cajas (caja_id, tipo, monto, concepto) VALUES (?, 'ingreso', ?, 'Ingreso por Rendición de Pepito')", [$caja_CentralId, $montoARendir]);
+
+        $db->transComplete(); // Confirmamos los cambios
+
+        if ($db->transStatus() === FALSE) {
+            return redirect()->back()->with('error', 'Error al procesar la rendición.');
+        }
+
+        return redirect()->to('/cajas')->with('success', 'Rendición completada con éxito.');
+        }
+
+        
+    }
+        
