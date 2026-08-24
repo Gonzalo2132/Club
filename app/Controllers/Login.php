@@ -20,7 +20,6 @@ class Login extends BaseController
             'pagname' => "Gestion/login",
         ];
         echo view('login/index', $context);
-        echo view('panel/footer');
     }
 
     public function validar()

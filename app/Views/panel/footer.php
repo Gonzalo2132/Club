@@ -71,37 +71,40 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
 <script>
-  new DataTable('#contenido-lista', {
-    language: {
-      url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
-    },
-    layout: {
-      topStart: {
-        buttons: [
-          {
-            extend: 'csv',
-            text: '<i class="fas fa-file-csv"></i> CSV',
-            className: 'btn btn-success btn-sm'
-          },
-          {
-            extend: 'excel',
-            text: '<i class="fas fa-file-excel"></i> Excel',
-            className: 'btn btn-primary btn-sm'
-          },
-          {
-            extend: 'pdf',
-            text: '<i class="fas fa-file-pdf"></i> PDF',
-            className: 'btn btn-danger btn-sm'
-          },
-          {
-            extend: 'print',
-            text: '<i class="fas fa-print"></i> Imprimir',
-            className: 'btn btn-info btn-sm'
-          }
-        ]
+  var tablaContenido = document.querySelector('#contenido-lista');
+  if (tablaContenido) {
+    new DataTable('#contenido-lista', {
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+      },
+      layout: {
+        topStart: {
+          buttons: [
+            {
+              extend: 'csv',
+              text: '<i class="fas fa-file-csv"></i> CSV',
+              className: 'btn btn-success btn-sm'
+            },
+            {
+              extend: 'excel',
+              text: '<i class="fas fa-file-excel"></i> Excel',
+              className: 'btn btn-primary btn-sm'
+            },
+            {
+              extend: 'pdf',
+              text: '<i class="fas fa-file-pdf"></i> PDF',
+              className: 'btn btn-danger btn-sm'
+            },
+            {
+              extend: 'print',
+              text: '<i class="fas fa-print"></i> Imprimir',
+              className: 'btn btn-info btn-sm'
+            }
+          ]
+        }
       }
-    }
-  });
+    });
+  }
 </script>
    </body>
 

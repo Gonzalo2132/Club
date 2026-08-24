@@ -9,10 +9,6 @@ $routes->get('/', 'Login::index');
 $routes->get('/panel', 'Panel::index');
 $routes->get('/panel/index', 'Panel::index');
 $routes->get('/panel/nuevo', 'Panel::nuevo');
-$routes->get('/paises', 'Paises::index');
-$routes->get('/paises/listar', 'Paises::listar');
-$routes->get('/proveedores', 'Proveedores::index');
-
 
 //zonas
 $routes->get('/zonas', 'Zonas::index');
@@ -41,6 +37,7 @@ $routes->post('/socios/actualizar/(:num)', 'Socios::actualizar/$1');
 $routes->get('/cajas', 'Caja::index');
 $routes->get('/cajas/nuevo', 'Caja::nuevo');
 $routes->post('/cajas/guardar', 'Caja::guardar');
+$routes->post('/cajas/guardar-movimiento', 'Caja::guardarMovimiento');
 $routes->get('/cajas/borrar/(:num)', 'Caja::borrar/$1');
 $routes->get('/cajas/editar/(:num)', 'Caja::editar/$1');
 $routes->post('/cajas/actualizar/(:num)', 'Caja::actualizar/$1');

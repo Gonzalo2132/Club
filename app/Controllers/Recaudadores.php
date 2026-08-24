@@ -4,18 +4,20 @@ namespace App\Controllers;
 
 use App\Models\RecaudadoresModel;
 use App\Models\CajasModel;
-
+use App\Models\ZonasModel;
 
 class Recaudadores extends BaseController
 {
     protected $recaudadores;
     protected $cajas;
+    protected $zonas;
     protected $sesion;
 
     public function __construct()
-    { //La función constructora
+    {
         $this->recaudadores = new RecaudadoresModel();
         $this->cajas = new CajasModel();
+        $this->zonas = new ZonasModel();
         $this->sesion = session();
     }
 
@@ -26,59 +28,64 @@ class Recaudadores extends BaseController
         }
 
         $recaudadores = $this->recaudadores->where('activo', $activo)->findAll();
-
-        //traer todas las cajas
-        $cajas = $this->cajas->where('activo',1)->findAll();
+        $cajas = $this->cajas->where('activo', 1)->findAll();
+        $zonas = $this->zonas->where('activo', 1)->findAll();
 
         $context = [
             'recaudadores' => $recaudadores,
             'cajas' => $cajas,
-            'titulo' => "Gestión de Recaudadores",
-            'pagname' => "Gestion/recaudadores"
+            'zonas' => $zonas,
+            'titulo' => 'Gestión de Recaudadores',
+            'pagname' => 'Gestion/recaudadores'
         ];
-
-
 
         echo view('panel/header', $context);
         echo view('recaudadores/listado', $context);
         echo view('panel/footer');
     }
-    //esta función "nuevo "muestra el header el footer y la vista que va a tener el formulario
+
     public function nuevo($activo = 1)
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
+
         $cajas = $this->cajas->where('activo', $activo)->findAll();
+        $zonas = $this->zonas->where('activo', $activo)->findAll();
+
         $context = [
-            'titulo' => "Nuevo Recaudador",
+            'titulo' => 'Nuevo Recaudador',
             'pagname' => 'Gestión/Nuevo Recaudador',
-            'caja' => $cajas
+            'caja' => $cajas,
+            'zona' => $zonas
         ];
 
         echo view('panel/header', $context);
         echo view('recaudadores/nuevo');
         echo view('panel/footer');
     }
+
     public function guardar()
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->recaudadores->save(
-            [
-                'nombre' => $this->request->getPost('nombre'),
-                'apellido' => $this->request->getPost('apellido'),
-                'dni' => $this->request->getPost('dni'),
-                'telefono'=> $this->request->getPost('telefono'),
-                'id_caja' => $this->request->getPost('id_caja')
+        $idZona = $this->request->getPost('id_zona');
+        $idCaja = $this->request->getPost('id_caja');
 
+        $this->recaudadores->save([
+            'nombre' => $this->request->getPost('nombre'),
+            'apellido' => $this->request->getPost('apellido'),
+            'dni' => $this->request->getPost('dni'),
+            'telefono' => $this->request->getPost('telefono'),
+            'id_caja' => $idCaja,
+            'id_zona' => $idZona === '' ? null : $idZona
+        ]);
 
-            ]
-        );
         return redirect()->to(base_url() . 'public/recaudadores/');
     }
+
     public function borrar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
@@ -88,47 +95,49 @@ class Recaudadores extends BaseController
         $this->recaudadores->delete($id);
         return redirect()->to(base_url() . 'public/recaudadores/');
     }
+
     public function editar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
+
         $status = 1;
         $recaudador = $this->recaudadores->where('id', $id)->findAll();
         $cajas = $this->cajas->where('activo', $status)->findAll();
+        $zonas = $this->zonas->where('activo', $status)->findAll();
+
         $context = [
             'recaudador' => $recaudador,
-            'titulo' => "Edición recaudador",
+            'titulo' => 'Edición recaudador',
             'pagname' => 'Gestión/Edición recaudador',
-            'caja' => $cajas
-
-
+            'caja' => $cajas,
+            'zona' => $zonas
         ];
-
-
 
         echo view('panel/header', $context);
         echo view('recaudadores/editar');
         echo view('panel/footer');
     }
+
     public function actualizar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
-        //primer parámetro es el where en este caso $id
-        $this->recaudadores->update(
-            $id,
-            [
-                'nombre' => $this->request->getPost('nombre'),
-                'apellido' => $this->request->getPost('apellido'),
-                'dni' => $this->request->getPost('dni'),
-                'telefono'=> $this->request->getPost('telefono'),
-                'id_caja' => $this->request->getPost('id_caja')
+        $idZona = $this->request->getPost('id_zona');
+        $idCaja = $this->request->getPost('id_caja');
 
-            ]
-        );
+        $this->recaudadores->update($id, [
+            'nombre' => $this->request->getPost('nombre'),
+            'apellido' => $this->request->getPost('apellido'),
+            'dni' => $this->request->getPost('dni'),
+            'telefono' => $this->request->getPost('telefono'),
+            'id_caja' => $idCaja,
+            'id_zona' => $idZona === '' ? null : $idZona
+        ]);
+
         return redirect()->to(base_url() . 'public/recaudadores/');
     }
 }
