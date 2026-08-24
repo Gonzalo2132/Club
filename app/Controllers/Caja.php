@@ -133,7 +133,10 @@ class Caja extends BaseController
         $monto = (float) $this->request->getPost('monto');
         $concepto = trim((string) $this->request->getPost('concepto'));
 
-        if ($monto <= 0 || empty($origenId) || empty($destinoId) || $origenId === $destinoId) {
+        $origenId = $origenId === '' ? null : (int) $origenId;
+        $destinoId = $destinoId === '' ? null : (int) $destinoId;
+
+        if ($monto <= 0 || $origenId === null || $destinoId === null || (int) $origenId === (int) $destinoId) {
             return redirect()->to(base_url() . 'public/cajas')->with('error', 'Ingresá un origen, un destino y un monto válido.');
         }
 
@@ -157,6 +160,9 @@ class Caja extends BaseController
 
             if (in_array('caja_origen_id', $columnNames)) {
                 $data['caja_origen_id'] = $origenId;
+            }
+            if (in_array('caja_destino_id', $columnNames)) {
+                $data['caja_destino_id'] = $destinoId;
             }
             if (in_array('caja_id', $columnNames)) {
                 $data['caja_id'] = $origenId;
@@ -220,8 +226,9 @@ class Caja extends BaseController
 
         foreach ($result as &$movimiento) {
             $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
+            $destinoId = $movimiento['caja_destino_id'] ?? null;
             $origen = $this->obtenerNombreCaja($origenId);
-            $destino = 'Caja Central';
+            $destino = $this->obtenerNombreCaja($destinoId);
             $concepto = trim((string) ($movimiento['concepto'] ?? ''));
 
             if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {

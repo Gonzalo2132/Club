@@ -47,20 +47,20 @@
                         <label class="form-label">Caja origen</label>
                         <select name="caja_origen_id" class="form-select" required>
                             <option value="">Seleccionar</option>
+                            <option value="0">Caja Central</option>
                             <?php foreach ($cajas as $caja) : ?>
                                 <option value="<?= $caja['id'] ?>"><?= esc($caja['denominacion']) ?></option>
                             <?php endforeach; ?>
-                            <option value="0">Caja Central</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Caja destino</label>
                         <select name="caja_destino_id" class="form-select" required>
                             <option value="">Seleccionar</option>
+                            <option value="0">Caja Central</option>
                             <?php foreach ($cajas as $caja) : ?>
                                 <option value="<?= $caja['id'] ?>"><?= esc($caja['denominacion']) ?></option>
                             <?php endforeach; ?>
-                            <option value="0">Caja Central</option>
                         </select>
                     </div>
                     <div class="col-md-2">
