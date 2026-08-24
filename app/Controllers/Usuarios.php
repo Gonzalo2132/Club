@@ -16,10 +16,10 @@ class Usuarios extends BaseController
 
     public function index($activo = 1)
     {
-       if (!isset($this->sesion->id_usuario)) {
+        /* if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
-    
+    */
         $usuarios = $this->usuarios->where('activo', $activo)->findAll();
 
         $context = [
@@ -49,10 +49,10 @@ class Usuarios extends BaseController
     }
     public function guardar()
     {
-        if (!isset($this->sesion->id_usuario)) {
+        /*  if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
-
+*/
         $hash = password_hash($this->request->getPost('clave'), PASSWORD_DEFAULT);
         $this->usuarios->save(
             [
@@ -67,18 +67,18 @@ class Usuarios extends BaseController
     }
     public function borrar($id)
     {
-       if (!isset($this->sesion->id_usuario)) {
+        /*if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
-        }
+        }*/
 
         $this->usuarios->delete($id);
         return redirect()->to(base_url() . 'public/usuarios/');
     }
     public function editar($id)
     {
-       if (!isset($this->sesion->id_usuario)) {
+        /*if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
-        }
+        }*/
 
         $usuario = $this->usuarios->where('id', $id)->findAll();
         $context = [
@@ -93,11 +93,11 @@ class Usuarios extends BaseController
         echo view('panel/footer');
     }
     public function actualizar($id)
-    {
+    {  /*
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
-        }
-   
+        }*/
+
 
         $data = [
             'nombre' => $this->request->getPost('nombre'),

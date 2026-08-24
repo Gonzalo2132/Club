@@ -14,14 +14,14 @@
     <link rel="icon" type="image/png" href="<?= base_url('public/img/sarmiento_icon.png') ?>">
 
     <!-- Custom fonts for this template-->
-    <link href="<?php echo base_url( ); ?>public/js/vendor/fontawesome-free/css/all.min.css" rel="stylesheet"
+    <link href="<?php echo base_url(); ?>public/js/vendor/fontawesome-free/css/all.min.css" rel="stylesheet"
         type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="<?php echo base_url( ); ?>public/css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="<?php echo base_url(); ?>public/css/sb-admin-2.min.css" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
 
@@ -53,7 +53,7 @@
 
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
-                <a href="<?php echo base_url()?>public/panel" class="nav-link">
+                <a href="<?php echo base_url() ?>public/panel" class="nav-link">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Panel</span></a>
             </li>
@@ -68,7 +68,7 @@
 
             <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="<?php echo base_url()?>public/socios">
+                <a class="nav-link collapsed" href="<?php echo base_url() ?>public/socios">
                     <i class="bi bi-person-rolodex"></i>
                     <span>Socios</span>
                 </a>
@@ -76,7 +76,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="<?php echo base_url()?>public/zonas">
+                <a class="nav-link collapsed" href="<?php echo base_url() ?>public/zonas">
                     <i class="bi bi-map-fill"></i>
                     <span>Zonas</span>
                 </a>
@@ -86,7 +86,7 @@
 
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="<?php echo base_url()?>public/recaudadores">
+                <a class="nav-link collapsed" href="<?php echo base_url() ?>public/recaudadores">
                     <i class="bi bi-geo-alt-fill"></i>
 
                     <span>Recaudadores</span>
@@ -95,14 +95,14 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="<?php echo base_url()?>public/cajas">
+                <a class="nav-link collapsed" href="<?php echo base_url() ?>public/cajas">
                     <i class="bi bi-box-fill"></i>
                     <span>Cajas</span>
                 </a>
 
             </li>
             <li class="nav-item">
-                <a class="nav-link collapsed" href="<?php echo base_url()?>public/liquidaciones">
+                <a class="nav-link collapsed" href="<?php echo base_url() ?>public/liquidaciones">
                     <i class="bi bi-currency-dollar"></i>
                     <span>Liquidaciones</span>
                 </a>
@@ -110,7 +110,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="<?php echo base_url()?>public/usuarios">
+                <a class="nav-link collapsed" href="<?php echo base_url() ?>public/usuarios">
                     <i class="bi bi-people-fill"></i>
                     <span>Usuarios</span>
                 </a>
@@ -399,7 +399,7 @@
                                                         Delfor Castro</li>
                                                     <li><i class="fas fa-chalkboard-teacher text-success"></i> Prof.
                                                         Lisandro Casanova</li>
-                                                    
+
                                                 </ul>
                                             </div>
                                         </div>
