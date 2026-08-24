@@ -51,16 +51,12 @@ Este sistema surge de la necesidad institucional de:
 Proyecto elaborado por:
 Estudiantes de la Tecnicatura Superior en Análisis y Desarrollo de Software:
 
-- 👥 Almada, Santiago.
-- 👥 Balista, Berenice.
-- 👥 Feling, Danilo.
-- 👥 Mansilla, Diego.
-- 👥 Nuñez, Alesio.
+- 👥 Arrosaygor Gonzalo
+- 👥 Padularrosa Valentin
+- 👥 Santino Alonso
 
 Docentes a Cargo:
-
-- 👨‍🏫 Casanova, Lisandro (Docente Práctica Profesionalizante III).
-- 👨‍🏫 Castro, Delfor (Docente Programación III).
+- 👨‍🏫 Castro, Delfor (Docente PP3).
 
 Institución
 
