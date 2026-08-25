@@ -28,6 +28,10 @@ class Caja extends BaseController
             ->orderBy('id', 'ASC')
             ->findAll();
 
+        foreach ($cajas as $index => $caja) {
+            $cajas[$index]['saldo'] = $this->obtenerSaldoCaja((int) $caja['id']);
+        }
+
         $context = [
             'cajas' => $cajas,
             'cajaCentral' => $this->obtenerCajaCentral(),
@@ -187,26 +191,111 @@ class Caja extends BaseController
 
     private function obtenerCajaCentral(): array
     {
-        $db = \Config\Database::connect();
-
-        if ($db->tableExists('caja_central')) {
-            $cajaCentral = $db->table('caja_central')->orderBy('id', 'ASC')->get()->getRowArray();
-            if ($cajaCentral) {
-                return [
-                    'id' => $cajaCentral['id'] ?? 0,
-                    'denominacion' => $cajaCentral['nombre'] ?? 'Caja Central',
-                    'descripcion' => 'Caja central del club',
-                    'saldo_actual' => $cajaCentral['saldo_actual'] ?? 0
-                ];
-            }
-        }
-
         return [
             'id' => 0,
             'denominacion' => 'Caja Central',
             'descripcion' => 'Caja central del club',
-            'saldo_actual' => 0
+            'saldo_actual' => $this->obtenerSaldoCentral()
         ];
+    }
+
+    private function obtenerSaldoCaja(int $cajaId): float
+    {
+        $db = \Config\Database::connect();
+        $saldo = 0.0;
+
+        $pagos = $db->table('pagos')
+            ->selectSum('monto', 'total')
+            ->where('id_caja', $cajaId)
+            ->get()
+            ->getRowArray();
+
+        $saldo += (float) ($pagos['total'] ?? 0);
+
+        $movimientos = $db->table('movimientos_caja')
+            ->get()
+            ->getResultArray();
+
+        foreach ($movimientos as $movimiento) {
+            $monto = (float) ($movimiento['monto'] ?? 0);
+            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
+            $origenId = $movimiento['caja_origen_id'] ?? null;
+            $cajaActual = $this->normalizarNombreCaja($this->obtenerNombreCaja($cajaId));
+            $procesado = false;
+
+            if ((int) $origenId === $cajaId && !preg_match('/\s*->\s*/', $concepto)) {
+                $saldo -= $monto;
+                $procesado = true;
+            }
+
+            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
+                $origen = trim($matches[1]);
+                $destino = trim($matches[2]);
+
+                if ($this->normalizarNombreCaja($origen) === $cajaActual && !$procesado) {
+                    $saldo -= $monto;
+                    $procesado = true;
+                }
+
+                if ($this->normalizarNombreCaja($destino) === $cajaActual) {
+                    $saldo += $monto;
+                    $procesado = true;
+                }
+            }
+        }
+
+        return round($saldo, 2);
+    }
+
+    private function obtenerSaldoCentral(): float
+    {
+        $db = \Config\Database::connect();
+        $saldo = 0.0;
+
+        $movimientos = $db->table('movimientos_caja')->get()->getResultArray();
+
+        foreach ($movimientos as $movimiento) {
+            $monto = (float) ($movimiento['monto'] ?? 0);
+            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
+            $origenId = $movimiento['caja_origen_id'] ?? null;
+            $procesado = false;
+
+            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
+                $origen = trim($matches[1]);
+                $destino = trim($matches[2]);
+
+                if ($this->normalizarNombreCaja($destino) === 'caja central') {
+                    $saldo += $monto;
+                    $procesado = true;
+                }
+
+                if ($this->normalizarNombreCaja($origen) === 'caja central') {
+                    $saldo -= $monto;
+                    $procesado = true;
+                }
+            }
+
+            if ((int) $origenId === 0 && !$procesado) {
+                $saldo -= $monto;
+            }
+        }
+
+        return round($saldo, 2);
+    }
+
+    private function normalizarNombreCaja(string $nombre): string
+    {
+        $nombre = trim($nombre);
+        $nombre = strtolower($nombre);
+        $nombre = str_replace(['á', 'à', 'ä', 'â'], 'a', $nombre);
+        $nombre = str_replace(['é', 'è', 'ë', 'ê'], 'e', $nombre);
+        $nombre = str_replace(['í', 'ì', 'ï', 'î'], 'i', $nombre);
+        $nombre = str_replace(['ó', 'ò', 'ö', 'ô'], 'o', $nombre);
+        $nombre = str_replace(['ú', 'ù', 'ü', 'û'], 'u', $nombre);
+        $nombre = str_replace(['ñ'], 'n', $nombre);
+        $nombre = preg_replace('/\s+/', ' ', $nombre);
+
+        return trim((string) $nombre);
     }
 
     private function obtenerMovimientos(): array

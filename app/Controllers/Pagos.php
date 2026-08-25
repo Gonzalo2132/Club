@@ -64,11 +64,11 @@ class Pagos extends BaseController
         $this->pagos->save([
             'id_socio' => $this->request->getPost('id_socio'),
             'id_liquidacion' => $this->request->getPost('id_liquidacion'),
-            'id_caja' => $this->request->getPost('id_caja'), // 👈 directo del select
-	        'forma_pago' => $this->request->getPost('forma_pago'),
+            'id_caja' => $this->request->getPost('id_caja'),
+            'forma_pago' => $this->request->getPost('forma_pago'),
             'monto' => $this->request->getPost('monto'),
             'fecha_pago' => $this->request->getPost('fecha_pago'),
-            'activo' => 1
+            'fecha_alta' => date('Y-m-d H:i:s')
         ]);
 
         return redirect()->to(base_url('public/liquidaciones/listado_socio/' . $this->request->getPost('id_socio')));

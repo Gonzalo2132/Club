@@ -16,6 +16,7 @@
                         <small class="text-muted">Caja <?= $numeroCaja ?></small>
                         <h5 class="card-title mt-2"><?= esc($caja['denominacion']) ?></h5>
                         <p class="mb-1"><strong>Código:</strong> <?= esc($caja['codigointerno']) ?></p>
+                        <p class="mb-1"><strong>Saldo:</strong> $<?= number_format((float) ($caja['saldo'] ?? 0), 2, ',', '.') ?></p>
                         <p class="mb-0"><strong>Descripción:</strong> <?= esc($caja['descripcion']) ?></p>
                     </div>
                     <div class="card-footer bg-white border-0 pt-0">
