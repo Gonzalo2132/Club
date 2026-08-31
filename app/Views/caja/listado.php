@@ -20,8 +20,22 @@
                         <p class="mb-0"><strong>Descripción:</strong> <?= esc($caja['descripcion']) ?></p>
                     </div>
                     <div class="card-footer bg-white border-0 pt-0">
-                        <a class="btn btn-sm btn-warning me-2" href="<?= base_url() ?>public/cajas/editar/<?= $caja['id'] ?>">Editar</a>
-                        <a class="btn btn-sm btn-danger" href="<?= base_url() ?>public/cajas/borrar/<?= $caja['id'] ?>">Borrar</a>
+                        <a class="btn btn-sm btn-warning me-2"
+                        href="<?= base_url() ?>public/cajas/editar/<?= $caja['id'] ?>"
+                        title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+
+                        <a class="btn btn-sm btn-danger"
+                        href="<?= base_url() ?>public/cajas/borrar/<?= $caja['id'] ?>"
+                        title="Borrar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        <a class="btn btn-sm btn-info"
+                        href="<?= base_url() ?>public/cajas/movimientos/<?= $caja['id'] ?>"
+                        title="Ver movimientos">
+                            <i class="bi bi-list-ul"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -35,6 +49,25 @@
                     <p class="mb-1"><strong>Saldo:</strong> $<?= number_format((float) ($cajaCentral['saldo_actual'] ?? 0), 2, ',', '.') ?></p>
                     <p class="mb-0"><?= esc($cajaCentral['descripcion']) ?></p>
                 </div>
+
+                <div class="card-footer bg-white border-0 pt-0">
+                    <a class="btn btn-sm btn-warning me-2"
+                    href="<?= base_url() ?>public/cajas/editar/<?= $cajaCentral['id'] ?>"
+                    title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <a class="btn btn-sm btn-danger me-2"
+                    href="<?= base_url() ?>public/cajas/borrar/<?= $cajaCentral['id'] ?>"
+                    title="Borrar">
+                        <i class="bi bi-trash"></i>
+                    </a>
+
+                    <a class="btn btn-sm btn-info"
+                    href="<?= base_url() ?>public/cajas/movimientos/<?= $cajaCentral['id'] ?>"
+                    title="Ver movimientos">
+                        <i class="bi bi-list-ul"></i>
+                    </a>
             </div>
         </div>
     </div>

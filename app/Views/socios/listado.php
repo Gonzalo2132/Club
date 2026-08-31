@@ -48,14 +48,20 @@
 
             echo '<td>
         <a class ="btn btn-warning"
-         href="' . base_url() . 'public/socios/editar/' . $socio['id'] . '">Editar
+         href="' . base_url() . 'public/socios/editar/' . $socio['id'] . '"
+        title="Editar">
+        <i class="bi bi-pencil"></i>
          </a>
         <a class ="btn btn-danger"
-         href="' . base_url() . 'public/socios/borrar/' . $socio['id'] . '">Borrar
+         href="' . base_url() . 'public/socios/borrar/' . $socio['id'] . '"
+        title="Borrar">
+        <i class="bi bi-trash"></i>
          </a>
 
          <a class="btn btn-info"
-         href="' . base_url() . 'public/liquidaciones/listado_socio/' . $socio['id'] . '">Ver pagos
+         href="' . base_url() . 'public/liquidaciones/listado_socio/' . $socio['id'] . '"
+        title="Ver pagos">
+        <i class="bi bi-cash-stack"></i>
          </a>
 
         </td>';
