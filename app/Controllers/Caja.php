@@ -140,8 +140,31 @@ class Caja extends BaseController
         $origenId = $origenId === '' ? null : (int) $origenId;
         $destinoId = $destinoId === '' ? null : (int) $destinoId;
 
-        if ($monto <= 0 || $origenId === null || $destinoId === null || (int) $origenId === (int) $destinoId) {
-            return redirect()->to(base_url() . 'public/cajas')->with('error', 'Ingresá un origen, un destino y un monto válido.');
+        if ($origenId === null || $destinoId === null) {
+            return redirect()->to(base_url() . 'public/cajas')
+                ->with('error', 'Seleccioná una caja de origen y una caja de destino.');
+        }
+
+        if ($monto <= 0) {
+            return redirect()->to(base_url() . 'public/cajas')
+                ->with('error', 'El monto debe ser mayor a 0.');
+        }
+
+
+        if ((int) $origenId === (int) $destinoId) {
+            return redirect()->to(base_url() . 'public/cajas')
+                ->with('error', 'La caja de origen y destino no pueden ser la misma.');
+        }
+
+        if ($origenId === 0) {
+            $saldoOrigen = $this->obtenerSaldoCentral();
+        } else {
+            $saldoOrigen = $this->obtenerSaldoCaja($origenId);
+        }
+
+        if ($monto > $saldoOrigen) {
+            return redirect()->to(base_url() . 'public/cajas')
+                ->with('error', 'No hay saldo suficiente en la caja de origen.');
         }
 
         $db = \Config\Database::connect();
@@ -244,7 +267,7 @@ class Caja extends BaseController
             }
         }
 
-        return round($saldo, 2);
+        return max (0, round($saldo, 2));
     }
 
     private function obtenerSaldoCentral(): float
