@@ -189,6 +189,69 @@ class Caja extends BaseController
         return redirect()->to(base_url() . 'public/cajas')->with('success', 'Movimiento registrado correctamente.');
     }
 
+    public function rendicionCuentas()
+    {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $db = \Config\Database::connect();
+
+        $caja_zonaId = $this->request->getPost('caja_origen_id');
+        $caja_CentralId = 1;
+        $montoARendir = (float) $this->request->getPost('monto');
+
+        if (empty($caja_zonaId) || $montoARendir <= 0) {
+            return redirect()->back()->with('error', 'Datos inválidos para la rendición.');
+        }
+
+        $saldoActual = $this->obtenerSaldoCaja((int) $caja_zonaId);
+        if ($montoARendir > $saldoActual) {
+            return redirect()->back()->with('error', 'La caja no tiene saldo suficiente para rendir ese monto.');
+        }
+
+        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
+
+        if (!$tablaMovimiento) {
+            return redirect()->back()->with('error', 'Error: No se encontró la tabla de movimientos.');
+        }
+
+        $db->transStart();
+
+        $origenNombre = $this->obtenerNombreCaja($caja_zonaId);
+        $destinoNombre = 'Caja Central';
+        $mensaje = sprintf('%s -> %s | Rendición de cuentas', $origenNombre, $destinoNombre);
+
+        $data = [
+            'tipo_movimiento' => 'transferencia',
+            'monto' => $montoARendir,
+            'concepto' => $mensaje,
+            'fecha' => date('Y-m-d H:i:s')
+        ];
+
+        $columnNames = $db->getFieldNames($tablaMovimiento);
+
+        if (in_array('caja_origen_id', $columnNames)) {
+            $data['caja_origen_id'] = $caja_zonaId;
+        }
+        if (in_array('caja_destino_id', $columnNames)) {
+            $data['caja_destino_id'] = $caja_CentralId;
+        }
+        if (in_array('caja_id', $columnNames)) {
+            $data['caja_id'] = $caja_zonaId;
+        }
+
+        $db->table($tablaMovimiento)->insert($data);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === FALSE) {
+            return redirect()->back()->with('error', 'Error en la base de datos al procesar la rendición.');
+        }
+
+        return redirect()->to(base_url() . 'public/cajas')->with('success', 'Rendición a Caja Central completada con éxito.');
+    }
+
     private function obtenerTablaMovimientos($db): ?string
     {
         foreach (['movimientos_caja', 'movimientos_cajas'] as $tabla) {
@@ -311,30 +374,5 @@ class Caja extends BaseController
         }
 
         return 'Caja ' . $id;
-    }
-
-    public function rendicionCuentas()
-    {
-        $db = \Config\Database::connect();
-
-        $caja_zonaId = 2;
-        $caja_CentralId = 1;
-        $montoARendir = $this->request->getPost('monto');
-
-        $db->transStart();
-
-        $db->query("UPDATE cajas SET saldo = saldo - ? WHERE id = ?", [$montoARendir, $caja_zonaId]);
-        $db->query("INSERT INTO movimientos_cajas (caja_id, tipo, monto, concepto) VALUES (?, 'egreso', ?, 'Rendición a Caja Central')", [$caja_zonaId, $montoARendir]);
-
-        $db->query("UPDATE cajas SET saldo = saldo + ? WHERE id = ?", [$montoARendir, $caja_CentralId]);
-        $db->query("INSERT INTO movimientos_cajas (caja_id, tipo, monto, concepto) VALUES (?, 'ingreso', ?, 'Ingreso por Rendición de Pepito')", [$caja_CentralId, $montoARendir]);
-
-        $db->transComplete();
-
-        if ($db->transStatus() === FALSE) {
-            return redirect()->back()->with('error', 'Error al procesar la rendición.');
-        }
-
-        return redirect()->to('/cajas')->with('success', 'Rendición completada con éxito.');
     }
 }
