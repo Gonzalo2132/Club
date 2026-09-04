@@ -396,4 +396,75 @@ class Caja extends BaseController
 
         return redirect()->to('/cajas')->with('success', 'Rendición completada con éxito.');
     }
+
+    // Muestra todos los movimientos (filtrados por caja si se pasa un id distinto de 0)
+    public function movimientos($id = 0)
+    {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $db = \Config\Database::connect();
+        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
+
+        if (!$tablaMovimiento) {
+            return redirect()->to(base_url() . 'public/cajas')->with('error', 'No se encontró la tabla de movimientos.');
+        }
+
+        $builder = $db->table($tablaMovimiento)->orderBy('fecha', 'DESC');
+        $columnNames = $db->getFieldNames($tablaMovimiento);
+
+        $intId = (int) $id;
+
+        // Si se pidió una caja específica (id != 0), filtrar por las columnas existentes
+        if ($intId !== 0) {
+            $conditions = [];
+            if (in_array('caja_id', $columnNames)) {
+                $conditions[] = "caja_id = " . $intId;
+            }
+            if (in_array('caja_origen_id', $columnNames)) {
+                $conditions[] = "caja_origen_id = " . $intId;
+            }
+            if (in_array('caja_destino_id', $columnNames)) {
+                $conditions[] = "caja_destino_id = " . $intId;
+            }
+
+            if (!empty($conditions)) {
+                $whereSql = '(' . implode(' OR ', $conditions) . ')';
+                $builder->where($whereSql);
+            }
+        }
+
+        $result = $builder->get()->getResultArray();
+
+        foreach ($result as &$movimiento) {
+            $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
+            $destinoId = $movimiento['caja_destino_id'] ?? null;
+            $origen = $this->obtenerNombreCaja($origenId);
+            $destino = $this->obtenerNombreCaja($destinoId);
+            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
+
+            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
+                $origen = trim($matches[1]);
+                $destino = trim($matches[2]);
+            }
+
+            $movimiento['origen'] = $origen;
+            $movimiento['destino'] = $destino;
+            $movimiento['tipo'] = $movimiento['tipo_movimiento'] ?? 'transferencia';
+            $movimiento['concepto'] = $concepto !== '' ? $concepto : 'Movimiento registrado';
+        }
+
+        $context = [
+            'movimientos' => $result,
+            'titulo' => 'Movimientos',
+            'pagname' => 'Gestión/Movimientos',
+            'cajaId' => $intId,
+            'cajaNombre' => $this->obtenerNombreCaja($intId)
+        ];
+
+        echo view('panel/header', $context);
+        echo view('caja/movimientos', $context);
+        echo view('panel/footer');
+    }
 }

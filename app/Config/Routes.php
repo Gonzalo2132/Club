@@ -41,6 +41,9 @@ $routes->post('/cajas/guardar-movimiento', 'Caja::guardarMovimiento');
 $routes->get('/cajas/borrar/(:num)', 'Caja::borrar/$1');
 $routes->get('/cajas/editar/(:num)', 'Caja::editar/$1');
 $routes->post('/cajas/actualizar/(:num)', 'Caja::actualizar/$1');
+// movimientos (lista completa o por caja)
+$routes->get('/cajas/movimientos', 'Caja::movimientos');
+$routes->get('/cajas/movimientos/(:num)', 'Caja::movimientos/$1');
 
 //recaudadores
 $routes->get('/recaudadores', 'Recaudadores::index');
