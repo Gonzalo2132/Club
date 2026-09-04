@@ -4,78 +4,46 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
+
+<?php if (session()->getFlashdata('success')) : ?>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <?= session()->getFlashdata('success') ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
+
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="mb-0">Caja y movimientos</h3>
-        <a class="btn btn-primary" href="<?php echo base_url(); ?>public/cajas/nuevo">+ Nueva caja</a>
+        <h3 class="mb-0">Cajas y movimientos</h3>
+        <a class="btn btn-primary" href="<?= base_url(); ?>public/cajas/nuevo">+ Nueva caja</a>
     </div>
 
     <div class="row g-3 mb-4">
-        <?php
-        $cajasVisibles = array_slice($cajas, 0, 5);
-        foreach ($cajasVisibles as $index => $caja) {
-            $numeroCaja = $index + 1;
-            ?>
+        <?php foreach ($cajas as $index => $caja) { ?>
             <div class="col-md-2">
-                <div class="card h-100 border-primary shadow-sm">
+                <!-- Pintamos la tarjeta distinto si es la Caja Central (Asumiendo que es el ID 1) -->
+                <div class="card h-100 shadow-sm <?= $caja['id'] == 1 ? 'border-dark bg-light' : 'border-primary' ?>">
                     <div class="card-body">
-                        <small class="text-muted">Caja <?= $numeroCaja ?></small>
+                        <small class="text-muted"><?= $caja['id'] == 1 ? 'Caja Principal' : 'Caja ' . ($index + 1) ?></small>
                         <h5 class="card-title mt-2"><?= esc($caja['denominacion']) ?></h5>
                         <p class="mb-1"><strong>Código:</strong> <?= esc($caja['codigointerno']) ?></p>
                         <p class="mb-1"><strong>Saldo:</strong> $<?= number_format((float) ($caja['saldo'] ?? 0), 2, ',', '.') ?></p>
                         <p class="mb-0"><strong>Descripción:</strong> <?= esc($caja['descripcion']) ?></p>
                     </div>
-                    <div class="card-footer bg-white border-0 pt-0">
-                        <a class="btn btn-sm btn-warning me-2"
-                        href="<?= base_url() ?>public/cajas/editar/<?= $caja['id'] ?>"
-                        title="Editar">
+                    <div class="card-footer bg-transparent border-0 pt-0">
+                        <a class="btn btn-sm btn-warning me-1" href="<?= base_url() ?>public/cajas/editar/<?= $caja['id'] ?>" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </a>
-
-                        <a class="btn btn-sm btn-danger"
-                        href="<?= base_url() ?>public/cajas/borrar/<?= $caja['id'] ?>"
-                        title="Borrar">
+                        <a class="btn btn-sm btn-danger me-1" href="<?= base_url() ?>public/cajas/borrar/<?= $caja['id'] ?>" title="Borrar" onclick="return confirm('¿Seguro que deseas borrar esta caja?');">
                             <i class="bi bi-trash"></i>
                         </a>
-                        <a class="btn btn-sm btn-info"
-                        href="<?= base_url() ?>public/cajas/movimientos/<?= $caja['id'] ?>"
-                        title="Ver movimientos">
+                        <a class="btn btn-sm btn-info" href="<?= base_url() ?>public/cajas/movimientos/<?= $caja['id'] ?>" title="Ver movimientos">
                             <i class="bi bi-list-ul"></i>
                         </a>
                     </div>
                 </div>
             </div>
         <?php } ?>
-
-        <div class="col-md-2">
-            <div class="card h-100 border-dark bg-light shadow-sm">
-                <div class="card-body">
-                    <small class="text-muted">Caja central</small>
-                    <h5 class="card-title mt-2"><?= esc($cajaCentral['denominacion']) ?></h5>
-                    <p class="mb-1"><strong>Saldo:</strong> $<?= number_format((float) ($cajaCentral['saldo_actual'] ?? 0), 2, ',', '.') ?></p>
-                    <p class="mb-0"><?= esc($cajaCentral['descripcion']) ?></p>
-                </div>
-
-                <div class="card-footer bg-white border-0 pt-0">
-                    <a class="btn btn-sm btn-warning me-2"
-                    href="<?= base_url() ?>public/cajas/editar/<?= $cajaCentral['id'] ?>"
-                    title="Editar">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-
-                    <a class="btn btn-sm btn-danger me-2"
-                    href="<?= base_url() ?>public/cajas/borrar/<?= $cajaCentral['id'] ?>"
-                    title="Borrar">
-                        <i class="bi bi-trash"></i>
-                    </a>
-
-                    <a class="btn btn-sm btn-info"
-                    href="<?= base_url() ?>public/cajas/movimientos/<?= $cajaCentral['id'] ?>"
-                    title="Ver movimientos">
-                        <i class="bi bi-list-ul"></i>
-                    </a>
-            </div>
-        </div>
     </div>
 
     <div class="card shadow-sm mb-4">
@@ -87,7 +55,7 @@
                         <label class="form-label">Caja origen</label>
                         <select name="caja_origen_id" class="form-select" required>
                             <option value="">Seleccionar</option>
-                            <option value="0">Caja Central</option>
+                            <!-- El bucle ahora imprime la Caja Central automáticamente -->
                             <?php foreach ($cajas as $caja) : ?>
                                 <option value="<?= $caja['id'] ?>"><?= esc($caja['denominacion']) ?></option>
                             <?php endforeach; ?>
@@ -97,7 +65,7 @@
                         <label class="form-label">Caja destino</label>
                         <select name="caja_destino_id" class="form-select" required>
                             <option value="">Seleccionar</option>
-                            <option value="0">Caja Central</option>
+                            <!-- El bucle ahora imprime la Caja Central automáticamente -->
                             <?php foreach ($cajas as $caja) : ?>
                                 <option value="<?= $caja['id'] ?>"><?= esc($caja['denominacion']) ?></option>
                             <?php endforeach; ?>

@@ -2,17 +2,15 @@
 
 namespace App\Controllers;
 
-use App\Models\CajasModel; //Acá asignamos que usamos el modelo designado
-
-
+use App\Models\CajasModel;
 
 class Caja extends BaseController
 {
-    protected $cajas; //Esto es para que la variable en cuestion este definida
+    protected $cajas;
     protected $sesion;
 
     public function __construct()
-    { //La función constructora
+    {
         $this->cajas = new CajasModel();
         $this->sesion = session();
     }
@@ -34,7 +32,6 @@ class Caja extends BaseController
 
         $context = [
             'cajas' => $cajas,
-            'cajaCentral' => $this->obtenerCajaCentral(),
             'movimientos' => $this->obtenerMovimientos(),
             'titulo' => 'Cajas',
             'pagname' => 'Gestión/Cajas'
@@ -44,14 +41,13 @@ class Caja extends BaseController
         echo view('caja/listado', $context);
         echo view('panel/footer');
     }
-    //esta funcion "nuevo "muestra el header el footer y la vista que va a tener el formulario
+
     public function nuevo()
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
-        //este context es para cambiar el titulo de la pagina que esta esperando el header
         $context = [
             'titulo' => "Nueva caja",
             'pagname' => 'Gestión/Nueva caja'
@@ -61,6 +57,7 @@ class Caja extends BaseController
         echo view('caja/nuevo');
         echo view('panel/footer');
     }
+
     public function guardar()
     {
         if (!isset($this->sesion->id_usuario)) {
@@ -72,11 +69,11 @@ class Caja extends BaseController
                 'denominacion' => $this->request->getPost('denominacion'),
                 'descripcion' => $this->request->getPost('descripcion'),
                 'codigointerno' => $this->request->getPost('codigointerno')
-
             ]
         );
         return redirect()->to(base_url() . 'public/cajas/');
     }
+
     public function borrar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
@@ -86,6 +83,7 @@ class Caja extends BaseController
         $this->cajas->delete($id);
         return redirect()->to(base_url() . 'public/cajas/');
     }
+
     public function editar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
@@ -99,32 +97,27 @@ class Caja extends BaseController
             'pagname' => 'Gestión/Edición caja'
         ];
 
-
-
         echo view('panel/header', $context);
         echo view('caja/editar');
         echo view('panel/footer');
     }
+
     public function actualizar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
-        //primer parametro es el where en este caso $id
         $this->cajas->update(
             $id,
             [
                 'denominacion' => $this->request->getPost('denominacion'),
                 'descripcion' => $this->request->getPost('descripcion'),
                 'codigointerno' => $this->request->getPost('codigointerno')
-
             ]
         );
-                    return redirect()->to(base_url().'public/cajas/');
-
-
-        }
+        return redirect()->to(base_url() . 'public/cajas/');
+    }
 
     public function guardarMovimiento()
     {
@@ -150,17 +143,12 @@ class Caja extends BaseController
                 ->with('error', 'El monto debe ser mayor a 0.');
         }
 
-
-        if ((int) $origenId === (int) $destinoId) {
+        if ($origenId === $destinoId) {
             return redirect()->to(base_url() . 'public/cajas')
                 ->with('error', 'La caja de origen y destino no pueden ser la misma.');
         }
 
-        if ($origenId === 0) {
-            $saldoOrigen = $this->obtenerSaldoCentral();
-        } else {
-            $saldoOrigen = $this->obtenerSaldoCaja($origenId);
-        }
+        $saldoOrigen = $this->obtenerSaldoCaja($origenId);
 
         if ($monto > $saldoOrigen) {
             return redirect()->to(base_url() . 'public/cajas')
@@ -208,18 +196,7 @@ class Caja extends BaseController
                 return $tabla;
             }
         }
-
         return null;
-    }
-
-    private function obtenerCajaCentral(): array
-    {
-        return [
-            'id' => 0,
-            'denominacion' => 'Caja Central',
-            'descripcion' => 'Caja central del club',
-            'saldo_actual' => $this->obtenerSaldoCentral()
-        ];
     }
 
     private function obtenerSaldoCaja(int $cajaId): float
@@ -267,43 +244,7 @@ class Caja extends BaseController
             }
         }
 
-        return max (0, round($saldo, 2));
-    }
-
-    private function obtenerSaldoCentral(): float
-    {
-        $db = \Config\Database::connect();
-        $saldo = 0.0;
-
-        $movimientos = $db->table('movimientos_caja')->get()->getResultArray();
-
-        foreach ($movimientos as $movimiento) {
-            $monto = (float) ($movimiento['monto'] ?? 0);
-            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
-            $origenId = $movimiento['caja_origen_id'] ?? null;
-            $procesado = false;
-
-            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
-                $origen = trim($matches[1]);
-                $destino = trim($matches[2]);
-
-                if ($this->normalizarNombreCaja($destino) === 'caja central') {
-                    $saldo += $monto;
-                    $procesado = true;
-                }
-
-                if ($this->normalizarNombreCaja($origen) === 'caja central') {
-                    $saldo -= $monto;
-                    $procesado = true;
-                }
-            }
-
-            if ((int) $origenId === 0 && !$procesado) {
-                $saldo -= $monto;
-            }
-        }
-
-        return round($saldo, 2);
+        return max(0, round($saldo, 2));
     }
 
     private function normalizarNombreCaja(string $nombre): string
@@ -359,8 +300,8 @@ class Caja extends BaseController
 
     private function obtenerNombreCaja($id): string
     {
-        if ($id === null || $id === '' || $id === 0) {
-            return 'Caja Central';
+        if ($id === null || $id === '') {
+            return 'Caja Desconocida';
         }
 
         $caja = $this->cajas->where('id', $id)->first();
