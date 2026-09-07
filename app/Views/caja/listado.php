@@ -88,7 +88,7 @@
     </div>
 
     <div class="card shadow-sm">
-        <div class="card-header bg-secondary text-white">Movimientos recientes</div>
+        <div class="card-header bg-secondary text-white">Todos los movimientos</div>
         <div class="card-body p-0">
             <table class="table table-hover mb-0">
                 <thead>

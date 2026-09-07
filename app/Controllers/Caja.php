@@ -336,7 +336,6 @@ class Caja extends BaseController
 
         $result = $db->table($tablaMovimiento)
             ->orderBy('fecha', 'DESC')
-            ->limit(20)
             ->get()
             ->getResultArray();
 
