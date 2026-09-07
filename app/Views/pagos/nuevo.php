@@ -24,7 +24,7 @@ echo base_url();
     <input class="form-control" type="text" name="monto" id="monto" placeholder="Ingrese un monto">
 
     <label class="form-label" for="fecha_pago">Fecha de Pago</label>
-    <input class="form-control" type="date" name="fecha_pago" id="fecha_pago" placeholder="dd/mm/AAAA">
+    <input class="form-control" type="date" name="fecha_pago" id="fecha_pago" value="<?= date('Y-m-d') ?>" placeholder="dd/mm/AAAA">
    
     <label class="form-label" for="id_caja">Caja</label>
     <select class="form-control" id="id_caja" name="id_caja">

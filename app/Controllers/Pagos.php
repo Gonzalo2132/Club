@@ -66,7 +66,7 @@ class Pagos extends BaseController
         $idCaja = $this->request->getPost('id_caja');
         $formaPago = $this->request->getPost('forma_pago');
         $monto = (float) $this->request->getPost('monto');
-        $fechaPago = $this->request->getPost('fecha_pago');
+        $fechaPago = $this->request->getPost('fecha_pago') ?: date('Y-m-d');
 
         $this->pagos->save([
             'id_socio' => $idSocio,
