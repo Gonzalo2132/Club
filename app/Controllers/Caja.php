@@ -2,17 +2,15 @@
 
 namespace App\Controllers;
 
-use App\Models\CajasModel; //Acá asignamos que usamos el modelo designado
-
-
+use App\Models\CajasModel;
 
 class Caja extends BaseController
 {
-    protected $cajas; //Esto es para que la variable en cuestion este definida
+    protected $cajas;
     protected $sesion;
 
     public function __construct()
-    { //La función constructora
+    {
         $this->cajas = new CajasModel();
         $this->sesion = session();
     }
@@ -34,7 +32,6 @@ class Caja extends BaseController
 
         $context = [
             'cajas' => $cajas,
-            'cajaCentral' => $this->obtenerCajaCentral(),
             'movimientos' => $this->obtenerMovimientos(),
             'titulo' => 'Cajas',
             'pagname' => 'Gestión/Cajas'
@@ -44,14 +41,13 @@ class Caja extends BaseController
         echo view('caja/listado', $context);
         echo view('panel/footer');
     }
-    //esta funcion "nuevo "muestra el header el footer y la vista que va a tener el formulario
+
     public function nuevo()
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
-        //este context es para cambiar el titulo de la pagina que esta esperando el header
         $context = [
             'titulo' => "Nueva caja",
             'pagname' => 'Gestión/Nueva caja'
@@ -61,6 +57,7 @@ class Caja extends BaseController
         echo view('caja/nuevo');
         echo view('panel/footer');
     }
+
     public function guardar()
     {
         if (!isset($this->sesion->id_usuario)) {
@@ -72,11 +69,11 @@ class Caja extends BaseController
                 'denominacion' => $this->request->getPost('denominacion'),
                 'descripcion' => $this->request->getPost('descripcion'),
                 'codigointerno' => $this->request->getPost('codigointerno')
-
             ]
         );
         return redirect()->to(base_url() . 'public/cajas/');
     }
+
     public function borrar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
@@ -86,6 +83,7 @@ class Caja extends BaseController
         $this->cajas->delete($id);
         return redirect()->to(base_url() . 'public/cajas/');
     }
+
     public function editar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
@@ -99,32 +97,27 @@ class Caja extends BaseController
             'pagname' => 'Gestión/Edición caja'
         ];
 
-
-
         echo view('panel/header', $context);
         echo view('caja/editar');
         echo view('panel/footer');
     }
+
     public function actualizar($id)
     {
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
 
-        //primer parametro es el where en este caso $id
         $this->cajas->update(
             $id,
             [
                 'denominacion' => $this->request->getPost('denominacion'),
                 'descripcion' => $this->request->getPost('descripcion'),
                 'codigointerno' => $this->request->getPost('codigointerno')
-
             ]
         );
-                    return redirect()->to(base_url().'public/cajas/');
-
-
-        }
+        return redirect()->to(base_url() . 'public/cajas/');
+    }
 
     public function guardarMovimiento()
     {
@@ -150,17 +143,12 @@ class Caja extends BaseController
                 ->with('error', 'El monto debe ser mayor a 0.');
         }
 
-
-        if ((int) $origenId === (int) $destinoId) {
+        if ($origenId === $destinoId) {
             return redirect()->to(base_url() . 'public/cajas')
                 ->with('error', 'La caja de origen y destino no pueden ser la misma.');
         }
 
-        if ($origenId === 0) {
-            $saldoOrigen = $this->obtenerSaldoCentral();
-        } else {
-            $saldoOrigen = $this->obtenerSaldoCaja($origenId);
-        }
+        $saldoOrigen = $this->obtenerSaldoCaja($origenId);
 
         if ($monto > $saldoOrigen) {
             return redirect()->to(base_url() . 'public/cajas')
@@ -201,6 +189,69 @@ class Caja extends BaseController
         return redirect()->to(base_url() . 'public/cajas')->with('success', 'Movimiento registrado correctamente.');
     }
 
+    public function rendicionCuentas()
+    {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $db = \Config\Database::connect();
+
+        $caja_zonaId = $this->request->getPost('caja_origen_id');
+        $caja_CentralId = 1;
+        $montoARendir = (float) $this->request->getPost('monto');
+
+        if (empty($caja_zonaId) || $montoARendir <= 0) {
+            return redirect()->back()->with('error', 'Datos inválidos para la rendición.');
+        }
+
+        $saldoActual = $this->obtenerSaldoCaja((int) $caja_zonaId);
+        if ($montoARendir > $saldoActual) {
+            return redirect()->back()->with('error', 'La caja no tiene saldo suficiente para rendir ese monto.');
+        }
+
+        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
+
+        if (!$tablaMovimiento) {
+            return redirect()->back()->with('error', 'Error: No se encontró la tabla de movimientos.');
+        }
+
+        $db->transStart();
+
+        $origenNombre = $this->obtenerNombreCaja($caja_zonaId);
+        $destinoNombre = 'Caja Central';
+        $mensaje = sprintf('%s -> %s | Rendición de cuentas', $origenNombre, $destinoNombre);
+
+        $data = [
+            'tipo_movimiento' => 'transferencia',
+            'monto' => $montoARendir,
+            'concepto' => $mensaje,
+            'fecha' => date('Y-m-d H:i:s')
+        ];
+
+        $columnNames = $db->getFieldNames($tablaMovimiento);
+
+        if (in_array('caja_origen_id', $columnNames)) {
+            $data['caja_origen_id'] = $caja_zonaId;
+        }
+        if (in_array('caja_destino_id', $columnNames)) {
+            $data['caja_destino_id'] = $caja_CentralId;
+        }
+        if (in_array('caja_id', $columnNames)) {
+            $data['caja_id'] = $caja_zonaId;
+        }
+
+        $db->table($tablaMovimiento)->insert($data);
+
+        $db->transComplete();
+
+        if ($db->transStatus() === FALSE) {
+            return redirect()->back()->with('error', 'Error en la base de datos al procesar la rendición.');
+        }
+
+        return redirect()->to(base_url() . 'public/cajas')->with('success', 'Rendición a Caja Central completada con éxito.');
+    }
+
     private function obtenerTablaMovimientos($db): ?string
     {
         foreach (['movimientos_caja', 'movimientos_cajas'] as $tabla) {
@@ -208,18 +259,7 @@ class Caja extends BaseController
                 return $tabla;
             }
         }
-
         return null;
-    }
-
-    private function obtenerCajaCentral(): array
-    {
-        return [
-            'id' => 0,
-            'denominacion' => 'Caja Central',
-            'descripcion' => 'Caja central del club',
-            'saldo_actual' => $this->obtenerSaldoCentral()
-        ];
     }
 
     private function obtenerSaldoCaja(int $cajaId): float
@@ -267,43 +307,7 @@ class Caja extends BaseController
             }
         }
 
-        return max (0, round($saldo, 2));
-    }
-
-    private function obtenerSaldoCentral(): float
-    {
-        $db = \Config\Database::connect();
-        $saldo = 0.0;
-
-        $movimientos = $db->table('movimientos_caja')->get()->getResultArray();
-
-        foreach ($movimientos as $movimiento) {
-            $monto = (float) ($movimiento['monto'] ?? 0);
-            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
-            $origenId = $movimiento['caja_origen_id'] ?? null;
-            $procesado = false;
-
-            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
-                $origen = trim($matches[1]);
-                $destino = trim($matches[2]);
-
-                if ($this->normalizarNombreCaja($destino) === 'caja central') {
-                    $saldo += $monto;
-                    $procesado = true;
-                }
-
-                if ($this->normalizarNombreCaja($origen) === 'caja central') {
-                    $saldo -= $monto;
-                    $procesado = true;
-                }
-            }
-
-            if ((int) $origenId === 0 && !$procesado) {
-                $saldo -= $monto;
-            }
-        }
-
-        return round($saldo, 2);
+        return max(0, round($saldo, 2));
     }
 
     private function normalizarNombreCaja(string $nombre): string
@@ -359,8 +363,8 @@ class Caja extends BaseController
 
     private function obtenerNombreCaja($id): string
     {
-        if ($id === null || $id === '' || $id === 0) {
-            return 'Caja Central';
+        if ($id === null || $id === '') {
+            return 'Caja Desconocida';
         }
 
         $caja = $this->cajas->where('id', $id)->first();
@@ -370,101 +374,5 @@ class Caja extends BaseController
         }
 
         return 'Caja ' . $id;
-    }
-
-    public function rendicionCuentas()
-    {
-        $db = \Config\Database::connect();
-
-        $caja_zonaId = 2;
-        $caja_CentralId = 1;
-        $montoARendir = $this->request->getPost('monto');
-
-        $db->transStart();
-
-        $db->query("UPDATE cajas SET saldo = saldo - ? WHERE id = ?", [$montoARendir, $caja_zonaId]);
-        $db->query("INSERT INTO movimientos_cajas (caja_id, tipo, monto, concepto) VALUES (?, 'egreso', ?, 'Rendición a Caja Central')", [$caja_zonaId, $montoARendir]);
-
-        $db->query("UPDATE cajas SET saldo = saldo + ? WHERE id = ?", [$montoARendir, $caja_CentralId]);
-        $db->query("INSERT INTO movimientos_cajas (caja_id, tipo, monto, concepto) VALUES (?, 'ingreso', ?, 'Ingreso por Rendición de Pepito')", [$caja_CentralId, $montoARendir]);
-
-        $db->transComplete();
-
-        if ($db->transStatus() === FALSE) {
-            return redirect()->back()->with('error', 'Error al procesar la rendición.');
-        }
-
-        return redirect()->to('/cajas')->with('success', 'Rendición completada con éxito.');
-    }
-
-    // Muestra todos los movimientos (filtrados por caja si se pasa un id distinto de 0)
-    public function movimientos($id = 0)
-    {
-        if (!isset($this->sesion->id_usuario)) {
-            return redirect()->to(base_url() . 'public/login');
-        }
-
-        $db = \Config\Database::connect();
-        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
-
-        if (!$tablaMovimiento) {
-            return redirect()->to(base_url() . 'public/cajas')->with('error', 'No se encontró la tabla de movimientos.');
-        }
-
-        $builder = $db->table($tablaMovimiento)->orderBy('fecha', 'DESC');
-        $columnNames = $db->getFieldNames($tablaMovimiento);
-
-        $intId = (int) $id;
-
-        // Si se pidió una caja específica (id != 0), filtrar por las columnas existentes
-        if ($intId !== 0) {
-            $conditions = [];
-            if (in_array('caja_id', $columnNames)) {
-                $conditions[] = "caja_id = " . $intId;
-            }
-            if (in_array('caja_origen_id', $columnNames)) {
-                $conditions[] = "caja_origen_id = " . $intId;
-            }
-            if (in_array('caja_destino_id', $columnNames)) {
-                $conditions[] = "caja_destino_id = " . $intId;
-            }
-
-            if (!empty($conditions)) {
-                $whereSql = '(' . implode(' OR ', $conditions) . ')';
-                $builder->where($whereSql);
-            }
-        }
-
-        $result = $builder->get()->getResultArray();
-
-        foreach ($result as &$movimiento) {
-            $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
-            $destinoId = $movimiento['caja_destino_id'] ?? null;
-            $origen = $this->obtenerNombreCaja($origenId);
-            $destino = $this->obtenerNombreCaja($destinoId);
-            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
-
-            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
-                $origen = trim($matches[1]);
-                $destino = trim($matches[2]);
-            }
-
-            $movimiento['origen'] = $origen;
-            $movimiento['destino'] = $destino;
-            $movimiento['tipo'] = $movimiento['tipo_movimiento'] ?? 'transferencia';
-            $movimiento['concepto'] = $concepto !== '' ? $concepto : 'Movimiento registrado';
-        }
-
-        $context = [
-            'movimientos' => $result,
-            'titulo' => 'Movimientos',
-            'pagname' => 'Gestión/Movimientos',
-            'cajaId' => $intId,
-            'cajaNombre' => $this->obtenerNombreCaja($intId)
-        ];
-
-        echo view('panel/header', $context);
-        echo view('caja/movimientos', $context);
-        echo view('panel/footer');
     }
 }
