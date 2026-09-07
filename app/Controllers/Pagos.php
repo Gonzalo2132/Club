@@ -92,10 +92,13 @@ class Pagos extends BaseController
 
                 $detalleConcepto = sprintf('Pago: %s - %s | Socio: %s | Forma: %s', $liqNombre, number_format($monto, 2, '.', ''), $socioNombre, $formaPago);
 
+                $caja = $this->cajas->find((int) $idCaja);
+                $cajaNombre = $caja['denominacion'] ?? ('Caja ' . $idCaja);
+
                 $data = [
                     'tipo_movimiento' => 'ingreso',
                     'monto' => $monto,
-                    'concepto' => $detalleConcepto,
+                    'concepto' => sprintf('%s -> %s | %s', $socioNombre ?: 'Socio', $cajaNombre, $detalleConcepto),
                     'fecha' => date('Y-m-d H:i:s')
                 ];
 
@@ -110,18 +113,9 @@ class Pagos extends BaseController
                 }
 
                 // Si la tabla sólo tiene caja_origen_id (esquema movimientos_caja),
-                // asignar la caja en caja_origen_id y construir un concepto con formato "Origen -> Destino | detalle"
-                // para que al parsear el concepto la vista muestre correctamente destino = caja
+                // se usa la caja de destino en el concepto y el socio como origen visible.
                 if (in_array('caja_origen_id', $columnNames) && !in_array('caja_destino_id', $columnNames) && !in_array('caja_id', $columnNames)) {
-                    // Esquema antiguo: movimientos_caja tiene solo caja_origen_id
-                    // Guardar caja_origen_id = 0 (Caja Central) y construir concepto "Caja Central -> CajaDestino | detalle"
                     $data['caja_origen_id'] = 0;
-
-                    $caja = $this->cajas->find((int) $idCaja);
-                    $cajaNombre = $caja['denominacion'] ?? ('Caja ' . $idCaja);
-
-                    // construir concepto con flecha indicando origen (Caja Central) y destino la caja recibidora
-                    $data['concepto'] = sprintf('%s -> %s | %s', 'Caja Central', $cajaNombre, $detalleConcepto);
                 }
 
                 $db->table($tabla)->insert($data);
