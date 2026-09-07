@@ -384,11 +384,10 @@
                                                 <small
                                                     class="text-uppercase text-muted font-weight-bold">Alumnos</small>
                                                 <ul class="list-unstyled mt-2">
-                                                    <li><i class="fas fa-code text-primary"></i> Almada, Santiago</li>
-                                                    <li><i class="fas fa-code text-primary"></i> Berenice, Balista</li>
-                                                    <li><i class="fas fa-code text-primary"></i> Mansilla, Diego</li>
-                                                    <li><i class="fas fa-code text-primary"></i> Nuñez, Alesio</li>
-                                                    <li><i class="fas fa-code text-primary"></i> Felling, Danilo</li>
+                                                    <li><i class="fas fa-code text-primary"></i> Padularrosa, Valentin</li>
+                                                    <li><i class="fas fa-code text-primary"></i> Alonso, Santino</li>
+                                                    <li><i class="fas fa-code text-primary"></i> Arreseygor, Gonzalo</li>
+
                                                 </ul>
                                             </div>
                                             <div class="col-md-6">
@@ -397,16 +396,13 @@
                                                 <ul class="list-unstyled mt-2">
                                                     <li><i class="fas fa-chalkboard-teacher text-success"></i> Prof.
                                                         Delfor Castro</li>
-                                                    <li><i class="fas fa-chalkboard-teacher text-success"></i> Prof.
-                                                        Lisandro Casanova</li>
-
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
 
                                     <div class="modal-footer bg-light d-flex justify-content-between">
-                                        <small class="text-muted">Victoria, Entre Ríos - 2025</small>
+                                        <small class="text-muted">Victoria, Entre Ríos - 2026</small>
                                     </div>
 
                                 </div>
