@@ -266,16 +266,19 @@ class Caja extends BaseController
     {
         $db = \Config\Database::connect();
         $saldo = 0.0;
+        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
 
-        $pagos = $db->table('pagos')
-            ->selectSum('monto', 'total')
-            ->where('id_caja', $cajaId)
-            ->get()
-            ->getRowArray();
+        if (!$tablaMovimiento) {
+            $pagos = $db->table('pagos')
+                ->selectSum('monto', 'total')
+                ->where('id_caja', $cajaId)
+                ->get()
+                ->getRowArray();
 
-        $saldo += (float) ($pagos['total'] ?? 0);
+            return round((float) ($pagos['total'] ?? 0), 2);
+        }
 
-        $movimientos = $db->table('movimientos_caja')
+        $movimientos = $db->table($tablaMovimiento)
             ->get()
             ->getResultArray();
 
