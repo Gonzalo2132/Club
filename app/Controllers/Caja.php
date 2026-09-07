@@ -325,6 +325,71 @@ class Caja extends BaseController
         return trim((string) $nombre);
     }
 
+    public function movimientos($id = 0)
+    {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $db = \Config\Database::connect();
+        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
+
+        if (!$tablaMovimiento) {
+            return redirect()->to(base_url() . 'public/cajas')
+                ->with('error', 'No se encontró la tabla de movimientos.');
+        }
+
+        $movimientos = $db->table($tablaMovimiento)
+            ->orderBy('fecha', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        $cajaId = (int) $id;
+        $cajaNombre = $this->obtenerNombreCaja($cajaId);
+        $cajaNormalizada = $this->normalizarNombreCaja($cajaNombre);
+        $resultado = [];
+
+        foreach ($movimientos as $movimiento) {
+            $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
+            $destinoId = $movimiento['caja_destino_id'] ?? null;
+            $origen = $this->obtenerNombreCaja($origenId);
+            $destino = $this->obtenerNombreCaja($destinoId);
+            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
+
+            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
+                $origen = trim($matches[1]);
+                $destino = trim($matches[2]);
+            }
+
+            // En 0 se muestran todos; si se solicita una caja, se contemplan
+            // origen, destino por id y destinos guardados dentro del concepto.
+            $esDeLaCaja = $cajaId === 0
+                || (int) $origenId === $cajaId
+                || (int) $destinoId === $cajaId
+                || $this->normalizarNombreCaja($origen) === $cajaNormalizada
+                || $this->normalizarNombreCaja($destino) === $cajaNormalizada;
+
+            if ($esDeLaCaja) {
+                $movimiento['origen'] = $origen;
+                $movimiento['destino'] = $destino;
+                $movimiento['tipo'] = $movimiento['tipo_movimiento'] ?? 'transferencia';
+                $movimiento['concepto'] = $concepto !== '' ? $concepto : 'Movimiento registrado';
+                $resultado[] = $movimiento;
+            }
+        }
+
+        $context = [
+            'movimientos' => $resultado,
+            'cajaNombre' => $cajaId === 0 ? 'Todas las cajas' : $cajaNombre,
+            'titulo' => 'Movimientos',
+            'pagname' => 'Gestión/Movimientos'
+        ];
+
+        echo view('panel/header', $context);
+        echo view('caja/movimientos', $context);
+        echo view('panel/footer');
+    }
+
     private function obtenerMovimientos(): array
     {
         $db = \Config\Database::connect();

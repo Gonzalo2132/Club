@@ -21,7 +21,7 @@ echo base_url();
     <input type="hidden" name="id_liquidacion" value="<?= $liquidacion['id'] ?>">
 
     <label class="form-label" for="monto">Monto</label>
-    <input class="form-control" type="text" name="monto" id="monto" placeholder="Ingrese un monto">
+    <input class="form-control" type="number" name="monto" id="monto" value="<?= esc($liquidacion['monto'] ?? '') ?>" min="0" step="0.01" placeholder="Ingrese un monto">
 
     <label class="form-label" for="fecha_pago">Fecha de Pago</label>
     <input class="form-control" type="date" name="fecha_pago" id="fecha_pago" value="<?= date('Y-m-d') ?>" placeholder="dd/mm/AAAA">
