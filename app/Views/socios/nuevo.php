@@ -35,6 +35,16 @@ echo base_url();
         ?>
     </select>
 
+    <label class="form-label" for="id_plan">Plan de Suscripción</label>
+    <select class="form-control" id="planes" name="planes[]" multiple style="height: 120px;">
+        <option value="">Seleccione un plan...</option>
+        <?php
+        foreach ($planes as $plan) {
+            echo '<option value="' . $plan['id'] . '">' . $plan['nombre'] . ' ($' . number_format($plan['monto'], 2, ',', '.') . ')</option>';
+        }
+        ?>
+    </select>
+    <br>
 
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="

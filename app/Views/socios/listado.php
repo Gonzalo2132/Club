@@ -19,6 +19,7 @@
         <th>D.N.I.</th>
         <th>Email</th>
         <th>Zona</th>
+        <th>Plan</th>
         <th>Acciones</th>
 
     </thead>
@@ -45,6 +46,8 @@
             }
             echo '<td>' . $zonaNombre . '</td>';
             //echo '<td>' . $socio['id_zona'] . '</td>';
+
+            echo '<td><span class="badge bg-info text-dark">' . (!empty($socio['planes_nombres']) ? $socio['planes_nombres'] : 'Sin plan') . '</span></td>';
 
             echo '<td>
         <a class ="btn btn-warning"

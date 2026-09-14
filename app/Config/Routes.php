@@ -70,3 +70,11 @@ $routes->get('/login/logout', 'Login::logout');
 //Pagos
 $routes->get('/pagos/nuevo/(:num)/(:num)', 'Pagos::nuevo/$1/$2');
 $routes->post('/pagos/guardar', 'Pagos::guardar');
+
+//planes
+$routes->get('/planes', 'Planes::index');
+$routes->get('/planes/nuevo', 'Planes::nuevo');
+$routes->post('/planes/guardar', 'Planes::guardar');
+$routes->get('/planes/borrar/(:num)', 'Planes::borrar/$1');
+$routes->get('/planes/editar/(:num)', 'Planes::editar/$1');
+$routes->post('/planes/actualizar/(:num)', 'Planes::actualizar/$1');

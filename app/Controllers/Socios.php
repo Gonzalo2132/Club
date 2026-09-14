@@ -2,21 +2,25 @@
 
 namespace App\Controllers;
 
-use App\Models\SociosModel; //Acá asignamos que usamos el modelo designado
-use App\Models\ZonasModel; //Acá asignamos que usamos el modelo designado
+use App\Models\SociosModel;
+use App\Models\PlanesModel; 
+use App\Models\ZonasModel;
+use App\Models\SociosPlanesModel;
 
 
 
 class Socios extends BaseController
 {
-    protected $socios; //Esto es para que la variable en cuestión esté definida
+    protected $socios; 
     protected $zonas;
+    protected $sociosPlanes;
     protected $sesion;
 
     public function __construct()
     { //La función constructora
         $this->socios = new SociosModel();
         $this->zonas = new ZonasModel();
+        $this->sociosPlanes = new SociosPlanesModel();
         $this->sesion = session();
     }
 
@@ -25,6 +29,13 @@ class Socios extends BaseController
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
+
+        $socios = $this->socios->select('socios.*, GROUP_CONCAT(planes.nombre SEPARATOR " | ") as planes_nombres')
+                               ->join('socios_planes', 'socios_planes.id_socio = socios.id', 'left')
+                               ->join('planes', 'planes.id = socios_planes.id_plan', 'left')
+                               ->where('socios.activo', $activo)
+                               ->groupBy('socios.id')
+                               ->findAll();
 
         //Esto serñia una consulta,  "Select * from socios"
         $socios = $this->socios->where('activo', $activo)->findAll();
@@ -55,16 +66,19 @@ class Socios extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
+        $planesModel = new PlanesModel();
+        $planes = $planesModel->where('activo', 1)->findAll();
         //este context es para cambiar el título de la página que está esperando el header
         $zonas = $this->zonas->where('activo', $activo)->findAll();
         $context = [
+            'planes' => $planes,
             'titulo' => "Nuevo Socio",
             'pagname' => 'Gestión/Nuevo Socio',
             'zonas' => $zonas
         ];
 
         echo view('panel/header', $context);
-        echo view('socios/nuevo');
+        echo view('socios/nuevo', $context);
         echo view('panel/footer');
     }
     public function guardar()
@@ -73,7 +87,7 @@ class Socios extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->socios->save(
+        $id_socio = $this->socios->insert(
             [
                 'nombre' => $this->request->getPost('nombre'),
                 'apellido' => $this->request->getPost('apellido'),
@@ -82,10 +96,22 @@ class Socios extends BaseController
                 'fecha_nac' => $this->request->getPost('fecha_nac'),
                 'dni' => $this->request->getPost('dni'),
                 'email' => $this->request->getPost('email'),
-                'id_zona' => $this->request->getPost('id_zona')
+                'id_zona' => $this->request->getPost('id_zona'),
+                'id_plan' => $this->request->getPost('id_plan')
 
             ]
         );
+
+        $planes_seleccionados = $this->request->getPost('planes'); // Viene como un arreglo []
+        if (!empty($planes_seleccionados)) {
+            foreach ($planes_seleccionados as $id_plan) {
+                $this->sociosPlanes->insert([
+                    'id_socio' => $id_socio,
+                    'id_plan' => $id_plan
+                ]);
+            }
+        }
+
         return redirect()->to(base_url() . 'public/socios/');
     }
     public function borrar($id)
@@ -104,11 +130,19 @@ class Socios extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
+        $planesModel = new PlanesModel();
+        $planes = $planesModel->where('activo', 1)->findAll();
         $status = 1;
         $socio = $this->socios->where('id', $id)->findAll();
-        $zonas = $this->zonas->where('activo', $status)->findall();
+        $zonas = $this->zonas->where('activo', $status)->findall();     
+
+        $planesAsignados = $this->sociosPlanes->where('id_socio', $id)->findAll();
+        $misPlanesIds = array_column($planesAsignados, 'id_plan');
+
         $context = [
             'socio' => $socio,
+            'planes' => $planes,
+            'misPlanes' => $misPlanesIds,
             'titulo' => "Edición socio",
             'pagname' => 'Gestión/Edición socio',
             'zonas' => $zonas
@@ -117,7 +151,7 @@ class Socios extends BaseController
 
 
         echo view('panel/header', $context);
-        echo view('socios/editar');
+        echo view('socios/editar', $context);
         echo view('panel/footer');
     }
     public function actualizar($id)
@@ -137,9 +171,23 @@ class Socios extends BaseController
                 'fecha_nac' => $this->request->getPost('fecha_nac'),
                 'dni' => $this->request->getPost('dni'),
                 'email' => $this->request->getPost('email'),
-                'id_zona' => $this->request->getPost('id_zona')
+                'id_zona' => $this->request->getPost('id_zona'),
+                'id_plan' => $this->request->getPost('id_plan')
             ]
         );
+
+        $this->sociosPlanes->where('id_socio', $id)->delete();
+
+        $planes_seleccionados = $this->request->getPost('planes'); 
+        if (!empty($planes_seleccionados)) {
+            foreach ($planes_seleccionados as $id_plan) {
+                $this->sociosPlanes->insert([
+                    'id_socio' => $id,
+                    'id_plan' => $id_plan
+                ]);
+            }
+        }
+
         return redirect()->to(base_url() . 'public/socios/');
     }
 }

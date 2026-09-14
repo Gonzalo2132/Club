@@ -398,6 +398,19 @@
                                                         Delfor Castro</li>
                                                 </ul>
                                             </div>
+                                            <div class="row text-left">
+                                            <div class="col-md-6">
+                                                <small
+                                                    class="text-uppercase text-muted font-weight-bold">Alumnos Egresados 2025</small>
+                                                <ul class="list-unstyled mt-2">
+                                                    <li><i class="fas fa-code text-primary"></i> Almada, Santiago</li>
+                                                    <li><i class="fas fa-code text-primary"></i> Balista, Berenice</li>
+                                                    <li><i class="fas fa-code text-primary"></i> Feling, Danilo</li>
+                                                    <li><i class="fas fa-code text-primary"></i> Mansilla, Diego</li>
+                                                    <li><i class="fas fa-code text-primary"></i> Nuñez, Alesio</li>
+
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
 
