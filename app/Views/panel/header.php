@@ -116,6 +116,12 @@
                 </a>
 
             </li>
+           
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo base_url(); ?>public/planes">
+                    <i class="bi bi-card-checklist"></i> Gestión de Planes
+                </a>
+            </li>
 
             <!-- Divider -->
             <hr class="sidebar-divider">
