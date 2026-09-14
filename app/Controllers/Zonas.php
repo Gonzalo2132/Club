@@ -77,7 +77,7 @@ class Zonas extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->zonas->update($id);
+        $this->zonas->update($id, ['activo' => 0]);
         return redirect()->to(base_url() . 'public/zonas/');
     }
     public function editar($id)

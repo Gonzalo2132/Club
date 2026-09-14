@@ -29,11 +29,12 @@ foreach ($zonas as $zona) {
     
         echo '<td>
         <a class ="btn btn-warning"
-         href="' . base_url() . 'public/zonas/editar/' . $zona['id'] . '">Editar
+         href="' . base_url('public/zonas/editar/' . $zona['id']) . '">Editar
          </a>
-        <a class ="btn btn-danger"
-         href="' . base_url() . 'public/zonas/borrar/' . $zona['id'] . '">Borrar
-         </a>
+        <form class="d-inline" method="post"
+         action="' . base_url('public/zonas/borrar/' . $zona['id']) . '">
+         <button class="btn btn-danger" type="submit">Borrar</button>
+         </form>
 
         </td>';
 

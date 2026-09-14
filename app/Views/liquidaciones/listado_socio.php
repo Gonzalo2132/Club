@@ -24,11 +24,11 @@
                 echo '<tr>';
                 echo '<td>' . $h['liquidacion']['id'] . '</td>';
                 echo '<td>' . $h['liquidacion']['nombre'] . '</td>';
-                echo '<td>$' . ($h['pago']['monto'] ?? $h['liquidacion']['monto']) . '</td>';
+                echo '<td>$' . ($h['total_pagado'] ?? 0) . ' / $' . $h['liquidacion']['monto'] . '</td>';
                 echo '<td>' . date('d/m/Y', strtotime($h['liquidacion']['fecha_vencimiento'])) . '</td>';
                 echo '<td>' . $h['estado'] . '</td>';
                 echo '<td>';
-                if ($h['estado'] === 'Pendiente') {
+                if ($h['estado'] !== 'Pagado') {
                     echo '<a class="btn btn-success" href="' . base_url('public/pagos/nuevo/' . $idSocio . '/' . $h['liquidacion']['id']) . '">Pagar</a>';
                 } else {
                     echo '<button class="btn btn-secondary" disabled>Pago realizado</button>';

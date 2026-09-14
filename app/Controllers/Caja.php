@@ -265,19 +265,18 @@ class Caja extends BaseController
     private function obtenerSaldoCaja(int $cajaId): float
     {
         $db = \Config\Database::connect();
-        $saldo = 0.0;
+        $saldo = (float) ($db->table('pagos')
+            ->selectSum('monto', 'total')
+            ->where('id_caja', $cajaId)
+            ->get()
+            ->getRowArray()['total'] ?? 0);
         $tablaMovimiento = $this->obtenerTablaMovimientos($db);
 
         if (!$tablaMovimiento) {
-            $pagos = $db->table('pagos')
-                ->selectSum('monto', 'total')
-                ->where('id_caja', $cajaId)
-                ->get()
-                ->getRowArray();
-
-            return round((float) ($pagos['total'] ?? 0), 2);
+            return round($saldo, 2);
         }
 
+        $columnNames = $db->getFieldNames($tablaMovimiento);
         $movimientos = $db->table($tablaMovimiento)
             ->get()
             ->getResultArray();
@@ -285,32 +284,50 @@ class Caja extends BaseController
         foreach ($movimientos as $movimiento) {
             $monto = (float) ($movimiento['monto'] ?? 0);
             $concepto = trim((string) ($movimiento['concepto'] ?? ''));
-            $origenId = $movimiento['caja_origen_id'] ?? null;
-            $cajaActual = $this->normalizarNombreCaja($this->obtenerNombreCaja($cajaId));
-            $procesado = false;
+            $tipo = $movimiento['tipo_movimiento'] ?? ($movimiento['tipo'] ?? '');
 
-            if ((int) $origenId === $cajaId && !preg_match('/\s*->\s*/', $concepto)) {
-                $saldo -= $monto;
-                $procesado = true;
+            // Los pagos ya están incluidos desde la tabla pagos; no deben sumarse dos veces.
+            if ($tipo === 'ingreso' && stripos($concepto, 'Pago:') !== false) {
+                continue;
             }
 
-            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
-                $origen = trim($matches[1]);
-                $destino = trim($matches[2]);
+            $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
+            $destinoId = in_array('caja_destino_id', $columnNames, true)
+                ? ($movimiento['caja_destino_id'] ?? null)
+                : null;
 
-                if ($this->normalizarNombreCaja($origen) === $cajaActual && !$procesado) {
+            if ($tipo === 'transferencia') {
+                if ($destinoId === null && preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
+                    $origenId = $this->obtenerIdCajaPorNombre(trim($matches[1])) ?? $origenId;
+                    $destinoId = $this->obtenerIdCajaPorNombre(trim($matches[2]));
+                }
+                if ((int) $origenId === $cajaId) {
                     $saldo -= $monto;
-                    $procesado = true;
                 }
-
-                if ($this->normalizarNombreCaja($destino) === $cajaActual) {
+                if ((int) $destinoId === $cajaId) {
                     $saldo += $monto;
-                    $procesado = true;
                 }
+                continue;
+            }
+
+            if ((int) $origenId === $cajaId) {
+                $saldo += $tipo === 'egreso' ? -$monto : $monto;
             }
         }
 
-        return max(0, round($saldo, 2));
+        return round($saldo, 2);
+    }
+
+    private function obtenerIdCajaPorNombre(string $nombre): ?int
+    {
+        $nombreNormalizado = $this->normalizarNombreCaja($nombre);
+        foreach ($this->cajas->findAll() as $caja) {
+            if ($this->normalizarNombreCaja((string) $caja['denominacion']) === $nombreNormalizado) {
+                return (int) $caja['id'];
+            }
+        }
+
+        return null;
     }
 
     private function normalizarNombreCaja(string $nombre): string

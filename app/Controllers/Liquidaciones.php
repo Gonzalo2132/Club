@@ -133,7 +133,7 @@ class Liquidaciones extends BaseController
                 ->with('error', 'El socio no existe');
         }
 
-        $fechaAlta = $socio['fecha_alta'];
+        $fechaAlta = date('Y-m-d', strtotime($socio['fecha_alta']));
 
         // Liquidaciones desde la fecha de alta
         $liquidaciones = $this->liquidaciones
@@ -148,11 +148,29 @@ class Liquidaciones extends BaseController
         // Armar historial
         $historial = [];
         foreach ($liquidaciones as $liq) {
-            $pago = array_filter($pagos, fn($p) => $p['id_liquidacion'] == $liq['id']);
+            $pagosLiquidacion = array_filter(
+                $pagos,
+                fn($p) => (int) $p['id_liquidacion'] === (int) $liq['id']
+            );
+            $totalPagado = round(
+                array_sum(array_map(
+                    static fn($p) => (float) $p['monto'],
+                    $pagosLiquidacion
+                )),
+                2
+            );
+            $montoLiquidacion = (float) $liq['monto'];
+            $pago = $pagosLiquidacion ? reset($pagosLiquidacion) : null;
+            $estado = $totalPagado <= 0
+                ? 'Pendiente'
+                : ($totalPagado < $montoLiquidacion ? 'Pago parcial' : 'Pagado');
+
             $historial[] = [
                 'liquidacion' => $liq,
-                'pago' => $pago ? reset($pago) : null,
-                'estado' => $pago ? 'Pagado' : 'Pendiente'
+                'pago' => $pago,
+                'total_pagado' => $totalPagado,
+                'saldo_pendiente' => max(0, round($montoLiquidacion - $totalPagado, 2)),
+                'estado' => $estado
             ];
         }
 
