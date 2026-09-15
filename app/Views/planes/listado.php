@@ -3,7 +3,7 @@
 <br><br>
 <table class="table table-hover" id="contenido-lista">
     <thead>
-        <th>#</th>
+        <th>ID</th>
         <th>Nombre del Plan</th>
         <th>Descripción</th>
         <th>Monto</th>
