@@ -47,7 +47,7 @@
             echo '<td>' . $zonaNombre . '</td>';
             //echo '<td>' . $socio['id_zona'] . '</td>';
 
-            echo '<td><span class="badge bg-info text-dark">' . (!empty($socio['planes_nombres']) ? $socio['planes_nombres'] : 'Sin plan') . '</span></td>';
+            echo '<td><span class="badge bg-info text-dark">' . (!empty($socio['planes_nombres']) ? str_replace(' | ', '<br>', $socio['planes_nombres']) : 'Sin plan') . '</span></td>';
 
             echo '<td>
         <a class ="btn btn-warning"

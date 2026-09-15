@@ -38,7 +38,7 @@ class Socios extends BaseController
                                ->findAll();
 
         //Esto serñia una consulta,  "Select * from socios"
-        $socios = $this->socios->where('activo', $activo)->findAll();
+        //$socios = $this->socios->where('activo', $activo)->findAll();
 
         //Traer todas las zonas
         $zonas = $this->zonas->where('activo',1)->findAll();
@@ -96,8 +96,7 @@ class Socios extends BaseController
                 'fecha_nac' => $this->request->getPost('fecha_nac'),
                 'dni' => $this->request->getPost('dni'),
                 'email' => $this->request->getPost('email'),
-                'id_zona' => $this->request->getPost('id_zona'),
-                'id_plan' => $this->request->getPost('id_plan')
+                'id_zona' => $this->request->getPost('id_zona')
 
             ]
         );
@@ -171,8 +170,7 @@ class Socios extends BaseController
                 'fecha_nac' => $this->request->getPost('fecha_nac'),
                 'dni' => $this->request->getPost('dni'),
                 'email' => $this->request->getPost('email'),
-                'id_zona' => $this->request->getPost('id_zona'),
-                'id_plan' => $this->request->getPost('id_plan')
+                'id_zona' => $this->request->getPost('id_zona')
             ]
         );
 
