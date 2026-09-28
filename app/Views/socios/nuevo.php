@@ -40,7 +40,7 @@ echo base_url();
         <option value="">Seleccione un plan...</option>
         <?php
         foreach ($planes as $plan) {
-            echo '<option value="' . $plan['id'] . '">' . $plan['nombre'] . ' ($' . number_format($plan['monto'], 2, ',', '.') . ')</option>';
+            echo '<option value="' . $plan['id'] . '">' . $plan['nombre'] . '</option>';
         }
         ?>
     </select>
