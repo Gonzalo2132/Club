@@ -19,7 +19,7 @@ echo base_url();
 
     <label class="form-label" for="id_plan">ID del Plan</label>
     <select class="form-control" name="id_plan" id="id_plan">
-        <option value="">Dejar vacío si no aplica</option>
+        <option value="">-</option>
         <?php foreach ($planes as $plan) { ?>
             <option value="<?= $plan['id'] ?>" <?= ($liquidacion[0]['id_plan'] == $plan['id']) ? 'selected' : '' ?>>
                 <?= $plan['id'] ?>
@@ -29,7 +29,7 @@ echo base_url();
 
     <label class="form-label" for="nombre_plan">Nombre del Plan</label>
     <select class="form-control" name="nombre_plan" id="nombre_plan">
-        <option value="Sin plan">Dejar vacío si no aplica</option>
+        <option value="Sin plan">Sin plan</option>
         <?php foreach ($planes as $plan) { ?>
             <option value="<?= $plan['nombre'] ?>" <?= ($liquidacion[0]['nombre_plan'] == $plan['nombre']) ? 'selected' : '' ?>>
                 <?= $plan['nombre'] ?>
