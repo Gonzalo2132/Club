@@ -18,17 +18,43 @@ echo base_url();
     placeholder="dd/mm/AAAA" value="<?php echo $liquidacion[0]['fecha_vencimiento'];?>">
 
     <label class="form-label" for="id_plan">ID del Plan</label>
-    <input class="form-control" type="number" name="id_plan" id="id_plan" placeholder="Dejar vacío si no aplica" value="<?= isset($liquidacion) ? $liquidacion[0]['id_plan'] : '' ?>">
+    <select class="form-control" name="id_plan" id="id_plan">
+        <option value="">Dejar vacío si no aplica</option>
+        <?php foreach ($planes as $plan) { ?>
+            <option value="<?= $plan['id'] ?>" <?= ($liquidacion[0]['id_plan'] == $plan['id']) ? 'selected' : '' ?>>
+                <?= $plan['id'] ?>
+            </option>
+        <?php } ?>
+    </select>
 
     <label class="form-label" for="nombre_plan">Nombre del Plan</label>
-    <input class="form-control" type="text" name="nombre_plan" id="nombre_plan" placeholder="Ej: Plan Básico (o dejar vacío)" value="<?= isset($liquidacion) ? $liquidacion[0]['nombre_plan'] : '' ?>">
+    <select class="form-control" name="nombre_plan" id="nombre_plan">
+        <option value="Sin plan">Dejar vacío si no aplica</option>
+        <?php foreach ($planes as $plan) { ?>
+            <option value="<?= $plan['nombre'] ?>" <?= ($liquidacion[0]['nombre_plan'] == $plan['nombre']) ? 'selected' : '' ?>>
+                <?= $plan['nombre'] ?>
+            </option>
+        <?php } ?>
+    </select>
+    <br>
 
     <input class="btn btn-success" type="submit" value="Guardar">
-    <a class="btn btn-danger" href="
-<?php
-echo base_url();
-?>public/liquidaciones
-">Cancelar</a>
+    <a class="btn btn-danger" href="<?php echo base_url(); ?>public/liquidaciones">Cancelar</a>
+
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectId = document.getElementById('id_plan');
+            const selectNombre = document.getElementById('nombre_plan');
 
 
-</form>
+            selectId.addEventListener('change', function() {
+                selectNombre.selectedIndex = selectId.selectedIndex;
+            });
+
+            selectNombre.addEventListener('change', function() {
+                selectId.selectedIndex = selectNombre.selectedIndex;
+            });
+        });
+    </script>

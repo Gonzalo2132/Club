@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\LiquidacionesModel;
 use App\Models\SociosModel;
 use App\Models\PagosModel;
+use App\Models\PlanesModel;
 
 class Liquidaciones extends BaseController
 {
@@ -47,14 +48,17 @@ class Liquidaciones extends BaseController
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
+        
+        $planesModel = new PlanesModel();
 
         $context = [
             'titulo' => "Nueva Liquidacion",
-            'pagname' => 'Gestión/Nuevo Liquidacion'
+            'pagname' => 'Gestión/Nuevo Liquidacion',
+            'planes' => $planesModel->findAll()
         ];
 
         echo view('panel/header', $context);
-        echo view('liquidaciones/nuevo');
+        echo view('liquidaciones/nuevo', $context);
         echo view('panel/footer');
     }
     public function guardar()
@@ -90,17 +94,19 @@ class Liquidaciones extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
+        $planesModel = new PlanesModel();
         $liquidacion = $this->liquidaciones->where('id', $id)->findAll();
         $context = [
             'liquidacion' => $liquidacion,
             'titulo' => "Edición liquidacion",
-            'pagname' => 'Gestión/Edición liquidacion'
+            'pagname' => 'Gestión/Edición liquidacion',
+            'planes' => $planesModel->findAll()
         ];
 
 
 
         echo view('panel/header', $context);
-        echo view('liquidaciones/editar');
+        echo view('liquidaciones/editar', $context);
         echo view('panel/footer');
     }
     public function actualizar($id)
