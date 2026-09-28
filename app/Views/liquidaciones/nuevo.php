@@ -14,7 +14,11 @@ echo base_url();
     <label class="form-label" for="fecha_vencimiento">Fecha de Vencimiento</label>
     <input class="form-control" type="date" name="fecha_vencimiento" id="fecha_vencimiento" placeholder="dd/mm/AAAA">
 
+    <label class="form-label" for="id_plan">ID del Plan</label>
+    <input class="form-control" type="number" name="id_plan" id="id_plan" placeholder="Dejar vacío si no aplica" value="<?= isset($liquidacion) ? $liquidacion[0]['id_plan'] : '' ?>">
 
+    <label class="form-label" for="nombre_plan">Nombre del Plan</label>
+    <input class="form-control" type="text" name="nombre_plan" id="nombre_plan" placeholder=" Plan Básico " value="<?= isset($liquidacion) ? $liquidacion[0]['nombre_plan'] : '' ?>">
 
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="

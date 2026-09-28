@@ -68,6 +68,8 @@ class Liquidaciones extends BaseController
                 'nombre' => $this->request->getPost('nombre'),
                 'monto' => $this->request->getPost('monto'),
                 'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
+                'id_plan' => $this->request->getPost('id_plan') ?: null,
+                'nombre_plan' => $this->request->getPost('nombre_plan') ?: 'Sin plan'
 
             ]
         );
@@ -112,7 +114,9 @@ class Liquidaciones extends BaseController
             [
                 'nombre' => $this->request->getPost('nombre'),
                 'monto' => $this->request->getPost('monto'),
-                'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento')
+                'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
+                'id_plan' => $this->request->getPost('id_plan') ?: null,
+                'nombre_plan' => $this->request->getPost('nombre_plan') ?: 'Sin plan'
             ]
         );
         return redirect()->to(base_url() . 'public/liquidaciones/');

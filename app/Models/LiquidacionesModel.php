@@ -14,8 +14,8 @@ class LiquidacionesModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['nombre', 'monto','activo', 'fecha_vencimiento', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
-
+    protected $allowedFields = ['nombre', 'monto', 'activo', 'fecha_vencimiento', 'id_plan', 'nombre_plan', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
+    
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;
 

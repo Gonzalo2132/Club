@@ -13,6 +13,8 @@ echo base_url();
         <th>#</th>
         <th>Nombre</th>
         <th>Monto</th>
+        <th>ID Plan</th>
+        <th>Plan</th>
         <th>Fecha de Vencimiento</th>
         <th>Acciones</th>
 
@@ -30,22 +32,18 @@ foreach ($liquidaciones as $liquidacion) {
     echo '<td>' . $liquidacion['id'] . '</td>';
     echo '<td>' . $liquidacion['nombre'] . '</td>';
     echo '<td>$' . $liquidacion['monto'] . '</td>';
+    echo '<td>' . ($liquidacion['id_plan'] ?? '-') . '</td>';
+    echo '<td>' . ($liquidacion['nombre_plan'] ?: 'Sin plan') . '</td>';
     echo '<td>' . date('d/m/Y', strtotime($liquidacion['fecha_vencimiento'])) . '</td>';
 
     
-        echo '<td>
-        <a class ="btn btn-warning"
-         href="' . base_url() . 'public/liquidaciones/editar/' . $liquidacion['id'] . '">Editar
-         </a>
-        <a class ="btn btn-danger"
-         href="' . base_url() . 'public/liquidaciones/borrar/' . $liquidacion['id'] . '">Borrar
-         </a>
+    echo '<td>
+                <a class="btn btn-warning" href="' . base_url() . 'public/liquidaciones/editar/' . $liquidacion['id'] . '">Editar</a>
+                <a class="btn btn-danger" href="' . base_url() . 'public/liquidaciones/borrar/' . $liquidacion['id'] . '">Borrar</a>
+            </td>';
+        echo '</tr>';
+    }
+    ?>
 
-        </td>';
-
-    echo '</tr>';
-}
-?>
-
-    </tbody>
-</table>
+        </tbody>
+    </table>
