@@ -13,8 +13,8 @@ echo base_url();
         <th>#</th>
         <th>Nombre</th>
         <th>Monto</th>
-        <th>ID Plan</th>
-        <th>Plan</th>
+        <th>ID Planes</th>
+        <th>Planes</th>
         <th>Fecha de Vencimiento</th>
         <th>Acciones</th>
 
@@ -28,12 +28,13 @@ echo base_url();
 
 <?php
 foreach ($liquidaciones as $liquidacion) {
+    $planesLiquidacion = $planesPorLiquidacion[$liquidacion['id']] ?? null;
     echo '<tr>';
     echo '<td>' . $liquidacion['id'] . '</td>';
-    echo '<td>' . $liquidacion['nombre'] . '</td>';
+    echo '<td>' . esc($liquidacion['nombre']) . '</td>';
     echo '<td>$' . $liquidacion['monto'] . '</td>';
-    echo '<td>' . ($liquidacion['id_plan'] ?? '-') . '</td>';
-    echo '<td>' . ($liquidacion['nombre_plan'] ?: 'Sin plan') . '</td>';
+    echo '<td>' . esc($planesLiquidacion['planes_ids'] ?? ($liquidacion['id_plan'] ?? '-')) . '</td>';
+    echo '<td>' . esc($planesLiquidacion['planes_nombres'] ?? ($liquidacion['nombre_plan'] ?: 'Sin plan')) . '</td>';
     echo '<td>' . date('d/m/Y', strtotime($liquidacion['fecha_vencimiento'])) . '</td>';
 
     
