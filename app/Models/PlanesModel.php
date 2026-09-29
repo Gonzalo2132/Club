@@ -15,7 +15,7 @@ class PlanesModel extends Model
     protected $useSoftDeletes = true;
 
     // Campos permitidos para guardar/actualizar
-    protected $allowedFields = ['nombre', 'descripcion', 'monto', 'activo', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
+    protected $allowedFields = ['nombre', 'descripcion', 'activo', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

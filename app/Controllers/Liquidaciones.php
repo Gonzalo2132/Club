@@ -30,26 +30,9 @@ class Liquidaciones extends BaseController
 
 
         $liquidaciones = $this->liquidaciones->where('activo', $activo)->findAll();
-        $planesPorLiquidacion = [];
-        if ($liquidaciones) {
-            $idsLiquidaciones = array_column($liquidaciones, 'id');
-            $relaciones = \Config\Database::connect()
-                ->table('liquidaciones_planes')
-                ->select('liquidaciones_planes.id_liquidacion, GROUP_CONCAT(planes.id ORDER BY planes.id SEPARATOR ", ") AS planes_ids, GROUP_CONCAT(CONCAT(planes.nombre, " ($", FORMAT(liquidaciones_planes.monto, 2), ")") ORDER BY planes.id SEPARATOR " | ") AS planes_nombres')
-                ->join('planes', 'planes.id = liquidaciones_planes.id_plan')
-                ->whereIn('liquidaciones_planes.id_liquidacion', $idsLiquidaciones)
-                ->groupBy('liquidaciones_planes.id_liquidacion')
-                ->get()
-                ->getResultArray();
-
-            foreach ($relaciones as $relacion) {
-                $planesPorLiquidacion[$relacion['id_liquidacion']] = $relacion;
-            }
-        }
 
         $context = [
             'liquidaciones' => $liquidaciones,
-            'planesPorLiquidacion' => $planesPorLiquidacion,
             'titulo' => "Gestión de Liquidaciones",
             'pagname' => "Gestion/liquidaciones"
         ];
@@ -69,9 +52,8 @@ class Liquidaciones extends BaseController
         $planes = (new PlanesModel())->where('activo', 1)->findAll();
         $context = [
             'planes' => $planes,
-            'planesSeleccionados' => [],
-            'montosPlanes' => [],
-            'montoTotal' => old('monto', '0.00'),
+            'planSeleccionado' => old('id_plan', ''),
+            'montoTotal' => old('monto', ''),
             'titulo' => "Nueva Liquidacion",
             'pagname' => 'Gestión/Nuevo Liquidacion'
         ];
@@ -86,36 +68,19 @@ class Liquidaciones extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $planesSeleccionados = $this->obtenerPlanesPost();
-        if ($planesSeleccionados === null) {
+        $plan = $this->obtenerPlanPost();
+        if ($plan === null) {
             return redirect()->back()->withInput()->with('error', 'La selección de planes no es válida.');
         }
 
-        $db = \Config\Database::connect();
-        $db->transBegin();
-        $montoTotal = $planesSeleccionados
-            ? array_sum(array_column($planesSeleccionados, 'monto'))
-            : $this->request->getPost('monto');
-        $idLiquidacion = $this->liquidaciones->insert([
+        $this->liquidaciones->insert([
             'nombre' => $this->request->getPost('nombre'),
-            'monto' => $montoTotal,
+            'monto' => $this->request->getPost('monto'),
             'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
-            'id_plan' => $planesSeleccionados[0]['id'] ?? null,
-            'nombre_plan' => $this->nombrePlanes($planesSeleccionados)
+            'id_plan' => $plan['id'] ?? null,
+            'nombre_plan' => $plan['nombre'] ?? 'Sin plan'
         ]);
 
-        if ($idLiquidacion && $planesSeleccionados) {
-            $db->table('liquidaciones_planes')->insertBatch(
-                $this->relacionesPlanes((int) $idLiquidacion, $planesSeleccionados)
-            );
-        }
-
-        if (!$idLiquidacion || !$db->transStatus()) {
-            $db->transRollback();
-            return redirect()->back()->withInput()->with('error', 'No se pudo guardar la liquidación y sus planes.');
-        }
-
-        $db->transCommit();
         return redirect()->to(base_url() . 'public/liquidaciones/');
     }
     public function borrar($id)
@@ -135,27 +100,10 @@ class Liquidaciones extends BaseController
 
         $liquidacion = $this->liquidaciones->where('id', $id)->findAll();
         $planes = (new PlanesModel())->where('activo', 1)->findAll();
-        $relaciones = \Config\Database::connect()
-            ->table('liquidaciones_planes')
-            ->select('id_plan, monto')
-            ->where('id_liquidacion', $id)
-            ->get()
-            ->getResultArray();
-        $planesSeleccionados = array_column($relaciones, 'id_plan');
-        $montosPlanes = [];
-        foreach ($relaciones as $relacion) {
-            $montosPlanes[$relacion['id_plan']] = $relacion['monto'];
-        }
-        if (!$planesSeleccionados && !empty($liquidacion[0]['id_plan'])) {
-            $planesSeleccionados[] = $liquidacion[0]['id_plan'];
-            $montosPlanes[$liquidacion[0]['id_plan']] = $liquidacion[0]['monto'];
-        }
-
         $context = [
             'liquidacion' => $liquidacion,
             'planes' => $planes,
-            'planesSeleccionados' => $planesSeleccionados,
-            'montosPlanes' => $montosPlanes,
+            'planSeleccionado' => old('id_plan', $liquidacion[0]['id_plan'] ?? ''),
             'montoTotal' => old('monto', $liquidacion[0]['monto']),
             'titulo' => "Edición liquidacion",
             'pagname' => 'Gestión/Edición liquidacion'
@@ -173,99 +121,37 @@ class Liquidaciones extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $planesSeleccionados = $this->obtenerPlanesPost();
-        if ($planesSeleccionados === null) {
+        $plan = $this->obtenerPlanPost();
+        if ($plan === null) {
             return redirect()->back()->withInput()->with('error', 'La selección de planes no es válida.');
         }
 
-        $db = \Config\Database::connect();
-        $db->transBegin();
-        $montoTotal = $planesSeleccionados
-            ? array_sum(array_column($planesSeleccionados, 'monto'))
-            : $this->request->getPost('monto');
-        $actualizado = $this->liquidaciones->update($id, [
+        $this->liquidaciones->update($id, [
             'nombre' => $this->request->getPost('nombre'),
-            'monto' => $montoTotal,
+            'monto' => $this->request->getPost('monto'),
             'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
-            'id_plan' => $planesSeleccionados[0]['id'] ?? null,
-            'nombre_plan' => $this->nombrePlanes($planesSeleccionados)
+            'id_plan' => $plan['id'] ?? null,
+            'nombre_plan' => $plan['nombre'] ?? 'Sin plan'
         ]);
-        $db->table('liquidaciones_planes')->where('id_liquidacion', $id)->delete();
-        if ($planesSeleccionados) {
-            $db->table('liquidaciones_planes')->insertBatch(
-                $this->relacionesPlanes((int) $id, $planesSeleccionados)
-            );
-        }
-
-        if (!$actualizado || !$db->transStatus()) {
-            $db->transRollback();
-            return redirect()->back()->withInput()->with('error', 'No se pudieron actualizar la liquidación y sus planes.');
-        }
-
-        $db->transCommit();
         return redirect()->to(base_url() . 'public/liquidaciones/');
     }
 
-    private function obtenerPlanesPost(): ?array
+    private function obtenerPlanPost(): ?array
     {
-        $ids = $this->request->getPost('planes') ?? [];
-        $montos = $this->request->getPost('montos_plan') ?? [];
-        if (!is_array($ids)) {
-            return null;
-        }
-        if (!is_array($montos)) {
-            return null;
-        }
-
-        $idsNormalizados = [];
-        foreach ($ids as $id) {
-            if (!is_scalar($id) || !ctype_digit((string) $id) || (int) $id < 1) {
-                return null;
-            }
-            $idsNormalizados[] = (int) $id;
-        }
-        $idsNormalizados = array_values(array_unique($idsNormalizados));
-
-        if (!$idsNormalizados) {
+        $idPlan = $this->request->getPost('id_plan');
+        if ($idPlan === null || $idPlan === '') {
             return [];
         }
 
-        $planes = (new PlanesModel())
-            ->where('activo', 1)
-            ->whereIn('id', $idsNormalizados)
-            ->findAll();
-
-        if (count($planes) !== count($idsNormalizados)) {
+        if (!is_scalar($idPlan) || !ctype_digit((string) $idPlan) || (int) $idPlan < 1) {
             return null;
         }
 
-        foreach ($planes as &$plan) {
-            $id = (string) $plan['id'];
-            if (!isset($montos[$id]) || !is_scalar($montos[$id]) || !is_numeric($montos[$id]) || (float) $montos[$id] < 0) {
-                return null;
-            }
-            $plan['monto'] = round((float) $montos[$id], 2);
-        }
-        unset($plan);
+        $plan = (new PlanesModel())
+            ->where('activo', 1)
+            ->find((int) $idPlan);
 
-        return $planes;
-    }
-
-    private function nombrePlanes(array $planes): string
-    {
-        return $planes ? implode(' | ', array_column($planes, 'nombre')) : 'Sin plan';
-    }
-
-    private function relacionesPlanes(int $idLiquidacion, array $planes): array
-    {
-        return array_map(
-            static fn(array $plan): array => [
-                'id_liquidacion' => $idLiquidacion,
-                'id_plan' => $plan['id'],
-                'monto' => $plan['monto']
-            ],
-            $planes
-        );
+        return $plan ?: null;
     }
 
     //Función para traer las liquidaciones por socios

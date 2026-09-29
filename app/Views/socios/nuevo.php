@@ -44,7 +44,7 @@ echo base_url();
                     <input class="form-check-input" type="checkbox" id="socio-plan-<?= esc($plan['id']); ?>"
                         name="planes[]" value="<?= esc($plan['id']); ?>">
                     <label class="form-check-label" for="socio-plan-<?= esc($plan['id']); ?>">
-                        <?= esc($plan['nombre']); ?> ($<?= number_format((float) $plan['monto'], 2, ',', '.'); ?>)
+                        <?= esc($plan['nombre']); ?>
                     </label>
                 </div>
             <?php } ?>

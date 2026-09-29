@@ -59,7 +59,7 @@ echo base_url();
                         name="planes[]" value="<?= esc($plan['id']); ?>"
                         <?= in_array($plan['id'], $misPlanes) ? 'checked' : ''; ?>>
                     <label class="form-check-label" for="socio-plan-<?= esc($plan['id']); ?>">
-                        <?= esc($plan['nombre']); ?> ($<?= number_format((float) $plan['monto'], 2, ',', '.'); ?>)
+                        <?= esc($plan['nombre']); ?>
                     </label>
                 </div>
             <?php } ?>

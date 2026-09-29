@@ -59,8 +59,7 @@ class Planes extends BaseController
         $this->planes->save(
             [
                 'nombre' => $this->request->getPost('nombre'),
-                'descripcion' => $this->request->getPost('descripcion'),
-                'monto' => $this->request->getPost('monto')
+                'descripcion' => $this->request->getPost('descripcion')
             ]
         );
         return redirect()->to(base_url() . 'public/planes/');
@@ -104,8 +103,7 @@ class Planes extends BaseController
             $id,
             [
                 'nombre' => $this->request->getPost('nombre'),
-                'descripcion' => $this->request->getPost('descripcion'),
-                'monto' => $this->request->getPost('monto')
+                'descripcion' => $this->request->getPost('descripcion')
             ]
         );
         return redirect()->to(base_url() . 'public/planes/');
