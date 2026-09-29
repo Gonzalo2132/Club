@@ -6,7 +6,6 @@ use App\Models\LiquidacionesModel;
 use App\Models\PlanesModel;
 use App\Models\SociosModel;
 use App\Models\PagosModel;
-use App\Models\PlanesModel;
 
 class Liquidaciones extends BaseController
 {
@@ -36,7 +35,7 @@ class Liquidaciones extends BaseController
             $idsLiquidaciones = array_column($liquidaciones, 'id');
             $relaciones = \Config\Database::connect()
                 ->table('liquidaciones_planes')
-                ->select('liquidaciones_planes.id_liquidacion, GROUP_CONCAT(planes.id ORDER BY planes.id SEPARATOR ", ") AS planes_ids, GROUP_CONCAT(planes.nombre ORDER BY planes.id SEPARATOR " | ") AS planes_nombres')
+                ->select('liquidaciones_planes.id_liquidacion, GROUP_CONCAT(planes.id ORDER BY planes.id SEPARATOR ", ") AS planes_ids, GROUP_CONCAT(CONCAT(planes.nombre, " ($", FORMAT(liquidaciones_planes.monto, 2), ")") ORDER BY planes.id SEPARATOR " | ") AS planes_nombres')
                 ->join('planes', 'planes.id = liquidaciones_planes.id_plan')
                 ->whereIn('liquidaciones_planes.id_liquidacion', $idsLiquidaciones)
                 ->groupBy('liquidaciones_planes.id_liquidacion')
@@ -67,15 +66,14 @@ class Liquidaciones extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
         
-        $planesModel = new PlanesModel();
-
         $planes = (new PlanesModel())->where('activo', 1)->findAll();
         $context = [
             'planes' => $planes,
             'planesSeleccionados' => [],
+            'montosPlanes' => [],
+            'montoTotal' => old('monto', '0.00'),
             'titulo' => "Nueva Liquidacion",
-            'pagname' => 'Gestión/Nuevo Liquidacion',
-            'planes' => $planesModel->findAll()
+            'pagname' => 'Gestión/Nuevo Liquidacion'
         ];
 
         echo view('panel/header', $context);
@@ -95,9 +93,12 @@ class Liquidaciones extends BaseController
 
         $db = \Config\Database::connect();
         $db->transBegin();
+        $montoTotal = $planesSeleccionados
+            ? array_sum(array_column($planesSeleccionados, 'monto'))
+            : $this->request->getPost('monto');
         $idLiquidacion = $this->liquidaciones->insert([
             'nombre' => $this->request->getPost('nombre'),
-            'monto' => $this->request->getPost('monto'),
+            'monto' => $montoTotal,
             'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
             'id_plan' => $planesSeleccionados[0]['id'] ?? null,
             'nombre_plan' => $this->nombrePlanes($planesSeleccionados)
@@ -132,27 +133,32 @@ class Liquidaciones extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $planesModel = new PlanesModel();
         $liquidacion = $this->liquidaciones->where('id', $id)->findAll();
         $planes = (new PlanesModel())->where('activo', 1)->findAll();
-        $planesSeleccionados = \Config\Database::connect()
+        $relaciones = \Config\Database::connect()
             ->table('liquidaciones_planes')
-            ->select('id_plan')
+            ->select('id_plan, monto')
             ->where('id_liquidacion', $id)
             ->get()
             ->getResultArray();
-        $planesSeleccionados = array_column($planesSeleccionados, 'id_plan');
+        $planesSeleccionados = array_column($relaciones, 'id_plan');
+        $montosPlanes = [];
+        foreach ($relaciones as $relacion) {
+            $montosPlanes[$relacion['id_plan']] = $relacion['monto'];
+        }
         if (!$planesSeleccionados && !empty($liquidacion[0]['id_plan'])) {
             $planesSeleccionados[] = $liquidacion[0]['id_plan'];
+            $montosPlanes[$liquidacion[0]['id_plan']] = $liquidacion[0]['monto'];
         }
 
         $context = [
             'liquidacion' => $liquidacion,
             'planes' => $planes,
             'planesSeleccionados' => $planesSeleccionados,
+            'montosPlanes' => $montosPlanes,
+            'montoTotal' => old('monto', $liquidacion[0]['monto']),
             'titulo' => "Edición liquidacion",
-            'pagname' => 'Gestión/Edición liquidacion',
-            'planes' => $planesModel->findAll()
+            'pagname' => 'Gestión/Edición liquidacion'
         ];
 
 
@@ -174,9 +180,12 @@ class Liquidaciones extends BaseController
 
         $db = \Config\Database::connect();
         $db->transBegin();
+        $montoTotal = $planesSeleccionados
+            ? array_sum(array_column($planesSeleccionados, 'monto'))
+            : $this->request->getPost('monto');
         $actualizado = $this->liquidaciones->update($id, [
             'nombre' => $this->request->getPost('nombre'),
-            'monto' => $this->request->getPost('monto'),
+            'monto' => $montoTotal,
             'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
             'id_plan' => $planesSeleccionados[0]['id'] ?? null,
             'nombre_plan' => $this->nombrePlanes($planesSeleccionados)
@@ -200,7 +209,11 @@ class Liquidaciones extends BaseController
     private function obtenerPlanesPost(): ?array
     {
         $ids = $this->request->getPost('planes') ?? [];
+        $montos = $this->request->getPost('montos_plan') ?? [];
         if (!is_array($ids)) {
+            return null;
+        }
+        if (!is_array($montos)) {
             return null;
         }
 
@@ -222,12 +235,25 @@ class Liquidaciones extends BaseController
             ->whereIn('id', $idsNormalizados)
             ->findAll();
 
-        return count($planes) === count($idsNormalizados) ? $planes : null;
+        if (count($planes) !== count($idsNormalizados)) {
+            return null;
+        }
+
+        foreach ($planes as &$plan) {
+            $id = (string) $plan['id'];
+            if (!isset($montos[$id]) || !is_scalar($montos[$id]) || !is_numeric($montos[$id]) || (float) $montos[$id] < 0) {
+                return null;
+            }
+            $plan['monto'] = round((float) $montos[$id], 2);
+        }
+        unset($plan);
+
+        return $planes;
     }
 
     private function nombrePlanes(array $planes): string
     {
-        return $planes[0]['nombre'] ?? 'Sin plan';
+        return $planes ? implode(' | ', array_column($planes, 'nombre')) : 'Sin plan';
     }
 
     private function relacionesPlanes(int $idLiquidacion, array $planes): array
@@ -235,7 +261,8 @@ class Liquidaciones extends BaseController
         return array_map(
             static fn(array $plan): array => [
                 'id_liquidacion' => $idLiquidacion,
-                'id_plan' => $plan['id']
+                'id_plan' => $plan['id'],
+                'monto' => $plan['monto']
             ],
             $planes
         );

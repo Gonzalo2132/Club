@@ -49,20 +49,24 @@ echo base_url();
         <?php }?>
     </select>
 
-    <label class="form-label" for="id_plan">Plan de Suscripción</label>
-    <select class="form-control" id="planes" name="planes[]" multiple style="height: 120px;">
-        <option value="">Seleccione un plan...</option>
-        <?php 
-        foreach($planes as $plan){ ?>
-            <option value="<?php echo $plan['id']; ?>"
-                <?php
-                    if(in_array($plan['id'], $misPlanes)){
-                        echo 'selected';
-                    }
-                ?>
-            ><?php echo $plan['nombre']; ?> ($<?php echo number_format($plan['monto'], 2, ',', '.'); ?>)</option>
+    <fieldset class="mb-3">
+        <legend class="form-label">Planes de suscripción</legend>
+        <p class="form-text">Seleccione uno o varios planes.</p>
+        <?php if (!empty($planes)) { ?>
+            <?php foreach ($planes as $plan) { ?>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="socio-plan-<?= esc($plan['id']); ?>"
+                        name="planes[]" value="<?= esc($plan['id']); ?>"
+                        <?= in_array($plan['id'], $misPlanes) ? 'checked' : ''; ?>>
+                    <label class="form-check-label" for="socio-plan-<?= esc($plan['id']); ?>">
+                        <?= esc($plan['nombre']); ?> ($<?= number_format((float) $plan['monto'], 2, ',', '.'); ?>)
+                    </label>
+                </div>
+            <?php } ?>
+        <?php } else { ?>
+            <p class="form-text">No hay planes disponibles.</p>
         <?php } ?>
-    </select>
+    </fieldset>
     <br>
 
     <input class="btn btn-success" type="submit" value="Guardar">

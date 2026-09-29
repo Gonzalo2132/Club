@@ -9,27 +9,36 @@ echo base_url();
     <input class="form-control" type="text" name="nombre" id="nombre" 
     placeholder="" value="<?php echo $liquidacion[0]['nombre'];?>">
 
-    <label class="form-label" for="monto">Monto</label>
-    <input class="form-control" type="number" name="monto" id="monto" 
-    placeholder="" value="<?php echo $liquidacion[0]['monto'];?>">
+    <label class="form-label" for="monto">Monto total</label>
+    <input class="form-control" type="number" step="0.01" min="0" name="monto" id="monto"
+        value="<?= esc($montoTotal); ?>" required>
 
     <label class="form-label" for="fecha_vencimiento">Fecha de Vencimiento</label>
     <input class="form-control" type="date" name="fecha_vencimiento" id="fecha_vencimiento" 
     placeholder="dd/mm/AAAA" value="<?php echo $liquidacion[0]['fecha_vencimiento'];?>">
 
-<<<<<<< HEAD
     <fieldset class="mb-3">
         <legend class="form-label">Planes</legend>
-        <p class="form-text">Seleccione uno o varios planes para esta liquidación.</p>
+        <p class="form-text">Seleccione los planes e indique el precio de cada uno.</p>
         <?php if (!empty($planes)) { ?>
             <?php foreach ($planes as $plan) { ?>
-                <div class="form-check">
+                <div class="row align-items-center mb-2">
+                    <div class="col-md-6 form-check">
                     <input class="form-check-input" type="checkbox" id="plan-<?= esc($plan['id']); ?>"
                         name="planes[]" value="<?= esc($plan['id']); ?>"
                         <?= in_array($plan['id'], $planesSeleccionados) ? 'checked' : ''; ?>>
                     <label class="form-check-label" for="plan-<?= esc($plan['id']); ?>">
                         <?= esc($plan['nombre']); ?>
                     </label>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="visually-hidden" for="monto-plan-<?= esc($plan['id']); ?>">Precio de <?= esc($plan['nombre']); ?></label>
+                        <input class="form-control monto-plan" type="number" step="0.01" min="0"
+                            id="monto-plan-<?= esc($plan['id']); ?>"
+                            name="montos_plan[<?= esc($plan['id']); ?>]"
+                            value="<?= esc(old('montos_plan.' . $plan['id'], $montosPlanes[$plan['id']] ?? '0.00')); ?>"
+                            placeholder="Precio del plan">
+                    </div>
                 </div>
             <?php } ?>
         <?php } else { ?>
@@ -40,29 +49,6 @@ echo base_url();
     <?php if (session()->getFlashdata('error')) { ?>
         <div class="alert alert-danger"><?= esc(session()->getFlashdata('error')); ?></div>
     <?php } ?>
-=======
-    <label class="form-label" for="id_plan">ID del Plan</label>
-    <select class="form-control" name="id_plan" id="id_plan">
-        <option value="">-</option>
-        <?php foreach ($planes as $plan) { ?>
-            <option value="<?= $plan['id'] ?>" <?= ($liquidacion[0]['id_plan'] == $plan['id']) ? 'selected' : '' ?>>
-                <?= $plan['id'] ?>
-            </option>
-        <?php } ?>
-    </select>
-
-    <label class="form-label" for="nombre_plan">Nombre del Plan</label>
-    <select class="form-control" name="nombre_plan" id="nombre_plan">
-        <option value="Sin plan">Sin plan</option>
-        <?php foreach ($planes as $plan) { ?>
-            <option value="<?= $plan['nombre'] ?>" <?= ($liquidacion[0]['nombre_plan'] == $plan['nombre']) ? 'selected' : '' ?>>
-                <?= $plan['nombre'] ?>
-            </option>
-        <?php } ?>
-    </select>
-    <br>
->>>>>>> 4f2c8dac17deb4031f780a60af9ecee5dc5101ea
-
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="<?php echo base_url(); ?>public/liquidaciones">Cancelar</a>
 
@@ -70,16 +56,29 @@ echo base_url();
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const selectId = document.getElementById('id_plan');
-            const selectNombre = document.getElementById('nombre_plan');
+            const total = document.getElementById('monto');
+            const checks = Array.from(document.querySelectorAll('input[name="planes[]"]'));
 
+            function actualizarTotal() {
+                const seleccionados = checks.filter((check) => check.checked);
+                const suma = seleccionados.reduce((acumulado, check) => {
+                    const precio = document.getElementById('monto-plan-' + check.value);
+                    precio.required = true;
+                    return acumulado + Number(precio.value || 0);
+                }, 0);
+                checks.forEach((check) => {
+                    document.getElementById('monto-plan-' + check.value).required = check.checked;
+                });
+                if (seleccionados.length) {
+                    total.value = suma.toFixed(2);
+                    total.readOnly = true;
+                } else {
+                    total.readOnly = false;
+                }
+            }
 
-            selectId.addEventListener('change', function() {
-                selectNombre.selectedIndex = selectId.selectedIndex;
-            });
-
-            selectNombre.addEventListener('change', function() {
-                selectId.selectedIndex = selectNombre.selectedIndex;
-            });
+            checks.forEach((check) => check.addEventListener('change', actualizarTotal));
+            document.querySelectorAll('.monto-plan').forEach((input) => input.addEventListener('input', actualizarTotal));
+            actualizarTotal();
         });
     </script>

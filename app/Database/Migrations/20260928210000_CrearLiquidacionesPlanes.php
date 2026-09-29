@@ -17,6 +17,12 @@ class CrearLiquidacionesPlanes extends Migration
                 'type' => 'INT',
                 'constraint' => 11,
             ],
+            'monto' => [
+                'type' => 'DECIMAL',
+                'constraint' => '12,2',
+                'null' => false,
+                'default' => 0,
+            ],
         ]);
         $this->forge->addKey(['id_liquidacion', 'id_plan'], true);
         $this->forge->addKey('id_plan');
