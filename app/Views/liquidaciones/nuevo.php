@@ -5,9 +5,6 @@ echo base_url();
 ?>public/liquidaciones/guardar
 " method="post">
 
-    <label class="form-label" for="nombre">Nombre</label>
-    <input class="form-control" type="text" name="nombre" id="nombre" placeholder="">
-
     <label class="form-label" for="monto">Monto</label>
     <input class="form-control" type="number" step="0.01" min="0" name="monto" id="monto"
         value="<?= esc($montoTotal); ?>" required>

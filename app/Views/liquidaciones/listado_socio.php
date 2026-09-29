@@ -5,6 +5,9 @@
 <!--<a class="btn btn-primary" href="<?= base_url(); ?>public/liquidaciones/nuevo">+ Nueva liquidación</a>
 <a class="btn btn-secondary" href="<?= base_url(); ?>public/socios">Volver a socios</a>-->
 <br><br>
+<?php if (session()->getFlashdata('error')) { ?>
+    <div class="alert alert-danger"><?= esc(session()->getFlashdata('error')); ?></div>
+<?php } ?>
 
 <table class="table table-hover" id="contenido-lista">
     <thead>

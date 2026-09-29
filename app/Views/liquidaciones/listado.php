@@ -11,10 +11,9 @@ echo base_url();
 <table class="table table-hover"id="contenido-lista">
     <thead>
         <th>#</th>
-        <th>Nombre</th>
         <th>Monto</th>
         <th>ID Plan</th>
-        <th>Plan</th>
+        <th>Liquidación / Plan</th>
         <th>Fecha de Vencimiento</th>
         <th>Acciones</th>
 
@@ -30,10 +29,9 @@ echo base_url();
 foreach ($liquidaciones as $liquidacion) {
     echo '<tr>';
     echo '<td>' . $liquidacion['id'] . '</td>';
-    echo '<td>' . esc($liquidacion['nombre']) . '</td>';
     echo '<td>$' . $liquidacion['monto'] . '</td>';
     echo '<td>' . esc($liquidacion['id_plan'] ?? '-') . '</td>';
-    echo '<td>' . esc($liquidacion['nombre_plan'] ?: 'Sin plan') . '</td>';
+    echo '<td>' . esc($liquidacion['nombre_plan'] ?: $liquidacion['nombre']) . '</td>';
     echo '<td>' . date('d/m/Y', strtotime($liquidacion['fecha_vencimiento'])) . '</td>';
 
     

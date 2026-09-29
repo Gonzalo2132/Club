@@ -6,6 +6,7 @@ use App\Models\LiquidacionesModel;
 use App\Models\PlanesModel;
 use App\Models\SociosModel;
 use App\Models\PagosModel;
+use App\Models\SociosPlanesModel;
 
 class Liquidaciones extends BaseController
 {
@@ -13,6 +14,7 @@ class Liquidaciones extends BaseController
     protected $sesion;
     protected $socios;
     protected $pagos;
+    protected $sociosPlanes;
 
     public function __construct()
     {
@@ -20,6 +22,7 @@ class Liquidaciones extends BaseController
         $this->sesion = session();
         $this->socios = new SociosModel();
         $this->pagos = new PagosModel();
+        $this->sociosPlanes = new SociosPlanesModel();
     }
 
     public function index($activo = 1)
@@ -74,7 +77,7 @@ class Liquidaciones extends BaseController
         }
 
         $this->liquidaciones->insert([
-            'nombre' => $this->request->getPost('nombre'),
+            'nombre' => $plan['nombre'] ?? 'Sin plan',
             'monto' => $this->request->getPost('monto'),
             'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
             'id_plan' => $plan['id'] ?? null,
@@ -127,7 +130,7 @@ class Liquidaciones extends BaseController
         }
 
         $this->liquidaciones->update($id, [
-            'nombre' => $this->request->getPost('nombre'),
+            'nombre' => $plan['nombre'] ?? 'Sin plan',
             'monto' => $this->request->getPost('monto'),
             'fecha_vencimiento' => $this->request->getPost('fecha_vencimiento'),
             'id_plan' => $plan['id'] ?? null,
@@ -175,6 +178,20 @@ class Liquidaciones extends BaseController
         $liquidaciones = $this->liquidaciones
             ->where('fecha_vencimiento >=', $fechaAlta)
             ->findAll();
+
+        $planesSocio = $this->sociosPlanes
+            ->where('id_socio', $idSocio)
+            ->findAll();
+        $idsPlanesSocio = array_map(
+            'intval',
+            array_column($planesSocio, 'id_plan')
+        );
+        $liquidaciones = array_values(array_filter(
+            $liquidaciones,
+            static fn(array $liquidacion): bool =>
+                empty($liquidacion['id_plan'])
+                || in_array((int) $liquidacion['id_plan'], $idsPlanesSocio, true)
+        ));
 
         // Pagos del socio
         $pagos = $this->pagos

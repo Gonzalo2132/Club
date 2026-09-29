@@ -5,10 +5,6 @@ echo base_url();
 ?>public/liquidaciones/actualizar/<?php echo $liquidacion[0]['id'];?>
 " method="post">
 
-    <label class="form-label" for="nombre">Nombre</label>
-    <input class="form-control" type="text" name="nombre" id="nombre" 
-    placeholder="" value="<?php echo $liquidacion[0]['nombre'];?>">
-
     <label class="form-label" for="monto">Monto</label>
     <input class="form-control" type="number" step="0.01" min="0" name="monto" id="monto"
         value="<?= esc($montoTotal); ?>" required>

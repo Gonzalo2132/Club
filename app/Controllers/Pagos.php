@@ -6,6 +6,7 @@ use App\Models\SociosModel;
 use App\Models\LiquidacionesModel;
 use App\Models\PagosModel;
 use App\Models\CajasModel;
+use App\Models\SociosPlanesModel;
 
 class Pagos extends BaseController
 {
@@ -14,6 +15,7 @@ class Pagos extends BaseController
     protected $pagos;
     protected $sesion;
     protected $cajas;
+    protected $sociosPlanes;
 
     public function __construct()
     {
@@ -21,6 +23,7 @@ class Pagos extends BaseController
         $this->liquidaciones = new LiquidacionesModel();
         $this->pagos = new PagosModel();
         $this->cajas = new CajasModel();
+        $this->sociosPlanes = new SociosPlanesModel();
         $this->sesion = session();
     }
 
@@ -32,6 +35,11 @@ class Pagos extends BaseController
 
         $socio = $this->socios->find($idSocio);
         $liquidacion = $this->liquidaciones->find($idLiquidacion);
+        if (!$socio || !$liquidacion || !$this->socioPuedePagarLiquidacion($idSocio, $liquidacion)) {
+            return redirect()
+                ->to(base_url('public/liquidaciones/listado_socio/' . $idSocio))
+                ->with('error', 'El socio no tiene asignado el plan de esta liquidación.');
+        }
 
         // Traer todas las cajas activas
         $cajas = $this->cajas->where('activo', 1)->findAll();
@@ -67,6 +75,13 @@ class Pagos extends BaseController
         $formaPago = $this->request->getPost('forma_pago');
         $monto = (float) $this->request->getPost('monto');
         $fechaPago = $this->request->getPost('fecha_pago') ?: date('Y-m-d');
+        $liquidacion = $this->liquidaciones->find($idLiquidacion);
+
+        if (!$this->socios->find($idSocio) || !$liquidacion || !$this->socioPuedePagarLiquidacion($idSocio, $liquidacion)) {
+            return redirect()
+                ->to(base_url('public/liquidaciones/listado_socio/' . $idSocio))
+                ->with('error', 'El socio no tiene asignado el plan de esta liquidación.');
+        }
 
         $this->pagos->save([
             'id_socio' => $idSocio,
@@ -125,5 +140,17 @@ class Pagos extends BaseController
         }
 
         return redirect()->to(base_url('public/liquidaciones/listado_socio/' . $idSocio));
+    }
+
+    private function socioPuedePagarLiquidacion($idSocio, array $liquidacion): bool
+    {
+        if (empty($liquidacion['id_plan'])) {
+            return true;
+        }
+
+        return $this->sociosPlanes
+            ->where('id_socio', $idSocio)
+            ->where('id_plan', $liquidacion['id_plan'])
+            ->first() !== null;
     }
 }
