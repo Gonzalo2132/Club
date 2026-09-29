@@ -14,6 +14,7 @@ echo base_url();
     <label class="form-label" for="fecha_vencimiento">Fecha de Vencimiento</label>
     <input class="form-control" type="date" name="fecha_vencimiento" id="fecha_vencimiento" placeholder="dd/mm/AAAA">
 
+<<<<<<< HEAD
     <fieldset class="mb-3">
         <legend class="form-label">Planes</legend>
         <p class="form-text">Seleccione uno o varios planes para esta liquidación.</p>
@@ -32,6 +33,10 @@ echo base_url();
             <p class="form-text">No hay planes disponibles.</p>
         <?php } ?>
     </fieldset>
+=======
+    <label class="form-label" for="id_plan">ID del Plan</label>
+    <input class="form-control" type="number" name="id_plan" id="id_plan" placeholder="-" value="<?= isset($liquidacion) ? $liquidacion[0]['id_plan'] : '' ?>">
+>>>>>>> 4f2c8dac17deb4031f780a60af9ecee5dc5101ea
 
     <?php if (session()->getFlashdata('error')) { ?>
         <div class="alert alert-danger"><?= esc(session()->getFlashdata('error')); ?></div>

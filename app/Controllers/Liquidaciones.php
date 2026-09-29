@@ -6,6 +6,7 @@ use App\Models\LiquidacionesModel;
 use App\Models\PlanesModel;
 use App\Models\SociosModel;
 use App\Models\PagosModel;
+use App\Models\PlanesModel;
 
 class Liquidaciones extends BaseController
 {
@@ -65,13 +66,16 @@ class Liquidaciones extends BaseController
         if (!isset($this->sesion->id_usuario)) {
             return redirect()->to(base_url() . 'public/login');
         }
+        
+        $planesModel = new PlanesModel();
 
         $planes = (new PlanesModel())->where('activo', 1)->findAll();
         $context = [
             'planes' => $planes,
             'planesSeleccionados' => [],
             'titulo' => "Nueva Liquidacion",
-            'pagname' => 'Gestión/Nuevo Liquidacion'
+            'pagname' => 'Gestión/Nuevo Liquidacion',
+            'planes' => $planesModel->findAll()
         ];
 
         echo view('panel/header', $context);
@@ -128,6 +132,7 @@ class Liquidaciones extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
+        $planesModel = new PlanesModel();
         $liquidacion = $this->liquidaciones->where('id', $id)->findAll();
         $planes = (new PlanesModel())->where('activo', 1)->findAll();
         $planesSeleccionados = \Config\Database::connect()
@@ -146,7 +151,8 @@ class Liquidaciones extends BaseController
             'planes' => $planes,
             'planesSeleccionados' => $planesSeleccionados,
             'titulo' => "Edición liquidacion",
-            'pagname' => 'Gestión/Edición liquidacion'
+            'pagname' => 'Gestión/Edición liquidacion',
+            'planes' => $planesModel->findAll()
         ];
 
 
