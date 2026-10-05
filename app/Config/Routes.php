@@ -24,6 +24,15 @@ $routes->post('/usuarios/guardar', 'Usuarios::guardar');
 $routes->get('/usuarios/borrar/(:num)', 'Usuarios::borrar/$1');
 $routes->get('/usuarios/editar/(:num)', 'Usuarios::editar/$1');
 $routes->post('/usuarios/actualizar/(:num)', 'Usuarios::actualizar/$1');
+$routes->post('/usuarios/asignar-rol/(:num)', 'Usuarios::asignarRol/$1');
+
+// administración de roles (solo administradores)
+$routes->get('/roles', 'Roles::index');
+$routes->get('/roles/nuevo', 'Roles::nuevo');
+$routes->post('/roles/guardar', 'Roles::guardar');
+$routes->get('/roles/editar/(:num)', 'Roles::editar/$1');
+$routes->post('/roles/actualizar/(:num)', 'Roles::actualizar/$1');
+$routes->post('/roles/borrar/(:num)', 'Roles::borrar/$1');
 
 //socios
 $routes->get('/socios', 'Socios::index');
