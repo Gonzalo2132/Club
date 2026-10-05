@@ -55,10 +55,12 @@
                 echo '<td>' . date('d/m/Y', strtotime($h['liquidacion']['fecha_vencimiento'])) . '</td>';
                 echo '<td>' . $h['estado'] . '</td>';
                 echo '<td>';
-                if ($h['estado'] !== 'Pagado') {
+                if ($h['estado'] !== 'Pagado' && $puedePagar) {
                     echo '<a class="btn btn-success" href="' . base_url('public/pagos/nuevo/' . $idSocio . '/' . $h['liquidacion']['id']) . '">Pagar</a>';
-                } else {
+                } elseif ($h['estado'] === 'Pagado') {
                     echo '<button class="btn btn-secondary" disabled>Pago realizado</button>';
+                } else {
+                    echo '<span class="text-muted">Sin permiso de pago</span>';
                 }
                 echo '</td>';
                 echo '</tr>';

@@ -1,3 +1,8 @@
+<?php
+$accessControl = new \App\Libraries\AccessControl();
+$allowedModules = $accessControl->allowedModules((int) session()->get('id_usuario'));
+$esAdministrador = $accessControl->isAdministrator((int) session()->get('id_usuario'));
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -67,6 +72,7 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
+            <?php if (in_array('socios', $allowedModules, true)): ?>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="<?php echo base_url() ?>public/socios">
                     <i class="bi bi-person-rolodex"></i>
@@ -74,7 +80,9 @@
                 </a>
 
             </li>
+            <?php endif ?>
 
+            <?php if (in_array('zonas', $allowedModules, true)): ?>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="<?php echo base_url() ?>public/zonas">
                     <i class="bi bi-map-fill"></i>
@@ -82,9 +90,11 @@
                 </a>
 
             </li>
+            <?php endif ?>
 
 
 
+            <?php if (in_array('recaudadores', $allowedModules, true)): ?>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="<?php echo base_url() ?>public/recaudadores">
                     <i class="bi bi-geo-alt-fill"></i>
@@ -93,7 +103,9 @@
                 </a>
 
             </li>
+            <?php endif ?>
 
+            <?php if (in_array('cajas', $allowedModules, true)): ?>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="<?php echo base_url() ?>public/cajas">
                     <i class="bi bi-box-fill"></i>
@@ -101,6 +113,8 @@
                 </a>
 
             </li>
+            <?php endif ?>
+            <?php if (in_array('liquidaciones', $allowedModules, true)): ?>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="<?php echo base_url() ?>public/liquidaciones">
                     <i class="bi bi-currency-dollar"></i>
@@ -108,7 +122,9 @@
                 </a>
 
             </li>
+            <?php endif ?>
 
+            <?php if (in_array('usuarios', $allowedModules, true)): ?>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="<?php echo base_url() ?>public/usuarios">
                     <i class="bi bi-people-fill"></i>
@@ -116,12 +132,24 @@
                 </a>
 
             </li>
-           
+            <?php endif ?>
+
+            <?php if ($esAdministrador): ?>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="<?php echo base_url() ?>public/roles">
+                    <i class="bi bi-shield-lock-fill"></i>
+                    <span>Roles y permisos</span>
+                </a>
+            </li>
+            <?php endif ?>
+
+            <?php if (in_array('planes', $allowedModules, true)): ?>
             <li class="nav-item">
                 <a class="nav-link" href="<?php echo base_url(); ?>public/planes">
                     <i class="bi bi-card-checklist"></i> Planes
                 </a>
             </li>
+            <?php endif ?>
 
             <!-- Divider -->
             <hr class="sidebar-divider">

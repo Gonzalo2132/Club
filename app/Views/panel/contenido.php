@@ -2,6 +2,7 @@
 <div class="row">
 
 
+<?php if (in_array('usuarios', $modulosPermitidos, true)): ?>
 <!-- Earnings (Monthly) Card Example -->
 <div class="col-xl-3 col-md-6 mb-4">
     <div class="card border-left-primary shadow h-100 py-2">
@@ -18,6 +19,8 @@
         </div>
     </div>
 </div>
+<?php endif ?>
+<?php if (in_array('socios', $modulosPermitidos, true)): ?>
 <!-- Earnings (Monthly) Card Example -->
 <div class="col-xl-3 col-md-6 mb-4">
     <div class="card border-left-primary shadow h-100 py-2">
@@ -35,6 +38,8 @@
         </div>
     </div>
 </div>
+<?php endif ?>
+<?php if (in_array('recaudadores', $modulosPermitidos, true)): ?>
 <!-- Earnings (Monthly) Card Example -->
 <div class="col-xl-3 col-md-6 mb-4">
     <div class="card border-left-primary shadow h-100 py-2">
@@ -52,6 +57,8 @@
         </div>
     </div>
 </div>
+<?php endif ?>
+<?php if (in_array('zonas', $modulosPermitidos, true)): ?>
 <!-- Earnings (Monthly) Card Example -->
 <div class="col-xl-3 col-md-6 mb-4">
     <div class="card border-left-primary shadow h-100 py-2">
@@ -69,6 +76,7 @@
         </div>
     </div>
 </div>
+<?php endif ?>
 
 <!-- Content Row -->
 <div class="row">
