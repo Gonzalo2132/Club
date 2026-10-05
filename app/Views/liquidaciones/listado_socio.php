@@ -1,6 +1,30 @@
 <?php #echo $titulo; 
 ?>
 
+<div class="card mb-3">
+    <div class="card-body">
+        <h5 class="card-title">Información del socio</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <strong>Nombre:</strong>
+                <?= esc(trim(($socio['nombre'] ?? '') . ' ' . ($socio['apellido'] ?? ''))); ?>
+            </div>
+            <div class="col-md-6">
+                <strong>D.N.I.:</strong> <?= esc($socio['dni'] ?? '-'); ?>
+            </div>
+            <div class="col-md-6">
+                <strong>Teléfono:</strong> <?= esc($socio['telefono'] ?? '-'); ?>
+            </div>
+            <div class="col-md-6">
+                <strong>Email:</strong> <?= esc($socio['email'] ?? '-'); ?>
+            </div>
+            <div class="col-12">
+                <strong>Domicilio:</strong> <?= esc($socio['domicilio'] ?? '-'); ?>
+            </div>
+        </div>
+    </div>
+</div>
+
 <br><br>
 <!--<a class="btn btn-primary" href="<?= base_url(); ?>public/liquidaciones/nuevo">+ Nueva liquidación</a>
 <a class="btn btn-secondary" href="<?= base_url(); ?>public/socios">Volver a socios</a>-->

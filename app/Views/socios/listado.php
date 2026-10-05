@@ -61,6 +61,12 @@
         <i class="bi bi-trash"></i>
          </a>
 
+         <a class="btn btn-secondary"
+         href="' . base_url() . 'public/socios/informe/' . $socio['id'] . '"
+        title="Vista previa del socio" aria-label="Vista previa del socio">
+        <i class="bi bi-eye"></i>
+         </a>
+
          <a class="btn btn-info"
          href="' . base_url() . 'public/liquidaciones/listado_socio/' . $socio['id'] . '"
         title="Ver pagos">

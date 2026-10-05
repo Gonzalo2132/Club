@@ -3,18 +3,20 @@
 namespace App\Controllers;
 
 use App\Models\SociosModel;
-use App\Models\PlanesModel; 
+use App\Models\PlanesModel;
 use App\Models\ZonasModel;
 use App\Models\SociosPlanesModel;
-
-
+use App\Models\LiquidacionesModel;
+use App\Models\PagosModel;
 
 class Socios extends BaseController
 {
-    protected $socios; 
+    protected $socios;
     protected $zonas;
     protected $sociosPlanes;
     protected $sesion;
+    protected $liquidaciones;
+    protected $pagos;
 
     public function __construct()
     { //La función constructora
@@ -22,6 +24,8 @@ class Socios extends BaseController
         $this->zonas = new ZonasModel();
         $this->sociosPlanes = new SociosPlanesModel();
         $this->sesion = session();
+        $this->liquidaciones = new LiquidacionesModel();
+        $this->pagos = new PagosModel();
     }
 
     public function index($activo = 1)
@@ -187,5 +191,79 @@ class Socios extends BaseController
         }
 
         return redirect()->to(base_url() . 'public/socios/');
+    }
+
+    public function informe($id)
+    {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $socio = $this->socios->find($id);
+        if (!$socio) {
+            return redirect()->to(base_url('public/socios'))
+                ->with('error', 'El socio no existe.');
+        }
+
+        $zona = $this->zonas->find($socio['id_zona']);
+        $planesAsignados = $this->sociosPlanes
+            ->select('planes.id, planes.nombre, planes.descripcion')
+            ->join('planes', 'planes.id = socios_planes.id_plan')
+            ->where('socios_planes.id_socio', $id)
+            ->findAll();
+
+        $fechaAlta = date('Y-m-d', strtotime($socio['fecha_alta']));
+        $liquidaciones = $this->liquidaciones
+            ->where('fecha_vencimiento >=', $fechaAlta)
+            ->findAll();
+        $idsPlanesSocio = array_map(
+            'intval',
+            array_column($planesAsignados, 'id')
+        );
+        $liquidaciones = array_values(array_filter(
+            $liquidaciones,
+            static fn(array $liquidacion): bool =>
+                empty($liquidacion['id_plan'])
+                || in_array((int) $liquidacion['id_plan'], $idsPlanesSocio, true)
+        ));
+
+        $pagos = $this->pagos
+            ->where('id_socio', $id)
+            ->findAll();
+        $informeLiquidaciones = [];
+        foreach ($liquidaciones as $liquidacion) {
+            $pagosLiquidacion = array_filter(
+                $pagos,
+                static fn(array $pago): bool =>
+                    (int) $pago['id_liquidacion'] === (int) $liquidacion['id']
+            );
+            $totalPagado = round(array_sum(array_map(
+                static fn(array $pago): float => (float) $pago['monto'],
+                $pagosLiquidacion
+            )), 2);
+            $monto = (float) $liquidacion['monto'];
+
+            $informeLiquidaciones[] = [
+                'liquidacion' => $liquidacion,
+                'total_pagado' => $totalPagado,
+                'saldo_pendiente' => max(0, round($monto - $totalPagado, 2)),
+                'estado' => $totalPagado <= 0
+                    ? 'Pendiente'
+                    : ($totalPagado < $monto ? 'Pago parcial' : 'Pagado')
+            ];
+        }
+
+        $context = [
+            'socio' => $socio,
+            'zona' => $zona,
+            'planes' => $planesAsignados,
+            'liquidaciones' => $informeLiquidaciones,
+            'titulo' => 'Vista previa del socio',
+            'pagname' => 'Gestión/Informe de socio'
+        ];
+
+        echo view('panel/header', $context);
+        echo view('socios/informe', $context);
+        echo view('panel/footer');
     }
 }
