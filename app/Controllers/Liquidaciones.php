@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\AccessControl;
 use App\Models\LiquidacionesModel;
 use App\Models\PlanesModel;
 use App\Models\SociosModel;
@@ -231,7 +232,9 @@ class Liquidaciones extends BaseController
             'titulo' => "Liquidaciones del socio",
             'historial' => $historial,
             'idSocio' => $idSocio,
-            'socio' => $socio
+            'socio' => $socio,
+            'puedePagar' => (new AccessControl())
+                ->canAccess((int) $this->sesion->id_usuario, 'pagos'),
         ];
 
         echo view('panel/header', $context);

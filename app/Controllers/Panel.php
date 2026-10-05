@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\AccessControl;
 use App\Models\UsuariosModel;
 use App\Models\SociosModel;
 use App\Models\RecaudadoresModel;
@@ -27,24 +28,16 @@ class Panel extends BaseController
 
     public function index()
     {
-        /* if (!isset($this->sesion->id_usuario)) {
-            return redirect()->to(base_url() . 'public/login');
-        }
-*/
-        //Esto seria una consulta,  "Select * from clientes"
-        $usuarios = $this->usuarios->findAll();
-        $socios = $this->socios->findAll();
-        $recaudadores = $this->recaudadores->findAll();
-        $zonas = $this->zonas->findAll();
+        $modulosPermitidos = (new AccessControl())->allowedModules((int) $this->sesion->id_usuario);
 
-        $totalUsuarios = $this->usuarios->countAll();
-        $totalSocios = $this->socios->countAll();
-        $totalRecaudadores = $this->recaudadores->countAll();
-        $totalZonas = $this->zonas->countAll();
-
+        $totalUsuarios = in_array('usuarios', $modulosPermitidos, true) ? $this->usuarios->countAll() : null;
+        $totalSocios = in_array('socios', $modulosPermitidos, true) ? $this->socios->countAll() : null;
+        $totalRecaudadores = in_array('recaudadores', $modulosPermitidos, true) ? $this->recaudadores->countAll() : null;
+        $totalZonas = in_array('zonas', $modulosPermitidos, true) ? $this->zonas->countAll() : null;
 
         $context = [
             'titulo' => 'Tablero',
+            'modulosPermitidos' => $modulosPermitidos,
             'totalSocios' => $totalSocios,
             'totalUsuarios' => $totalUsuarios,
             'totalRecaudadores' => $totalRecaudadores,
