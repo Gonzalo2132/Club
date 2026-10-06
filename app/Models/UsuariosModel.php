@@ -15,7 +15,7 @@ class UsuariosModel extends Model
     protected $useSoftDeletes = true;
 
     protected $allowedFields = ['nombre','apellido', 'username', 'clave',
-                                'dni', 'activo','fecha_alta', 'fecha_edicion', 'fecha_borrado'];
+                                'dni', 'activo', 'rol_id', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

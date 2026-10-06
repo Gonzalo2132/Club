@@ -10,6 +10,8 @@ class SociosPlanesModel extends Model
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
     protected $returnType     = 'array';
-    
-    protected $allowedFields = ['id_socio', 'id_plan'];
+    protected $useSoftDeletes = true;
+    protected $deletedField  = 'fecha_borrado';
+
+    protected $allowedFields = ['id_socio', 'id_plan', 'fecha_borrado'];
 }
