@@ -35,7 +35,7 @@ class Socios extends BaseController
         }
 
         $socios = $this->socios->select('socios.*, GROUP_CONCAT(planes.nombre SEPARATOR " | ") as planes_nombres')
-                               ->join('socios_planes', 'socios_planes.id_socio = socios.id', 'left')
+                               ->join('socios_planes', 'socios_planes.id_socio = socios.id AND socios_planes.fecha_borrado IS NULL', 'left')
                                ->join('planes', 'planes.id = socios_planes.id_plan', 'left')
                                ->where('socios.activo', $activo)
                                ->groupBy('socios.id')
