@@ -22,8 +22,8 @@ echo base_url();
     placeholder="Ingrese un teléfono" value="<?php echo $socio[0]['telefono'];?>">
 
     <label class="form-label" for="fecha_nac">Fecha de Nacimiento</label>
-    <input class="form-control" type="date" name="fecha_nac" id="fecha_nac" 
-    placeholder="dd/mm/AAAA" value="<?php echo $socio[0]['fecha_nac'];?>">
+    <input class="form-control" type="date" name="fecha_nac" id="fecha_nac" max="<?= date('Y-m-d') ?>"
+    value="<?= esc(old('fecha_nac', $socio[0]['fecha_nac'])); ?>" required>
 
     <label class="form-label" for="dni">D.N.I</label>
     <input class="form-control" type="text" name="dni" id="dni" 
@@ -68,6 +68,12 @@ echo base_url();
         <?php } ?>
     </fieldset>
     <br>
+
+    <?= view('socios/_disciplinas_tutor', [
+        'disciplinas' => $disciplinas,
+        'misDisciplinas' => $misDisciplinas,
+        'tutores' => $tutores,
+    ]) ?>
 
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="

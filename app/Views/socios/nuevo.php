@@ -18,7 +18,8 @@ echo base_url();
     <input class="form-control" type="text" name="telefono" id="telefono" placeholder="Ingrese un teléfono">
 
     <label class="form-label" for="fecha_nac">Fecha de Nacimiento</label>
-    <input class="form-control" type="date" name="fecha_nac" id="fecha_nac" placeholder="dd/mm/AAAA">
+    <input class="form-control" type="date" name="fecha_nac" id="fecha_nac" max="<?= date('Y-m-d') ?>"
+        value="<?= esc(old('fecha_nac')) ?>" required>
 
     <label class="form-label" for="dni">D.N.I.</label>
     <input class="form-control" type="text" name="dni" id="dni" placeholder="Ingrese DNI">
@@ -53,6 +54,12 @@ echo base_url();
         <?php } ?>
     </fieldset>
     <br>
+
+    <?= view('socios/_disciplinas_tutor', [
+        'disciplinas' => $disciplinas,
+        'misDisciplinas' => $misDisciplinas,
+        'tutores' => $tutores,
+    ]) ?>
 
     <input class="btn btn-success" type="submit" value="Guardar">
     <a class="btn btn-danger" href="

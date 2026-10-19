@@ -151,6 +151,14 @@ $esAdministrador = $accessControl->isAdministrator((int) session()->get('id_usua
             </li>
             <?php endif ?>
 
+            <?php if (in_array('disciplinas', $allowedModules, true)): ?>
+            <li class="nav-item">
+                <a class="nav-link" href="<?php echo base_url(); ?>public/disciplinas">
+                    <i class="bi bi-trophy-fill"></i> Disciplinas
+                </a>
+            </li>
+            <?php endif ?>
+
             <!-- Divider -->
             <hr class="sidebar-divider">
 

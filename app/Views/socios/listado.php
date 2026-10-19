@@ -19,7 +19,9 @@
         <th>D.N.I.</th>
         <th>Email</th>
         <th>Zona</th>
-        <th>Plan</th>
+        <th>Planes</th>
+        <th>Disciplinas</th>
+        <th>Tutor</th>
         <th>Acciones</th>
 
     </thead>
@@ -45,9 +47,9 @@
                 }
             }
             echo '<td>' . $zonaNombre . '</td>';
-            //echo '<td>' . $socio['id_zona'] . '</td>';
-
-            echo '<td><span class="badge bg-info text-dark">' . (!empty($socio['planes_nombres']) ? str_replace(' | ', '<br>', $socio['planes_nombres']) : 'Sin plan') . '</span></td>';
+            echo '<td><span class="badge bg-info text-dark">' . esc(!empty($socio['planes_nombres']) ? str_replace(' | ', ', ', $socio['planes_nombres']) : 'Sin plan') . '</span></td>';
+            echo '<td><span class="badge bg-success">' . esc(!empty($socio['disciplinas_nombres']) ? str_replace(' | ', ', ', $socio['disciplinas_nombres']) : 'Sin disciplina') . '</span></td>';
+            echo '<td>' . esc($socio['tutores_nombres'] ?? '-') . '</td>';
 
             echo '<td>
         <a class ="btn btn-warning"

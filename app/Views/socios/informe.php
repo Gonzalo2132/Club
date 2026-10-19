@@ -35,6 +35,38 @@
 </div>
 
 <div class="card mb-4">
+    <div class="card-header">Disciplinas</div>
+    <div class="card-body">
+        <?php if ($disciplinas): ?>
+            <?php foreach ($disciplinas as $disciplina): ?>
+                <span class="badge bg-success text-white me-1"><?= esc($disciplina['nombre']); ?></span>
+            <?php endforeach ?>
+        <?php else: ?>
+            <span>El socio no está inscripto en disciplinas.</span>
+        <?php endif ?>
+    </div>
+</div>
+
+<?php if ($tutores): ?>
+<div class="card mb-4">
+    <div class="card-header">Tutores responsables</div>
+    <div class="card-body row">
+        <?php foreach ($tutores as $tutor): ?>
+            <div class="col-lg-6 mb-3">
+                <div class="border rounded p-3 h-100">
+                    <strong><?= esc(trim($tutor['nombre'] . ' ' . $tutor['apellido'])); ?></strong>
+                    <div><strong>D.N.I.:</strong> <?= esc($tutor['dni']); ?></div>
+                    <div><strong>Teléfono:</strong> <?= esc($tutor['telefono']); ?></div>
+                    <div><strong>Email:</strong> <?= esc($tutor['email'] ?: '-'); ?></div>
+                    <div><strong>Parentesco:</strong> <?= esc($tutor['parentesco'] ?: '-'); ?></div>
+                </div>
+            </div>
+        <?php endforeach ?>
+    </div>
+</div>
+<?php endif ?>
+
+<div class="card mb-4">
     <div class="card-header">Planes asignados</div>
     <div class="card-body">
         <?php if ($planes) { ?>
