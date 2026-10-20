@@ -15,6 +15,7 @@ class AccessControl
         'liquidaciones'  => 'Liquidaciones',
         'pagos'          => 'Pagos',
         'planes'         => 'Planes',
+        'disciplinas'    => 'Disciplinas',
     ];
 
     public static function modules(): array

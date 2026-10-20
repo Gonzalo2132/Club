@@ -43,6 +43,15 @@ $routes->get('/socios/editar/(:num)', 'Socios::editar/$1');
 $routes->get('/socios/informe/(:num)', 'Socios::informe/$1');
 $routes->post('/socios/actualizar/(:num)', 'Socios::actualizar/$1');
 
+//disciplinas
+$routes->get('/disciplinas', 'Disciplinas::index');
+$routes->get('/disciplinas/nuevo', 'Disciplinas::nuevo');
+$routes->post('/disciplinas/guardar', 'Disciplinas::guardar');
+$routes->get('/disciplinas/jugadores/(:num)', 'Disciplinas::jugadores/$1');
+$routes->get('/disciplinas/editar/(:num)', 'Disciplinas::editar/$1');
+$routes->post('/disciplinas/actualizar/(:num)', 'Disciplinas::actualizar/$1');
+$routes->post('/disciplinas/borrar/(:num)', 'Disciplinas::borrar/$1');
+
 //cajas
 $routes->get('/cajas', 'Caja::index');
 $routes->get('/cajas/nuevo', 'Caja::nuevo');
