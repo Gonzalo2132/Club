@@ -18,37 +18,85 @@ class AccessControl
         'disciplinas'    => 'Disciplinas',
     ];
 
+    private const ACTIONS = [
+        'ver'      => 'Ver',
+        'crear'    => 'Crear',
+        'editar'   => 'Editar',
+        'eliminar' => 'Eliminar',
+    ];
+
     public static function modules(): array
     {
         return self::MODULES;
     }
 
+    public static function actions(): array
+    {
+        return self::ACTIONS;
+    }
+
     public function canAccess(int $userId, string $module): bool
     {
-        if (!isset(self::MODULES[$module])) {
+        return $this->canPerform($userId, $module, 'ver');
+    }
+
+    public function canPerform(int $userId, string $module, string $action): bool
+    {
+        if (!isset(self::MODULES[$module]) || !isset(self::ACTIONS[$action])) {
             return false;
+        }
+
+        if ($this->isAdministrator($userId)) {
+            return true;
         }
 
         return $this->database()
             ->table('usuarios')
-            ->join('roles', 'roles.id = usuarios.rol_id')
-            ->join('roles_modulos', 'roles_modulos.rol_id = roles.id')
+            ->join('roles_acciones', 'roles_acciones.rol_id = usuarios.rol_id')
             ->where('usuarios.id', $userId)
-            ->where('roles_modulos.modulo', $module)
+            ->where('roles_acciones.modulo', $module)
+            ->where('roles_acciones.accion', $action)
             ->countAllResults() > 0;
+    }
+
+    public function allowedActions(int $userId): array
+    {
+        if ($this->isAdministrator($userId)) {
+            $allActions = [];
+            foreach (self::MODULES as $module => $_label) {
+                $allActions[$module] = array_keys(self::ACTIONS);
+            }
+
+            return $allActions;
+        }
+
+        $permissions = $this->database()
+            ->table('roles_acciones')
+            ->select('roles_acciones.modulo, roles_acciones.accion')
+            ->join('usuarios', 'usuarios.rol_id = roles_acciones.rol_id')
+            ->where('usuarios.id', $userId)
+            ->get()
+            ->getResultArray();
+        $allowed = [];
+        foreach ($permissions as $permission) {
+            $allowed[$permission['modulo']][] = $permission['accion'];
+        }
+
+        return $allowed;
     }
 
     public function allowedModules(int $userId): array
     {
         $permissions = $this->database()
-            ->table('roles_modulos')
-            ->select('roles_modulos.modulo')
-            ->join('usuarios', 'usuarios.rol_id = roles_modulos.rol_id')
+            ->table('roles_acciones')
+            ->select('roles_acciones.modulo')
+            ->join('usuarios', 'usuarios.rol_id = roles_acciones.rol_id')
             ->where('usuarios.id', $userId)
+            ->where('roles_acciones.accion', 'ver')
             ->get()
             ->getResultArray();
 
-        return array_column($permissions, 'modulo');
+        return array_values(array_unique(array_column($permissions, 'modulo')));
     }
 
     public function isAdministrator(int $userId): bool

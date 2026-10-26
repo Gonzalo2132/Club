@@ -4,7 +4,9 @@
 <?php if (session()->getFlashdata('mensaje')): ?>
     <div class="alert alert-success"><?= esc(session()->getFlashdata('mensaje')) ?></div>
 <?php endif ?>
-<a class="btn btn-primary" href="<?= base_url('public/usuarios/nuevo') ?>">+ Nuevo usuario</a>
+<?php if (can_action('usuarios', 'crear')): ?>
+    <a class="btn btn-primary" href="<?= base_url('public/usuarios/nuevo') ?>">+ Nuevo usuario</a>
+<?php endif ?>
 <?php if ($esAdministrador): ?>
     <a class="btn btn-outline-primary" href="<?= base_url('public/roles') ?>">Administrar roles y permisos</a>
 <?php endif ?>
@@ -50,13 +52,16 @@
                     } elseif ((int) ($usuario['rol_es_administrador'] ?? 0) === 1) {
                         echo '<span class="badge bg-primary">Administrador protegido</span>';
                     }
-                    echo '
+                    if (can_action('usuarios', 'editar')) {
+                        echo '
                                 <a class ="btn btn-warning"
                                 href="' . base_url() . 'public/usuarios/editar/' . $usuario['id'] . '">Editar
                                 </a>
                             ';
+                    }
                     if ((int) $usuario['id'] !== $usuarioActualId
-                        && (int) ($usuario['rol_es_administrador'] ?? 0) !== 1) {
+                        && (int) ($usuario['rol_es_administrador'] ?? 0) !== 1
+                        && can_action('usuarios', 'eliminar')) {
                         echo '<a class ="btn btn-danger"
                                 href="' . base_url() . 'public/usuarios/borrar/' . $usuario['id'] . '">Borrar
                                 </a>';

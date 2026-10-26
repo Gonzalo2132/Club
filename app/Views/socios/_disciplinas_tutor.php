@@ -43,7 +43,7 @@ while (count($tutores) < 2) {
 
 <fieldset class="mb-3" id="tutor-fields" data-minimum="2">
     <legend class="form-label">Tutores responsables</legend>
-    <p class="form-text">Obligatorio para socios menores de 18 años: registra al menos dos tutores. Si un tutor ya está registrado para otro socio, usa el mismo DNI para vincularlo.</p>
+    <p class="form-text">Para socios menores de 18 años, registra al menos dos tutores. Para los demás socios, este dato es opcional. Si un tutor ya está registrado para otro socio, usa el mismo DNI para vincularlo.</p>
     <div id="tutor-list">
         <?php foreach ($tutores as $index => $tutor): ?>
             <?= view('socios/_tutor_campos', ['index' => $index, 'tutor' => $tutor]) ?>
@@ -72,7 +72,6 @@ while (count($tutores) < 2) {
         const limite = new Date(hoy.getFullYear() - 18, hoy.getMonth(), hoy.getDate());
         const esMenor = fecha !== null && !Number.isNaN(fecha.getTime()) && fecha > limite;
 
-        camposTutor.hidden = !esMenor;
         lista.querySelectorAll('.tutor-required').forEach((campo) => {
             campo.required = esMenor;
         });

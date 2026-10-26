@@ -33,9 +33,11 @@ class PermissionFilter implements FilterInterface
             return null;
         }
 
-        if (isset(AccessControl::modules()[$module])
-            && !(new AccessControl())->canAccess($userId, $module)) {
-            return $this->forbidden();
+        if (isset(AccessControl::modules()[$module])) {
+            $action = $this->actionForRequest($request, $segments);
+            if (!(new AccessControl())->canPerform($userId, $module, $action)) {
+                return $this->forbidden();
+            }
         }
 
         return null;
@@ -50,5 +52,27 @@ class PermissionFilter implements FilterInterface
         return service('response')
             ->setStatusCode(403)
             ->setBody('No tienes permiso para acceder a este módulo.');
+    }
+
+    private function actionForRequest(RequestInterface $request, array $segments): string
+    {
+        $endpoint = strtolower($segments[1] ?? '');
+        $method = strtoupper($request->getMethod());
+
+        if (in_array($endpoint, ['borrar', 'eliminar'], true)) {
+            return 'eliminar';
+        }
+        if (in_array($endpoint, ['nuevo', 'guardar', 'guardar-movimiento'], true)) {
+            return 'crear';
+        }
+        if (in_array($endpoint, ['editar', 'actualizar', 'asignar-rol'], true)) {
+            return 'editar';
+        }
+
+        if ($method === 'POST') {
+            return 'crear';
+        }
+
+        return 'ver';
     }
 }

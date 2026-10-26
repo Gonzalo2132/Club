@@ -3,9 +3,11 @@
 ?>
 <br>
 <br>
+<?php if (can_action('liquidaciones', 'crear')): ?>
 <a class="btn btn-primary" href="<?php 
 echo base_url();
 ?>public/liquidaciones/nuevo">+ Nueva Liquidacion</a>
+<?php endif ?>
 <br>
 <br>
 <table class="table table-hover"id="contenido-lista">
@@ -35,10 +37,14 @@ foreach ($liquidaciones as $liquidacion) {
     echo '<td>' . date('d/m/Y', strtotime($liquidacion['fecha_vencimiento'])) . '</td>';
 
     
-    echo '<td>
-                <a class="btn btn-warning" href="' . base_url() . 'public/liquidaciones/editar/' . $liquidacion['id'] . '">Editar</a>
-                <a class="btn btn-danger" href="' . base_url() . 'public/liquidaciones/borrar/' . $liquidacion['id'] . '">Borrar</a>
-            </td>';
+    echo '<td>';
+    if (can_action('liquidaciones', 'editar')) {
+        echo '<a class="btn btn-warning" href="' . base_url() . 'public/liquidaciones/editar/' . $liquidacion['id'] . '">Editar</a>';
+    }
+    if (can_action('liquidaciones', 'eliminar')) {
+        echo '<a class="btn btn-danger" href="' . base_url() . 'public/liquidaciones/borrar/' . $liquidacion['id'] . '">Borrar</a>';
+    }
+    echo '</td>';
         echo '</tr>';
     }
     ?>

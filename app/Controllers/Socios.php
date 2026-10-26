@@ -365,49 +365,48 @@ class Socios extends BaseController
         $hoy = new \DateTimeImmutable('today');
         $esMenor = $fecha > $hoy->modify('-18 years');
         $tutores = [];
-        if ($esMenor) {
-            $tutoresPost = $this->request->getPost('tutores');
-            if (!is_array($tutoresPost)) {
-                return ['error' => 'Para un socio menor de 18 años, registra al menos dos tutores.'];
-            }
+        $tutoresPost = $this->request->getPost('tutores') ?? [];
+        if (!is_array($tutoresPost)) {
+            return ['error' => 'Los datos de los tutores no son válidos.'];
+        }
 
-            $dnis = [];
-            foreach ($tutoresPost as $tutorPost) {
-                if (!is_array($tutorPost)) {
+        $dnis = [];
+        foreach ($tutoresPost as $tutorPost) {
+            if (!is_array($tutorPost)) {
+                return ['error' => 'Los datos de los tutores no son válidos.'];
+            }
+            foreach ($tutorPost as $value) {
+                if (!is_scalar($value) && $value !== null) {
                     return ['error' => 'Los datos de los tutores no son válidos.'];
                 }
-                foreach ($tutorPost as $value) {
-                    if (!is_scalar($value) && $value !== null) {
-                        return ['error' => 'Los datos de los tutores no son válidos.'];
-                    }
-                }
-                $tutor = [
-                    'nombre' => trim((string) ($tutorPost['nombre'] ?? '')),
-                    'apellido' => trim((string) ($tutorPost['apellido'] ?? '')),
-                    'dni' => trim((string) ($tutorPost['dni'] ?? '')),
-                    'telefono' => trim((string) ($tutorPost['telefono'] ?? '')),
-                    'email' => trim((string) ($tutorPost['email'] ?? '')),
-                    'parentesco' => trim((string) ($tutorPost['parentesco'] ?? '')),
-                ];
-                if (implode('', $tutor) === '') {
-                    continue;
-                }
-                if ($tutor['nombre'] === '' || $tutor['apellido'] === ''
-                    || $tutor['dni'] === '' || $tutor['telefono'] === '') {
-                    return ['error' => 'Completa nombre, apellido, DNI y teléfono de cada tutor.'];
-                }
-                if (isset($dnis[$tutor['dni']])) {
-                    return ['error' => 'Cada tutor debe tener un DNI diferente.'];
-                }
-                if ($tutor['email'] !== '' && !filter_var($tutor['email'], FILTER_VALIDATE_EMAIL)) {
-                    return ['error' => 'El email de cada tutor debe tener un formato válido.'];
-                }
-                $dnis[$tutor['dni']] = true;
-                $tutores[] = $tutor;
             }
-            if (count($tutores) < 2) {
-                return ['error' => 'Para un socio menor de 18 años, registra al menos dos tutores completos.'];
+            $tutor = [
+                'nombre' => trim((string) ($tutorPost['nombre'] ?? '')),
+                'apellido' => trim((string) ($tutorPost['apellido'] ?? '')),
+                'dni' => trim((string) ($tutorPost['dni'] ?? '')),
+                'telefono' => trim((string) ($tutorPost['telefono'] ?? '')),
+                'email' => trim((string) ($tutorPost['email'] ?? '')),
+                'parentesco' => trim((string) ($tutorPost['parentesco'] ?? '')),
+            ];
+            if (implode('', $tutor) === '') {
+                continue;
             }
+            if ($tutor['nombre'] === '' || $tutor['apellido'] === ''
+                || $tutor['dni'] === '' || $tutor['telefono'] === '') {
+                return ['error' => 'Completa nombre, apellido, DNI y teléfono de cada tutor.'];
+            }
+            if (isset($dnis[$tutor['dni']])) {
+                return ['error' => 'Cada tutor debe tener un DNI diferente.'];
+            }
+            if ($tutor['email'] !== '' && !filter_var($tutor['email'], FILTER_VALIDATE_EMAIL)) {
+                return ['error' => 'El email de cada tutor debe tener un formato válido.'];
+            }
+            $dnis[$tutor['dni']] = true;
+            $tutores[] = $tutor;
+        }
+
+        if ($esMenor && count($tutores) < 2) {
+            return ['error' => 'Para un socio menor de 18 años, registra al menos dos tutores completos.'];
         }
 
         return ['planes' => $planesIds, 'disciplinas' => $ids, 'tutores' => $tutores];

@@ -5,14 +5,14 @@
     <div class="alert alert-success"><?= esc(session()->getFlashdata('mensaje')) ?></div>
 <?php endif ?>
 
-<p>Los permisos se asignan por módulo. La cuenta administradora puede gestionar roles y asignarlos a los usuarios.</p>
+<p>Los permisos se asignan por acción para cada módulo. La cuenta administradora puede gestionar roles y asignarlos a los usuarios.</p>
 <a class="btn btn-primary mb-3" href="<?= base_url('public/roles/nuevo') ?>">Crear rol</a>
 
 <table class="table table-hover" id="contenido-lista">
     <thead>
         <tr>
             <th>Rol</th>
-            <th>Módulos habilitados</th>
+            <th>Permisos asignados</th>
             <th>Usuarios</th>
             <th>Acciones</th>
         </tr>
@@ -24,10 +24,13 @@
                 <td>
                     <?php
                     $labels = [];
-                    foreach ($role['modulos'] as $permission) {
-                        $labels[] = \App\Libraries\AccessControl::modules()[$permission['modulo']] ?? $permission['modulo'];
+                    foreach ($role['permisos'] as $permission) {
+                        $labels[$permission['modulo']][] = \App\Libraries\AccessControl::actions()[$permission['accion']] ?? $permission['accion'];
                     }
-                    echo esc(implode(', ', $labels));
+                    foreach ($labels as $module => $actions) {
+                        $moduleLabel = \App\Libraries\AccessControl::modules()[$module] ?? $module;
+                        echo '<strong>' . esc($moduleLabel) . ':</strong> ' . esc(implode(', ', $actions)) . '<br>';
+                    }
                     ?>
                 </td>
                 <td><?= (int) $role['usuarios_asignados'] ?></td>

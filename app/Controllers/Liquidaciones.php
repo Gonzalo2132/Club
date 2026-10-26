@@ -234,7 +234,7 @@ class Liquidaciones extends BaseController
             'idSocio' => $idSocio,
             'socio' => $socio,
             'puedePagar' => (new AccessControl())
-                ->canAccess((int) $this->sesion->id_usuario, 'pagos'),
+                ->canPerform((int) $this->sesion->id_usuario, 'pagos', 'crear'),
         ];
 
         echo view('panel/header', $context);

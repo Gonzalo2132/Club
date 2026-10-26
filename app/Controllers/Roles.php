@@ -15,8 +15,8 @@ class Roles extends BaseController
             ->getResultArray();
 
         foreach ($roles as &$role) {
-            $role['modulos'] = $db->table('roles_modulos')
-                ->select('modulo')
+            $role['permisos'] = $db->table('roles_acciones')
+                ->select('modulo, accion')
                 ->where('rol_id', $role['id'])
                 ->get()
                 ->getResultArray();
@@ -41,8 +41,9 @@ class Roles extends BaseController
     {
         $context = [
             'rol' => ['id' => null, 'nombre' => '', 'es_administrador' => 0],
-            'modulosSeleccionados' => [],
+            'permisosSeleccionados' => [],
             'modulos' => AccessControl::modules(),
+            'acciones' => AccessControl::actions(),
             'accion' => 'guardar',
             'titulo' => 'Nuevo rol',
             'pagname' => 'Gestión/Nuevo rol',
@@ -56,8 +57,12 @@ class Roles extends BaseController
     public function guardar()
     {
         $nombre = trim((string) $this->request->getPost('nombre'));
+        $permissions = $this->permisosEnviados();
         if (!$this->nombreDisponible($nombre)) {
             return redirect()->back()->withInput()->with('error', 'El nombre es obligatorio y debe ser único (máximo 80 caracteres).');
+        }
+        if ($permissions === null) {
+            return redirect()->back()->withInput()->with('error', 'La selección de permisos no es válida.');
         }
 
         $db = db_connect();
@@ -67,7 +72,7 @@ class Roles extends BaseController
             'es_administrador' => 0,
         ]);
         $roleId = (int) $db->insertID();
-        $this->guardarModulos($roleId);
+        $this->guardarPermisos($roleId, $permissions);
 
         if ($db->transStatus() === false) {
             $db->transRollback();
@@ -87,15 +92,20 @@ class Roles extends BaseController
                 ->with('error', 'El rol no existe o está protegido.');
         }
 
-        $permissions = $db->table('roles_modulos')
-            ->select('modulo')
+        $permissions = $db->table('roles_acciones')
+            ->select('modulo, accion')
             ->where('rol_id', $id)
             ->get()
             ->getResultArray();
+        $selectedPermissions = [];
+        foreach ($permissions as $permission) {
+            $selectedPermissions[$permission['modulo']][] = $permission['accion'];
+        }
         $context = [
             'rol' => $role,
-            'modulosSeleccionados' => array_column($permissions, 'modulo'),
+            'permisosSeleccionados' => $selectedPermissions,
             'modulos' => AccessControl::modules(),
+            'acciones' => AccessControl::actions(),
             'accion' => 'actualizar/' . $id,
             'titulo' => 'Editar rol',
             'pagname' => 'Gestión/Editar rol',
@@ -117,11 +127,16 @@ class Roles extends BaseController
         if (!$this->nombreDisponible($nombre, (int) $id)) {
             return redirect()->back()->withInput()->with('error', 'El nombre es obligatorio y debe ser único (máximo 80 caracteres).');
         }
+        $permissions = $this->permisosEnviados();
+        if ($permissions === null) {
+            return redirect()->back()->withInput()->with('error', 'La selección de permisos no es válida.');
+        }
 
         $db->transBegin();
         $db->table('roles')->where('id', $id)->update(['nombre' => $nombre]);
         $db->table('roles_modulos')->where('rol_id', $id)->delete();
-        $this->guardarModulos((int) $id);
+        $db->table('roles_acciones')->where('rol_id', $id)->delete();
+        $this->guardarPermisos((int) $id, $permissions);
 
         if ($db->transStatus() === false) {
             $db->transRollback();
@@ -146,6 +161,7 @@ class Roles extends BaseController
 
         $db->transBegin();
         $db->table('roles_modulos')->where('rol_id', $id)->delete();
+        $db->table('roles_acciones')->where('rol_id', $id)->delete();
         $db->table('roles')->where('id', $id)->delete();
         if ($db->transStatus() === false) {
             $db->transRollback();
@@ -156,24 +172,55 @@ class Roles extends BaseController
         return redirect()->to(base_url('public/roles'))->with('mensaje', 'Rol borrado correctamente.');
     }
 
-    private function guardarModulos(int $roleId): void
+    private function permisosEnviados(): ?array
     {
-        $posted = $this->request->getPost('modulos');
+        $posted = $this->request->getPost('permisos') ?? [];
         if (!is_array($posted)) {
-            return;
+            return null;
         }
 
-        $postedModules = array_filter($posted, 'is_string');
-        $validModules = array_intersect(
-            array_keys(AccessControl::modules()),
-            $postedModules
-        );
+        $validModules = AccessControl::modules();
+        $validActions = AccessControl::actions();
         $permissions = [];
-        foreach (array_unique($validModules) as $module) {
-            $permissions[] = ['rol_id' => $roleId, 'modulo' => $module];
+        foreach ($posted as $module => $actions) {
+            if (!is_string($module) || !isset($validModules[$module]) || !is_array($actions)) {
+                return null;
+            }
+            foreach ($actions as $action) {
+                if (!is_string($action) || !isset($validActions[$action])) {
+                    return null;
+                }
+                $permissions[$module][$action] = true;
+            }
         }
-        if ($permissions !== []) {
-            db_connect()->table('roles_modulos')->insertBatch($permissions);
+
+        return $permissions;
+    }
+
+    private function guardarPermisos(int $roleId, array $permissionsByModule): void
+    {
+        $modulePermissions = [];
+        $actionPermissions = [];
+        foreach ($permissionsByModule as $module => $actions) {
+            if ($actions === []) {
+                continue;
+            }
+            $modulePermissions[] = ['rol_id' => $roleId, 'modulo' => $module];
+            foreach (array_keys($actions) as $action) {
+                $actionPermissions[] = [
+                    'rol_id' => $roleId,
+                    'modulo' => $module,
+                    'accion' => $action,
+                ];
+            }
+        }
+
+        $db = db_connect();
+        if ($modulePermissions !== []) {
+            $db->table('roles_modulos')->insertBatch($modulePermissions);
+        }
+        if ($actionPermissions !== []) {
+            $db->table('roles_acciones')->insertBatch($actionPermissions);
         }
     }
 

@@ -3,9 +3,11 @@
 ?>
 <br>
 <br>
+<?php if (can_action('zonas', 'crear')): ?>
 <a class="btn btn-primary" href="<?php 
 echo base_url();
 ?>public/zonas/nuevo">+ Nueva zona</a>
+<?php endif ?>
 <br>
 <br>
 <table class="table table-hover"id="contenido-lista">
@@ -27,16 +29,20 @@ foreach ($zonas as $zona) {
     echo '<td>' . $zona['id'] . '</td>';
     echo '<td>' . $zona['denominacion'] . '</td>';
     
-        echo '<td>
-        <a class ="btn btn-warning"
+        echo '<td>';
+        if (can_action('zonas', 'editar')) {
+            echo '<a class ="btn btn-warning"
          href="' . base_url('public/zonas/editar/' . $zona['id']) . '">Editar
-         </a>
+         </a>';
+        }
+        if (can_action('zonas', 'eliminar')) {
+            echo '
         <form class="d-inline" method="post"
          action="' . base_url('public/zonas/borrar/' . $zona['id']) . '">
          <button class="btn btn-danger" type="submit">Borrar</button>
-         </form>
-
-        </td>';
+         </form>';
+        }
+        echo '</td>';
 
     echo '</tr>';
 }

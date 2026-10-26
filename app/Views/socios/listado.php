@@ -3,9 +3,11 @@
 ?>
 <br>
 <br>
+<?php if (can_action('socios', 'crear')): ?>
 <a class="btn btn-primary" href="<?php
                                     echo base_url();
                                     ?>public/socios/nuevo">+ Nuevo socio</a>
+<?php endif ?>
 <br>
 <br>
 <table class="table table-hover" id="contenido-lista">
@@ -51,31 +53,36 @@
             echo '<td><span class="badge bg-success">' . esc(!empty($socio['disciplinas_nombres']) ? str_replace(' | ', ', ', $socio['disciplinas_nombres']) : 'Sin disciplina') . '</span></td>';
             echo '<td>' . esc($socio['tutores_nombres'] ?? '-') . '</td>';
 
-            echo '<td>
-        <a class ="btn btn-warning"
+            echo '<td>';
+            if (can_action('socios', 'editar')) {
+                echo '<a class ="btn btn-warning"
          href="' . base_url() . 'public/socios/editar/' . $socio['id'] . '"
         title="Editar">
         <i class="bi bi-pencil"></i>
-         </a>
-        <a class ="btn btn-danger"
+         </a>';
+            }
+            if (can_action('socios', 'eliminar')) {
+                echo '<a class ="btn btn-danger"
          href="' . base_url() . 'public/socios/borrar/' . $socio['id'] . '"
         title="Borrar">
         <i class="bi bi-trash"></i>
-         </a>
-
-         <a class="btn btn-secondary"
+         </a>';
+            }
+            if (can_action('socios', 'ver')) {
+                echo '<a class="btn btn-secondary"
          href="' . base_url() . 'public/socios/informe/' . $socio['id'] . '"
         title="Vista previa del socio" aria-label="Vista previa del socio">
         <i class="bi bi-eye"></i>
-         </a>
-
-         <a class="btn btn-info"
+         </a>';
+            }
+            if (can_action('liquidaciones', 'ver')) {
+                echo '<a class="btn btn-info"
          href="' . base_url() . 'public/liquidaciones/listado_socio/' . $socio['id'] . '"
         title="Ver pagos">
         <i class="bi bi-cash-stack"></i>
-         </a>
-
-        </td>';
+         </a>';
+            }
+            echo '</td>';
 
             echo '</tr>';
         }

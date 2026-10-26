@@ -1,12 +1,16 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Vista previa del socio</h2>
     <div>
+        <?php if (can_action('socios', 'editar')): ?>
         <a class="btn btn-warning" href="<?= base_url('public/socios/editar/' . $socio['id']); ?>">
             <i class="bi bi-pencil"></i> Editar
         </a>
+        <?php endif ?>
+        <?php if (can_action('liquidaciones', 'ver')): ?>
         <a class="btn btn-info" href="<?= base_url('public/liquidaciones/listado_socio/' . $socio['id']); ?>">
             <i class="bi bi-cash-stack"></i> Ver pagos
         </a>
+        <?php endif ?>
         <a class="btn btn-secondary" href="<?= base_url('public/socios'); ?>">Volver</a>
     </div>
 </div>

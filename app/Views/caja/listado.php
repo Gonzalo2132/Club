@@ -15,7 +15,9 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="mb-0">Cajas y movimientos</h3>
-        <a class="btn btn-primary" href="<?= base_url(); ?>public/cajas/nuevo">+ Nueva caja</a>
+        <?php if (can_action('cajas', 'crear')): ?>
+            <a class="btn btn-primary" href="<?= base_url(); ?>public/cajas/nuevo">+ Nueva caja</a>
+        <?php endif ?>
     </div>
 
     <div class="row g-3 mb-4">
@@ -31,21 +33,28 @@
                         <p class="mb-0"><strong>Descripción:</strong> <?= esc($caja['descripcion']) ?></p>
                     </div>
                     <div class="card-footer bg-transparent border-0 pt-0">
+                        <?php if (can_action('cajas', 'editar')): ?>
                         <a class="btn btn-sm btn-warning me-1" href="<?= base_url() ?>public/cajas/editar/<?= $caja['id'] ?>" title="Editar">
                             <i class="bi bi-pencil"></i>
                         </a>
+                        <?php endif ?>
+                        <?php if (can_action('cajas', 'eliminar')): ?>
                         <a class="btn btn-sm btn-danger me-1" href="<?= base_url() ?>public/cajas/borrar/<?= $caja['id'] ?>" title="Borrar" onclick="return confirm('¿Seguro que deseas borrar esta caja?');">
                             <i class="bi bi-trash"></i>
                         </a>
+                        <?php endif ?>
+                        <?php if (can_action('cajas', 'ver')): ?>
                         <a class="btn btn-sm btn-info" href="<?= base_url() ?>public/cajas/movimientos/<?= $caja['id'] ?>" title="Ver movimientos">
                             <i class="bi bi-list-ul"></i>
                         </a>
+                        <?php endif ?>
                     </div>
                 </div>
             </div>
         <?php } ?>
     </div>
 
+    <?php if (can_action('cajas', 'crear')): ?>
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-primary text-white">Registrar movimiento entre cajas</div>
         <div class="card-body">
@@ -86,6 +95,7 @@
             </form>
         </div>
     </div>
+    <?php endif ?>
 
     <div class="card shadow-sm">
         <div class="card-header bg-secondary text-white">Todos los movimientos</div>

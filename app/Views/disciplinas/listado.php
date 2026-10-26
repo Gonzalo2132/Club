@@ -6,7 +6,9 @@
 <?php endif ?>
 
 <p>Las disciplinas son deportivas. Se mantienen separadas de los planes de suscripción y de las liquidaciones.</p>
-<a class="btn btn-primary mb-3" href="<?= base_url('public/disciplinas/nuevo') ?>">+ Nueva disciplina</a>
+<?php if (can_action('disciplinas', 'crear')): ?>
+    <a class="btn btn-primary mb-3" href="<?= base_url('public/disciplinas/nuevo') ?>">+ Nueva disciplina</a>
+<?php endif ?>
 
 <table class="table table-hover" id="contenido-lista">
     <thead>
@@ -24,12 +26,18 @@
                 <td><?= esc($disciplina['nombre']) ?></td>
                 <td><?= esc($disciplina['descripcion'] ?? '') ?></td>
                 <td>
-                    <a class="btn btn-info btn-sm" href="<?= base_url('public/disciplinas/jugadores/' . $disciplina['id']) ?>">Inscriptos</a>
-                    <a class="btn btn-warning btn-sm" href="<?= base_url('public/disciplinas/editar/' . $disciplina['id']) ?>">Editar</a>
-                    <form class="d-inline" method="post" action="<?= base_url('public/disciplinas/borrar/' . $disciplina['id']) ?>"
-                        onsubmit="return confirm('¿Borrar esta disciplina?')">
-                        <button class="btn btn-danger btn-sm" type="submit">Borrar</button>
-                    </form>
+                    <?php if (can_action('disciplinas', 'ver')): ?>
+                        <a class="btn btn-info btn-sm" href="<?= base_url('public/disciplinas/jugadores/' . $disciplina['id']) ?>">Inscriptos</a>
+                    <?php endif ?>
+                    <?php if (can_action('disciplinas', 'editar')): ?>
+                        <a class="btn btn-warning btn-sm" href="<?= base_url('public/disciplinas/editar/' . $disciplina['id']) ?>">Editar</a>
+                    <?php endif ?>
+                    <?php if (can_action('disciplinas', 'eliminar')): ?>
+                        <form class="d-inline" method="post" action="<?= base_url('public/disciplinas/borrar/' . $disciplina['id']) ?>"
+                            onsubmit="return confirm('¿Borrar esta disciplina?')">
+                            <button class="btn btn-danger btn-sm" type="submit">Borrar</button>
+                        </form>
+                    <?php endif ?>
                 </td>
             </tr>
         <?php endforeach ?>
