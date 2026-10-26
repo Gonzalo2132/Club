@@ -196,7 +196,10 @@ class Liquidaciones extends BaseController
 
         // Pagos del socio
         $pagos = $this->pagos
+            ->select('pagos.*, recaudadores.nombre AS recaudador_nombre, recaudadores.apellido AS recaudador_apellido')
+            ->join('recaudadores', 'recaudadores.id = pagos.id_recaudador', 'left')
             ->where('id_socio', $idSocio)
+            ->orderBy('fecha_pago', 'DESC')
             ->findAll();
 
         // Armar historial

@@ -14,7 +14,7 @@ class PagosModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['id_socio', 'id_liquidacion', 'id_caja', 'forma_pago', 'monto', 'fecha_pago'];
+    protected $allowedFields = ['id_socio', 'id_liquidacion', 'id_caja', 'id_recaudador', 'forma_pago', 'monto', 'fecha_pago'];
                                 
 
     protected bool $allowEmptyInserts = false;

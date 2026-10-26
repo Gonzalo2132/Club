@@ -41,6 +41,7 @@
             <th>Monto</th>
             <th>Fecha de Vencimiento</th>
             <th>Estado</th>
+            <th>Último cobrador</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -54,6 +55,10 @@
                 echo '<td>$' . ($h['total_pagado'] ?? 0) . ' / $' . $h['liquidacion']['monto'] . '</td>';
                 echo '<td>' . date('d/m/Y', strtotime($h['liquidacion']['fecha_vencimiento'])) . '</td>';
                 echo '<td>' . $h['estado'] . '</td>';
+                $cobrador = $h['pago'] && !empty($h['pago']['id_recaudador'])
+                    ? trim(($h['pago']['recaudador_apellido'] ?? '') . ', ' . ($h['pago']['recaudador_nombre'] ?? ''))
+                    : 'No registrado';
+                echo '<td>' . esc($cobrador) . '</td>';
                 echo '<td>';
                 if ($h['estado'] !== 'Pagado' && $puedePagar) {
                     echo '<a class="btn btn-success" href="' . base_url('public/pagos/nuevo/' . $idSocio . '/' . $h['liquidacion']['id']) . '">Pagar</a>';

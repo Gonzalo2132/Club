@@ -7,6 +7,7 @@ use App\Models\LiquidacionesModel;
 use App\Models\PagosModel;
 use App\Models\CajasModel;
 use App\Models\SociosPlanesModel;
+use App\Models\RecaudadoresModel;
 
 class Pagos extends BaseController
 {
@@ -16,6 +17,7 @@ class Pagos extends BaseController
     protected $sesion;
     protected $cajas;
     protected $sociosPlanes;
+    protected $recaudadores;
 
     public function __construct()
     {
@@ -24,6 +26,7 @@ class Pagos extends BaseController
         $this->pagos = new PagosModel();
         $this->cajas = new CajasModel();
         $this->sociosPlanes = new SociosPlanesModel();
+        $this->recaudadores = new RecaudadoresModel();
         $this->sesion = session();
     }
 
@@ -43,6 +46,12 @@ class Pagos extends BaseController
 
         // Traer todas las cajas activas
         $cajas = $this->cajas->where('activo', 1)->findAll();
+        $recaudadores = $this->recaudadoresActivosDeZona($socio['id_zona'] ?? null);
+        $recaudadorAsignado = (int) ($socio['id_recaudador'] ?? 0);
+        $recaudadorSeleccionado = in_array($recaudadorAsignado, array_map(
+            static fn(array $recaudador): int => (int) $recaudador['id'],
+            $recaudadores
+        ), true) ? $recaudadorAsignado : '';
 
         $pagos = $this->pagos
             ->where('id_socio', $idSocio)
@@ -54,7 +63,9 @@ class Pagos extends BaseController
             'socio' => $socio,
             'liquidacion' => $liquidacion,
             'pagos' => $pagos,
-            'cajas' => $cajas
+            'cajas' => $cajas,
+            'recaudadores' => $recaudadores,
+            'recaudadorSeleccionado' => $recaudadorSeleccionado,
         ];
 
         echo view('panel/header', $context);
@@ -75,18 +86,42 @@ class Pagos extends BaseController
         $formaPago = $this->request->getPost('forma_pago');
         $monto = (float) $this->request->getPost('monto');
         $fechaPago = $this->request->getPost('fecha_pago') ?: date('Y-m-d');
+        $idRecaudadorPost = $this->request->getPost('id_recaudador');
         $liquidacion = $this->liquidaciones->find($idLiquidacion);
+        $socio = $this->socios->find($idSocio);
 
-        if (!$this->socios->find($idSocio) || !$liquidacion || !$this->socioPuedePagarLiquidacion($idSocio, $liquidacion)) {
+        if (!$socio || !$liquidacion || !$this->socioPuedePagarLiquidacion($idSocio, $liquidacion)) {
             return redirect()
                 ->to(base_url('public/liquidaciones/listado_socio/' . $idSocio))
                 ->with('error', 'El socio no tiene asignado el plan de esta liquidación.');
+        }
+
+        $recaudadoresDisponibles = $this->recaudadoresActivosDeZona($socio['id_zona'] ?? null);
+        $idRecaudador = null;
+        if ($idRecaudadorPost !== null && $idRecaudadorPost !== '') {
+            $idRecaudador = filter_var($idRecaudadorPost, FILTER_VALIDATE_INT);
+            $recaudadorValido = $idRecaudador !== false
+                ? $this->recaudadores
+                    ->where('id', $idRecaudador)
+                    ->where('id_zona', $socio['id_zona'] ?? null)
+                    ->where('activo', 1)
+                    ->first()
+                : null;
+            if (!$recaudadorValido) {
+                return redirect()->back()->withInput()->with('error', 'El recaudador seleccionado no está activo en la zona del socio.');
+            }
+            $idRecaudador = (int) $idRecaudador;
+        } elseif (!is_scalar($idRecaudadorPost) && $idRecaudadorPost !== null) {
+            return redirect()->back()->withInput()->with('error', 'La selección del recaudador no es válida.');
+        } elseif ($recaudadoresDisponibles !== []) {
+            return redirect()->back()->withInput()->with('error', 'Selecciona quién recibió el pago.');
         }
 
         $this->pagos->save([
             'id_socio' => $idSocio,
             'id_liquidacion' => $idLiquidacion,
             'id_caja' => $idCaja,
+            'id_recaudador' => $idRecaudador,
             'forma_pago' => $formaPago,
             'monto' => $monto,
             'fecha_pago' => $fechaPago,
@@ -152,5 +187,20 @@ class Pagos extends BaseController
             ->where('id_socio', $idSocio)
             ->where('id_plan', $liquidacion['id_plan'])
             ->first() !== null;
+    }
+
+    private function recaudadoresActivosDeZona($idZona): array
+    {
+        if (empty($idZona)) {
+            return [];
+        }
+
+        return $this->recaudadores
+            ->select('id, nombre, apellido, id_zona')
+            ->where('id_zona', $idZona)
+            ->where('activo', 1)
+            ->orderBy('apellido')
+            ->orderBy('nombre')
+            ->findAll();
     }
 }

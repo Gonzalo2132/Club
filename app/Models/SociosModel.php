@@ -14,8 +14,8 @@ class SociosModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = true;
 
-    protected $allowedFields = ['nombre', 'apellido', 'domicilio', 'telefono', 'fecha_nac', 'dni', 
-                                'email', 'activo', 'id_zona', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
+    protected $allowedFields = ['nombre', 'apellido', 'domicilio', 'telefono', 'fecha_nac', 'dni',
+                                'email', 'activo', 'id_zona', 'id_recaudador', 'fecha_alta', 'fecha_edicion', 'fecha_borrado'];
 
     protected bool $allowEmptyInserts = false;
     protected bool $updateOnlyChanged = true;

@@ -50,13 +50,11 @@ class Recaudadores extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $cajas = $this->cajas->where('activo', $activo)->findAll();
         $zonas = $this->zonas->where('activo', $activo)->findAll();
 
         $context = [
             'titulo' => 'Nuevo Recaudador',
             'pagname' => 'Gestión/Nuevo Recaudador',
-            'caja' => $cajas,
             'zona' => $zonas
         ];
 
@@ -71,17 +69,43 @@ class Recaudadores extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
+        $nombre = trim((string) $this->request->getPost('nombre'));
+        $apellido = trim((string) $this->request->getPost('apellido'));
+        $dni = trim((string) $this->request->getPost('dni'));
+        $telefono = trim((string) $this->request->getPost('telefono'));
         $idZona = $this->request->getPost('id_zona');
-        $idCaja = $this->request->getPost('id_caja');
+        if ($nombre === '' || $apellido === '' || $dni === '' || $telefono === '') {
+            return redirect()->back()->withInput()->with('error', 'Completa nombre, apellido, DNI y teléfono del recaudador.');
+        }
 
-        $this->recaudadores->save([
-            'nombre' => $this->request->getPost('nombre'),
-            'apellido' => $this->request->getPost('apellido'),
-            'dni' => $this->request->getPost('dni'),
-            'telefono' => $this->request->getPost('telefono'),
+        $db = db_connect();
+        $db->transBegin();
+
+        $nombreCaja = trim($nombre . ' ' . $apellido);
+        $idCaja = $this->cajas->insert([
+            'denominacion' => $nombreCaja,
+            'descripcion' => 'Caja personal del recaudador',
+            'codigointerno' => 'REC-' . bin2hex(random_bytes(8)),
+        ], true);
+        if ($idCaja === false) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('error', 'No se pudo crear la caja del recaudador.');
+        }
+
+        $idRecaudador = $this->recaudadores->insert([
+            'nombre' => $nombre,
+            'apellido' => $apellido,
+            'dni' => $dni,
+            'telefono' => $telefono,
             'id_caja' => $idCaja,
-            'id_zona' => $idZona === '' ? null : $idZona
-        ]);
+            'id_zona' => $idZona === '' ? null : $idZona,
+        ], true);
+        if ($idRecaudador === false || !$db->transStatus()) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('error', 'No se pudo guardar el recaudador y su caja.');
+        }
+
+        $db->transCommit();
 
         return redirect()->to(base_url() . 'public/recaudadores/');
     }

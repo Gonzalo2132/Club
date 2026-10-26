@@ -12,6 +12,7 @@ use App\Models\ZonasModel;
 use App\Models\SociosPlanesModel;
 use App\Models\LiquidacionesModel;
 use App\Models\PagosModel;
+use App\Models\RecaudadoresModel;
 
 class Socios extends BaseController
 {
@@ -25,6 +26,7 @@ class Socios extends BaseController
     protected $sociosDisciplinas;
     protected $tutores;
     protected $sociosTutores;
+    protected $recaudadores;
 
     public function __construct()
     { //La función constructora
@@ -38,6 +40,7 @@ class Socios extends BaseController
         $this->sociosDisciplinas = new SociosDisciplinasModel();
         $this->tutores = new TutoresModel();
         $this->sociosTutores = new SociosTutoresModel();
+        $this->recaudadores = new RecaudadoresModel();
     }
 
     public function index($activo = 1)
@@ -93,6 +96,7 @@ class Socios extends BaseController
         $planesModel = new PlanesModel();
         $planes = $planesModel->where('activo', 1)->findAll();
         $disciplinas = $this->disciplinas->where('activo', 1)->findAll();
+        $recaudadores = $this->recaudadoresPorZona();
         //este context es para cambiar el título de la página que está esperando el header
         $zonas = $this->zonas->where('activo', $activo)->findAll();
         $context = [
@@ -100,6 +104,8 @@ class Socios extends BaseController
             'disciplinas' => $disciplinas,
             'misDisciplinas' => [],
             'tutores' => [],
+            'recaudadores' => $recaudadores,
+            'recaudadorSeleccionado' => old('id_recaudador', ''),
             'titulo' => "Nuevo Socio",
             'pagname' => 'Gestión/Nuevo Socio',
             'zonas' => $zonas
@@ -171,6 +177,7 @@ class Socios extends BaseController
         $disciplinasAsignadas = $this->sociosDisciplinas->where('id_socio', $id)->findAll();
         $misDisciplinasIds = array_map('intval', array_column($disciplinasAsignadas, 'id_disciplina'));
         $tutoresAsignados = $this->obtenerTutoresSocio((int) $id);
+        $recaudadores = $this->recaudadoresPorZona();
 
         $context = [
             'socio' => $socio,
@@ -178,6 +185,8 @@ class Socios extends BaseController
             'disciplinas' => $disciplinas,
             'misDisciplinas' => $misDisciplinasIds,
             'tutores' => $tutoresAsignados,
+            'recaudadores' => $recaudadores,
+            'recaudadorSeleccionado' => old('id_recaudador', $socio[0]['id_recaudador'] ?? ''),
             'misPlanes' => $misPlanesIds,
             'titulo' => "Edición socio",
             'pagname' => 'Gestión/Edición socio',
@@ -305,13 +314,54 @@ class Socios extends BaseController
 
     private function validarFormularioDeportivo(): array
     {
-        $fechaNacimiento = trim((string) $this->request->getPost('fecha_nac'));
+        $camposObligatorios = [
+            'nombre' => ['etiqueta' => 'nombre', 'maximo' => 50],
+            'apellido' => ['etiqueta' => 'apellido', 'maximo' => 50],
+            'domicilio' => ['etiqueta' => 'domicilio', 'maximo' => 80],
+            'telefono' => ['etiqueta' => 'teléfono', 'maximo' => 30],
+            'dni' => ['etiqueta' => 'DNI', 'maximo' => 30],
+        ];
+        foreach ($camposObligatorios as $campo => $regla) {
+            $valor = $this->request->getPost($campo);
+            if (!is_scalar($valor) || trim((string) $valor) === '') {
+                return ['error' => 'El campo ' . $regla['etiqueta'] . ' es obligatorio.'];
+            }
+            if (mb_strlen(trim((string) $valor)) > $regla['maximo']) {
+                return ['error' => 'El campo ' . $regla['etiqueta'] . ' supera el máximo de caracteres permitido.'];
+            }
+        }
+
+        $fechaNacimientoPost = $this->request->getPost('fecha_nac');
+        if (!is_scalar($fechaNacimientoPost) || trim((string) $fechaNacimientoPost) === '') {
+            return ['error' => 'La fecha de nacimiento es obligatoria.'];
+        }
+        $fechaNacimiento = trim((string) $fechaNacimientoPost);
         $fecha = \DateTimeImmutable::createFromFormat('!Y-m-d', $fechaNacimiento);
         if (!$fecha || $fecha->format('Y-m-d') !== $fechaNacimiento) {
             return ['error' => 'Ingresa una fecha de nacimiento válida.'];
         }
         if ($fecha > new \DateTimeImmutable('today')) {
             return ['error' => 'La fecha de nacimiento no puede ser futura.'];
+        }
+
+        $idZonaPost = $this->request->getPost('id_zona');
+        $idRecaudadorPost = $this->request->getPost('id_recaudador');
+        if ($idRecaudadorPost !== null && $idRecaudadorPost !== '') {
+            $idRecaudador = filter_var($idRecaudadorPost, FILTER_VALIDATE_INT);
+            $idZona = filter_var($idZonaPost, FILTER_VALIDATE_INT);
+            if ($idRecaudador === false || $idRecaudador < 1 || $idZona === false || $idZona < 1) {
+                return ['error' => 'La selección del recaudador no es válida para la zona.'];
+            }
+            $recaudadorValido = $this->recaudadores
+                ->where('id', $idRecaudador)
+                ->where('id_zona', $idZona)
+                ->where('activo', 1)
+                ->first();
+            if (!$recaudadorValido) {
+                return ['error' => 'El recaudador seleccionado no está activo en la zona elegida.'];
+            }
+        } elseif (!is_scalar($idRecaudadorPost) && $idRecaudadorPost !== null) {
+            return ['error' => 'La selección del recaudador no es válida.'];
         }
 
         $planesPost = $this->request->getPost('planes') ?? [];
@@ -415,14 +465,15 @@ class Socios extends BaseController
     private function datosSocio(): array
     {
         return [
-            'nombre' => $this->request->getPost('nombre'),
-            'apellido' => $this->request->getPost('apellido'),
-            'domicilio' => $this->request->getPost('domicilio'),
-            'telefono' => $this->request->getPost('telefono'),
+            'nombre' => trim((string) $this->request->getPost('nombre')),
+            'apellido' => trim((string) $this->request->getPost('apellido')),
+            'domicilio' => trim((string) $this->request->getPost('domicilio')),
+            'telefono' => trim((string) $this->request->getPost('telefono')),
             'fecha_nac' => $this->request->getPost('fecha_nac'),
-            'dni' => $this->request->getPost('dni'),
+            'dni' => trim((string) $this->request->getPost('dni')),
             'email' => $this->request->getPost('email'),
             'id_zona' => $this->request->getPost('id_zona'),
+            'id_recaudador' => $this->request->getPost('id_recaudador') ?: null,
         ];
     }
 
@@ -456,6 +507,18 @@ class Socios extends BaseController
             ->orderBy('tutores.nombre')
             ->get()
             ->getResultArray();
+    }
+
+    private function recaudadoresPorZona(): array
+    {
+        return $this->recaudadores
+            ->select('recaudadores.id, recaudadores.nombre, recaudadores.apellido, recaudadores.dni, recaudadores.telefono, recaudadores.id_zona, cajas.denominacion AS caja_nombre')
+            ->join('cajas', 'cajas.id = recaudadores.id_caja', 'left')
+            ->where('recaudadores.activo', 1)
+            ->where('recaudadores.id_zona IS NOT NULL', null, false)
+            ->orderBy('recaudadores.apellido')
+            ->orderBy('recaudadores.nombre')
+            ->findAll();
     }
 
     private function sincronizarTutores(int $idSocio, array $tutorIds): void

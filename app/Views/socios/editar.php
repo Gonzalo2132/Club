@@ -1,3 +1,7 @@
+<a class="btn btn-secondary mb-3" href="<?= base_url('public/socios') ?>">
+    <i class="bi bi-arrow-left"></i> Volver al listado
+</a>
+
 <form action="
 <?php 
 echo base_url();
@@ -5,29 +9,31 @@ echo base_url();
 ?>public/socios/actualizar/<?php echo $socio[0]['id'];?>
 " method="post">
 
-    <label class="form-label" for="nombre">Nombre</label>
-    <input class="form-control" type="text" name="nombre" id="nombre" 
-    placeholder="Ingrese un nombre" value="<?php echo $socio[0]['nombre'];?>">
+    <p class="form-text"><span class="text-danger">*</span> Los campos marcados con asterisco rojo son obligatorios.</p>
 
-    <label class="form-label" for="apellido">Apellido</label>
-    <input class="form-control" type="text" name="apellido" id="apellido" 
-    placeholder="Ingrese un apellido" value="<?php echo $socio[0]['apellido'];?>">
+    <label class="form-label" for="nombre">Nombre <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="nombre" id="nombre" maxlength="50"
+        placeholder="Ingrese un nombre" value="<?= esc(old('nombre', $socio[0]['nombre'])) ?>" required>
 
-    <label class="form-label" for="domicilio">Domicilio</label>
-    <input class="form-control" type="text" name="domicilio" id="domicilio" 
-    placeholder="Ingrese un domicilio" value="<?php echo $socio[0]['domicilio'];?>">
+    <label class="form-label" for="apellido">Apellido <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="apellido" id="apellido" maxlength="50"
+        placeholder="Ingrese un apellido" value="<?= esc(old('apellido', $socio[0]['apellido'])) ?>" required>
 
-    <label class="form-label" for="telefono">Teléfono</label>
-    <input class="form-control" type="text" name="telefono" id="telefono" 
-    placeholder="Ingrese un teléfono" value="<?php echo $socio[0]['telefono'];?>">
+    <label class="form-label" for="domicilio">Domicilio <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="domicilio" id="domicilio" maxlength="80"
+        placeholder="Ingrese un domicilio" value="<?= esc(old('domicilio', $socio[0]['domicilio'])) ?>" required>
 
-    <label class="form-label" for="fecha_nac">Fecha de Nacimiento</label>
+    <label class="form-label" for="telefono">Teléfono <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="telefono" id="telefono" maxlength="30"
+        placeholder="Ingrese un teléfono" value="<?= esc(old('telefono', $socio[0]['telefono'])) ?>" required>
+
+    <label class="form-label" for="fecha_nac">Fecha de Nacimiento <span class="text-danger">*</span></label>
     <input class="form-control" type="date" name="fecha_nac" id="fecha_nac" max="<?= date('Y-m-d') ?>"
     value="<?= esc(old('fecha_nac', $socio[0]['fecha_nac'])); ?>" required>
 
-    <label class="form-label" for="dni">D.N.I</label>
-    <input class="form-control" type="text" name="dni" id="dni" 
-    placeholder="Ingrese D.N.I" value="<?php echo $socio[0]['dni'];?>">
+    <label class="form-label" for="dni">D.N.I. <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="dni" id="dni" maxlength="30"
+        placeholder="Ingrese D.N.I" value="<?= esc(old('dni', $socio[0]['dni'])) ?>" required>
 
     <label class="form-label" for="email">Email</label>
     <input class="form-control" type="text" name="email" id="email" 
@@ -40,14 +46,19 @@ echo base_url();
 
             <option value="<?php echo $zona['id']; ?>" 
                 <?php
-                    if($zona['id']==$socio[0]['id_zona']){
+                    if((string) old('id_zona', $socio[0]['id_zona']) === (string) $zona['id']){
                         echo 'selected';
                     }
                 ?>
-            ><?php echo $zona['denominacion']; ?></option>
+            ><?= esc($zona['denominacion']) ?></option>
        
         <?php }?>
     </select>
+
+    <?= view('socios/_recaudadores_zona', [
+        'recaudadores' => $recaudadores,
+        'recaudadorSeleccionado' => $recaudadorSeleccionado,
+    ]) ?>
 
     <fieldset class="mb-3">
         <legend class="form-label">Planes de suscripción</legend>

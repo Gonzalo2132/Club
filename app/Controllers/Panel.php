@@ -28,12 +28,17 @@ class Panel extends BaseController
 
     public function index()
     {
-        $modulosPermitidos = (new AccessControl())->allowedModules((int) $this->sesion->id_usuario);
+        $accessControl = new AccessControl();
+        $userId = (int) $this->sesion->id_usuario;
+        $modulosPermitidos = $accessControl->allowedModules($userId);
 
         $totalUsuarios = in_array('usuarios', $modulosPermitidos, true) ? $this->usuarios->countAll() : null;
         $totalSocios = in_array('socios', $modulosPermitidos, true) ? $this->socios->countAll() : null;
         $totalRecaudadores = in_array('recaudadores', $modulosPermitidos, true) ? $this->recaudadores->countAll() : null;
         $totalZonas = in_array('zonas', $modulosPermitidos, true) ? $this->zonas->countAll() : null;
+        $puedeVerFinanzas = $accessControl->canPerform($userId, 'socios', 'ver')
+            && $accessControl->canPerform($userId, 'liquidaciones', 'ver')
+            && $accessControl->canPerform($userId, 'pagos', 'ver');
 
         $context = [
             'titulo' => 'Tablero',
@@ -41,13 +46,83 @@ class Panel extends BaseController
             'totalSocios' => $totalSocios,
             'totalUsuarios' => $totalUsuarios,
             'totalRecaudadores' => $totalRecaudadores,
-            'totalZonas' => $totalZonas
+            'totalZonas' => $totalZonas,
+            'resumenFinanciero' => $puedeVerFinanzas ? $this->obtenerResumenFinanciero() : null,
         ];
 
 
         echo view('panel/header', $context);
-        echo view('panel/contenido');
+        echo view('panel/contenido', $context);
         echo view('panel/footer');
+    }
+
+    private function obtenerResumenFinanciero(): array
+    {
+        $db = db_connect();
+        $hoy = date('Y-m-d');
+        $hasta = date('Y-m-d', strtotime('+7 days'));
+        $pendientesSql = "
+            SELECT socios.id AS id_socio,
+                socios.nombre AS socio_nombre,
+                socios.apellido AS socio_apellido,
+                liquidaciones.id AS id_liquidacion,
+                COALESCE(NULLIF(liquidaciones.nombre_plan, ''), liquidaciones.nombre) AS liquidacion_nombre,
+                liquidaciones.fecha_vencimiento,
+                GREATEST(liquidaciones.monto - COALESCE(pagos.total_pagado, 0), 0) AS saldo_pendiente
+            FROM socios
+            INNER JOIN liquidaciones
+                ON liquidaciones.fecha_vencimiento >= DATE(socios.fecha_alta)
+                AND liquidaciones.activo = 1
+                AND liquidaciones.fecha_borrado IS NULL
+            LEFT JOIN (
+                SELECT id_socio, id_liquidacion, SUM(monto) AS total_pagado
+                FROM pagos
+                WHERE fecha_borrado IS NULL
+                GROUP BY id_socio, id_liquidacion
+            ) AS pagos
+                ON pagos.id_socio = socios.id
+                AND pagos.id_liquidacion = liquidaciones.id
+            WHERE socios.activo = 1
+                AND socios.fecha_borrado IS NULL
+                AND (
+                    liquidaciones.id_plan IS NULL
+                    OR EXISTS (
+                        SELECT 1
+                        FROM socios_planes
+                        WHERE socios_planes.id_socio = socios.id
+                            AND socios_planes.id_plan = liquidaciones.id_plan
+                            AND socios_planes.fecha_borrado IS NULL
+                    )
+                )
+        ";
+        $pendientes = "SELECT * FROM ({$pendientesSql}) AS liquidaciones_pendientes WHERE saldo_pendiente > 0";
+
+        $totales = $db->query(
+            "SELECT COUNT(*) AS cantidad_pendiente,
+                COALESCE(SUM(saldo_pendiente), 0) AS saldo_total,
+                SUM(CASE WHEN fecha_vencimiento < ? THEN 1 ELSE 0 END) AS cantidad_vencida,
+                COALESCE(SUM(CASE WHEN fecha_vencimiento < ? THEN saldo_pendiente ELSE 0 END), 0) AS saldo_vencido,
+                SUM(CASE WHEN fecha_vencimiento BETWEEN ? AND ? THEN 1 ELSE 0 END) AS cantidad_proxima,
+                COALESCE(SUM(CASE WHEN fecha_vencimiento BETWEEN ? AND ? THEN saldo_pendiente ELSE 0 END), 0) AS saldo_proximo
+             FROM ({$pendientes}) AS resumen",
+            [$hoy, $hoy, $hoy, $hasta, $hoy, $hasta]
+        )->getRowArray();
+
+        $liquidacionesPendientes = $db->query(
+            "{$pendientes}
+             ORDER BY fecha_vencimiento ASC, socio_apellido ASC, socio_nombre ASC
+             LIMIT 10"
+        )->getResultArray();
+
+        return [
+            'cantidadPendiente' => (int) ($totales['cantidad_pendiente'] ?? 0),
+            'saldoTotal' => (float) ($totales['saldo_total'] ?? 0),
+            'cantidadVencida' => (int) ($totales['cantidad_vencida'] ?? 0),
+            'saldoVencido' => (float) ($totales['saldo_vencido'] ?? 0),
+            'cantidadProxima' => (int) ($totales['cantidad_proxima'] ?? 0),
+            'saldoProximo' => (float) ($totales['saldo_proximo'] ?? 0),
+            'liquidaciones' => $liquidacionesPendientes,
+        ];
     }
 
     public function nuevo()

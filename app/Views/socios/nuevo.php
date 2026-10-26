@@ -5,24 +5,31 @@ echo base_url();
 ?>public/socios/guardar
 " method="post">
 
-    <label class="form-label" for="nombre">Nombre</label>
-    <input class="form-control" type="text" name="nombre" id="nombre" placeholder="Ingrese nombre">
+    <p class="form-text"><span class="text-danger">*</span> Los campos marcados con asterisco rojo son obligatorios.</p>
 
-    <label class="form-label" for="apellido">Apellido</label>
-    <input class="form-control" type="text" name="apellido" id="apellido" placeholder="Ingrese apellido">
+    <label class="form-label" for="nombre">Nombre <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="nombre" id="nombre" maxlength="50"
+        placeholder="Ingrese nombre" value="<?= esc(old('nombre')) ?>" required>
 
-    <label class="form-label" for="domicilio">Domicilio</label>
-    <input class="form-control" type="text" name="domicilio" id="domicilio" placeholder="Ingrese un domicilio">
+    <label class="form-label" for="apellido">Apellido <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="apellido" id="apellido" maxlength="50"
+        placeholder="Ingrese apellido" value="<?= esc(old('apellido')) ?>" required>
 
-    <label class="form-label" for="telefono">Teléfono</label>
-    <input class="form-control" type="text" name="telefono" id="telefono" placeholder="Ingrese un teléfono">
+    <label class="form-label" for="domicilio">Domicilio <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="domicilio" id="domicilio" maxlength="80"
+        placeholder="Ingrese un domicilio" value="<?= esc(old('domicilio')) ?>" required>
 
-    <label class="form-label" for="fecha_nac">Fecha de Nacimiento</label>
+    <label class="form-label" for="telefono">Teléfono <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="telefono" id="telefono" maxlength="30"
+        placeholder="Ingrese un teléfono" value="<?= esc(old('telefono')) ?>" required>
+
+    <label class="form-label" for="fecha_nac">Fecha de Nacimiento <span class="text-danger">*</span></label>
     <input class="form-control" type="date" name="fecha_nac" id="fecha_nac" max="<?= date('Y-m-d') ?>"
         value="<?= esc(old('fecha_nac')) ?>" required>
 
-    <label class="form-label" for="dni">D.N.I.</label>
-    <input class="form-control" type="text" name="dni" id="dni" placeholder="Ingrese DNI">
+    <label class="form-label" for="dni">D.N.I. <span class="text-danger">*</span></label>
+    <input class="form-control" type="text" name="dni" id="dni" maxlength="30"
+        placeholder="Ingrese DNI" value="<?= esc(old('dni')) ?>" required>
 
     <label class="form-label" for="email">Email</label>
     <input class="form-control" type="text" name="email" id="email" placeholder="Ingrese email">
@@ -31,10 +38,16 @@ echo base_url();
     <select class="form-control" id="id_zona" name="id_zona">
         <?php
         foreach ($zonas as $zona) {
-            echo '<option value="' . $zona['id'] . '">' . $zona['denominacion'] . '</option>';
+            $selected = (string) old('id_zona') === (string) $zona['id'] ? ' selected' : '';
+            echo '<option value="' . (int) $zona['id'] . '"' . $selected . '>' . esc($zona['denominacion']) . '</option>';
         }
         ?>
     </select>
+
+    <?= view('socios/_recaudadores_zona', [
+        'recaudadores' => $recaudadores,
+        'recaudadorSeleccionado' => $recaudadorSeleccionado,
+    ]) ?>
 
     <fieldset class="mb-3">
         <legend class="form-label">Planes de suscripción</legend>
