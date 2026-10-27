@@ -15,9 +15,24 @@
 <div class="container-fluid mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="mb-0">Cajas y movimientos</h3>
-        <?php if (can_action('cajas', 'crear')): ?>
+        <div class="d-flex gap-2">
+            <?php if (can_action('cajas', 'ver')): ?>
+                <a class="btn btn-outline-primary" href="<?= base_url('public/cajas/gastos') ?>">
+                    <i class="bi bi-receipt"></i> Ver gastos
+                </a>
+            <?php endif ?>
+            <?php if (can_action('cajas', 'crear')): ?>
+                <a class="btn btn-success" href="<?= base_url('public/cajas/nuevo-gasto') ?>">
+                    <i class="bi bi-dash-circle"></i> Registrar gasto
+                </a>
             <a class="btn btn-primary" href="<?= base_url(); ?>public/cajas/nuevo">+ Nueva caja</a>
-        <?php endif ?>
+            <?php endif ?>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        Total de gastos no anulados de este mes:
+        <strong>$<?= number_format((float) ($gastoMesActual ?? 0), 2, ',', '.') ?></strong>
     </div>
 
     <div class="row g-3 mb-4">

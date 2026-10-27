@@ -62,10 +62,10 @@ class PermissionFilter implements FilterInterface
         if (in_array($endpoint, ['borrar', 'eliminar'], true)) {
             return 'eliminar';
         }
-        if (in_array($endpoint, ['nuevo', 'guardar', 'guardar-movimiento'], true)) {
+        if (in_array($endpoint, ['nuevo', 'guardar', 'guardar-movimiento', 'nuevo-gasto', 'guardar-gasto'], true)) {
             return 'crear';
         }
-        if (in_array($endpoint, ['editar', 'actualizar', 'asignar-rol'], true)) {
+        if (in_array($endpoint, ['editar', 'actualizar', 'asignar-rol', 'anular-gasto'], true)) {
             return 'editar';
         }
 
