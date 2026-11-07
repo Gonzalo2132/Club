@@ -3,3 +3,4 @@ app/Config/Database.php
 writable/debugbar/*
 writable/logs/*
 writable/session/*
+.vscode
