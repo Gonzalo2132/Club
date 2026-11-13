@@ -1,0 +1,8 @@
+app/Config/App.php
+app/Config/Database.php
+/.env
+/club (2).sql
+writable/debugbar/*
+writable/logs/*
+writable/session/*
+.vscode

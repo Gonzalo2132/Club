@@ -1,0 +1,104 @@
+<?php
+
+use CodeIgniter\Router\RouteCollection;
+
+/**
+ * @var RouteCollection $routes
+ */
+$routes->get('/', 'Login::index');
+$routes->get('/panel', 'Panel::index');
+$routes->get('/panel/index', 'Panel::index');
+$routes->get('/panel/nuevo', 'Panel::nuevo');
+
+//zonas
+$routes->get('/zonas', 'Zonas::index');
+$routes->get('/zonas/nuevo', 'Zonas::nuevo');
+$routes->post('/zonas/guardar', 'Zonas::guardar');
+$routes->post('/zonas/borrar/(:num)', 'Zonas::borrar/$1');
+$routes->get('/zonas/editar/(:num)', 'Zonas::editar/$1');
+$routes->post('/zonas/actualizar/(:num)', 'Zonas::actualizar/$1');
+
+$routes->get('/usuarios', 'Usuarios::index');
+$routes->get('/usuarios/nuevo', 'Usuarios::nuevo');
+$routes->post('/usuarios/guardar', 'Usuarios::guardar');
+$routes->get('/usuarios/borrar/(:num)', 'Usuarios::borrar/$1');
+$routes->get('/usuarios/editar/(:num)', 'Usuarios::editar/$1');
+$routes->post('/usuarios/actualizar/(:num)', 'Usuarios::actualizar/$1');
+$routes->post('/usuarios/asignar-rol/(:num)', 'Usuarios::asignarRol/$1');
+
+// administración de roles (solo administradores)
+$routes->get('/roles', 'Roles::index');
+$routes->get('/roles/nuevo', 'Roles::nuevo');
+$routes->post('/roles/guardar', 'Roles::guardar');
+$routes->get('/roles/editar/(:num)', 'Roles::editar/$1');
+$routes->post('/roles/actualizar/(:num)', 'Roles::actualizar/$1');
+$routes->post('/roles/borrar/(:num)', 'Roles::borrar/$1');
+
+//socios
+$routes->get('/socios', 'Socios::index');
+$routes->get('/socios/nuevo', 'Socios::nuevo');
+$routes->post('/socios/guardar', 'Socios::guardar');
+$routes->get('/socios/borrar/(:num)', 'Socios::borrar/$1');
+$routes->get('/socios/editar/(:num)', 'Socios::editar/$1');
+$routes->get('/socios/informe/(:num)', 'Socios::informe/$1');
+$routes->post('/socios/actualizar/(:num)', 'Socios::actualizar/$1');
+
+//disciplinas
+$routes->get('/disciplinas', 'Disciplinas::index');
+$routes->get('/disciplinas/nuevo', 'Disciplinas::nuevo');
+$routes->post('/disciplinas/guardar', 'Disciplinas::guardar');
+$routes->get('/disciplinas/jugadores/(:num)', 'Disciplinas::jugadores/$1');
+$routes->get('/disciplinas/editar/(:num)', 'Disciplinas::editar/$1');
+$routes->post('/disciplinas/actualizar/(:num)', 'Disciplinas::actualizar/$1');
+$routes->post('/disciplinas/borrar/(:num)', 'Disciplinas::borrar/$1');
+
+//cajas
+$routes->get('/cajas', 'Caja::index');
+$routes->get('/cajas/nuevo', 'Caja::nuevo');
+$routes->post('/cajas/guardar', 'Caja::guardar');
+$routes->post('/cajas/guardar-movimiento', 'Caja::guardarMovimiento');
+$routes->get('/cajas/gastos', 'Caja::gastos');
+$routes->get('/cajas/nuevo-gasto', 'Caja::nuevoGasto');
+$routes->post('/cajas/guardar-gasto', 'Caja::guardarGasto');
+$routes->post('/cajas/anular-gasto/(:num)', 'Caja::anularGasto/$1');
+$routes->get('/cajas/gastos/comprobante/(:num)', 'Caja::comprobanteGasto/$1');
+$routes->get('/cajas/borrar/(:num)', 'Caja::borrar/$1');
+$routes->get('/cajas/editar/(:num)', 'Caja::editar/$1');
+$routes->post('/cajas/actualizar/(:num)', 'Caja::actualizar/$1');
+// movimientos (lista completa o por caja)
+$routes->get('/cajas/movimientos', 'Caja::movimientos');
+$routes->get('/cajas/movimientos/(:num)', 'Caja::movimientos/$1');
+
+//recaudadores
+$routes->get('/recaudadores', 'Recaudadores::index');
+$routes->get('/recaudadores/nuevo', 'Recaudadores::nuevo');
+$routes->post('/recaudadores/guardar', 'Recaudadores::guardar');
+$routes->get('/recaudadores/borrar/(:num)', 'Recaudadores::borrar/$1');
+$routes->get('/recaudadores/editar/(:num)', 'Recaudadores::editar/$1');
+$routes->post('/recaudadores/actualizar/(:num)', 'Recaudadores::actualizar/$1');
+
+$routes->get('/liquidaciones', 'Liquidaciones::index');
+$routes->get('/liquidaciones/nuevo', 'Liquidaciones::nuevo');
+$routes->post('/liquidaciones/guardar', 'Liquidaciones::guardar');
+$routes->get('/liquidaciones/borrar/(:num)', 'Liquidaciones::borrar/$1');
+$routes->get('/liquidaciones/editar/(:num)', 'Liquidaciones::editar/$1');
+$routes->post('/liquidaciones/actualizar/(:num)', 'Liquidaciones::actualizar/$1');
+$routes->get('/liquidaciones/listado_socio/(:num)', 'Liquidaciones::listado_socio/$1');
+
+
+//login
+$routes->get('/login', 'Login::index');
+$routes->post('/login/validar', 'Login::validar');
+$routes->get('/login/logout', 'Login::logout');
+
+//Pagos
+$routes->get('/pagos/nuevo/(:num)/(:num)', 'Pagos::nuevo/$1/$2');
+$routes->post('/pagos/guardar', 'Pagos::guardar');
+
+//planes
+$routes->get('/planes', 'Planes::index');
+$routes->get('/planes/nuevo', 'Planes::nuevo');
+$routes->post('/planes/guardar', 'Planes::guardar');
+$routes->get('/planes/borrar/(:num)', 'Planes::borrar/$1');
+$routes->get('/planes/editar/(:num)', 'Planes::editar/$1');
+$routes->post('/planes/actualizar/(:num)', 'Planes::actualizar/$1');
