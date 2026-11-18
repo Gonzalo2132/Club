@@ -1,6 +1,7 @@
 <?php
 
 use CodeIgniter\Router\RouteCollection;
+ 
 
 /**
  * @var RouteCollection $routes
@@ -16,6 +17,8 @@ $routes->post('/zonas/guardar', 'Zonas::guardar');
 $routes->post('/zonas/borrar/(:num)', 'Zonas::borrar/$1');
 $routes->get('/zonas/editar/(:num)', 'Zonas::editar/$1');
 $routes->post('/zonas/actualizar/(:num)', 'Zonas::actualizar/$1');
+ 
+
 
 $routes->get('/usuarios', 'Usuarios::index');
 $routes->get('/usuarios/nuevo', 'Usuarios::nuevo');
