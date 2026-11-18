@@ -9,7 +9,6 @@ $routes->get('/', 'Login::index');
 $routes->get('/panel', 'Panel::index');
 $routes->get('/panel/index', 'Panel::index');
 $routes->get('/panel/nuevo', 'Panel::nuevo');
-
 //zonas
 $routes->get('/zonas', 'Zonas::index');
 $routes->get('/zonas/nuevo', 'Zonas::nuevo');
