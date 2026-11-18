@@ -25,18 +25,14 @@ Este sistema surge de la necesidad institucional de:
 - 📊 **Liquidaciones**: creación, listado y seguimiento.  
 - 💳 **Pagos**: registro de montos y actualización de estados.  
 - 📜 **Historial**: consulta de liquidaciones y pagos realizados.  
-
 ---
-
 ## ⚙️ Requisitos técnicos
 
 - 🐘 PHP 8.2.12  
 - 🖥️ XAMPP o servidor compatible  
 - 🗄️ MySQL/MariaDB  
 - 🛠️ Framework CodeIgniter 4  
-
 ---
-
 ## 📖 Instalación y uso
 
 1. 📥 Clonar el repositorio desde GitHub.
