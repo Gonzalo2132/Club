@@ -118,7 +118,18 @@
                             <td>$<?= number_format((float) $item['total_pagado'], 2, ',', '.'); ?></td>
                             <td>$<?= number_format((float) $item['saldo_pendiente'], 2, ',', '.'); ?></td>
                             <td><?= !empty($item['liquidacion']['fecha_vencimiento']) ? esc(date('d/m/Y', strtotime($item['liquidacion']['fecha_vencimiento']))) : '-'; ?></td>
-                            <td><?= esc($item['estado']); ?></td>
+                            <td>
+                                <?php $estado = $item['estado'] ?? 'Pendiente'; ?>
+                                <?php if ($estado === 'Pagado'): ?>
+                                    <span class="badge bg-success">Pagado</span>
+                                <?php elseif ($estado === 'Pago vencido'): ?>
+                                    <span class="badge bg-danger">Pago vencido</span>
+                                <?php elseif ($estado === 'Pago parcial'): ?>
+                                    <span class="badge bg-info text-dark">Pago parcial</span>
+                                <?php else: ?>
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php } ?>
                 <?php } else { ?>

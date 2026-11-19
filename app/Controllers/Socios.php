@@ -268,10 +268,7 @@ class Socios extends BaseController
             ->where('socios_planes.fecha_borrado', null)
             ->findAll();
 
-        $fechaAlta = date('Y-m-d', strtotime($socio['fecha_alta']));
-        $liquidaciones = $this->liquidaciones
-            ->where('fecha_vencimiento >=', $fechaAlta)
-            ->findAll();
+        $liquidaciones = $this->liquidaciones->findAll();
         $idsPlanesSocio = array_map(
             'intval',
             array_column($planesAsignados, 'id')
@@ -287,6 +284,8 @@ class Socios extends BaseController
             ->where('id_socio', $id)
             ->where('fecha_borrado', null)
             ->findAll();
+
+        $hoy = date('Y-m-d');
         $informeLiquidaciones = [];
         foreach ($liquidaciones as $liquidacion) {
             $pagosLiquidacion = array_filter(
@@ -299,14 +298,27 @@ class Socios extends BaseController
                 $pagosLiquidacion
             )), 2);
             $monto = (float) $liquidacion['monto'];
+            $saldoPendiente = max(0, round($monto - $totalPagado, 2));
+
+            $fechaVenc = !empty($liquidacion['fecha_vencimiento'])
+                ? date('Y-m-d', strtotime($liquidacion['fecha_vencimiento']))
+                : null;
+
+            if ($saldoPendiente <= 0) {
+                $estado = 'Pagado';
+            } elseif ($fechaVenc !== null && $fechaVenc < $hoy) {
+                $estado = 'Pago vencido';
+            } elseif ($totalPagado > 0 && $totalPagado < $monto) {
+                $estado = 'Pago parcial';
+            } else {
+                $estado = 'Pendiente';
+            }
 
             $informeLiquidaciones[] = [
                 'liquidacion' => $liquidacion,
                 'total_pagado' => $totalPagado,
-                'saldo_pendiente' => max(0, round($monto - $totalPagado, 2)),
-                'estado' => $totalPagado <= 0
-                    ? 'Pendiente'
-                    : ($totalPagado < $monto ? 'Pago parcial' : 'Pagado')
+                'saldo_pendiente' => $saldoPendiente,
+                'estado' => $estado,
             ];
         }
 
