@@ -10,6 +10,7 @@
 <?php endif ?>
 <br>
 <br>
+<div class="table-responsive">
 <table class="table table-hover" id="contenido-lista">
     <thead>
         <th>#</th>
@@ -90,3 +91,4 @@
 
     </tbody>
 </table>
+</div>
