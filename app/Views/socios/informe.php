@@ -31,6 +31,16 @@
             <div class="col-md-6 mb-2"><strong>Email:</strong> <?= esc($socio['email'] ?: '-'); ?></div>
             <div class="col-md-6 mb-2"><strong>Domicilio:</strong> <?= esc($socio['domicilio'] ?: '-'); ?></div>
             <div class="col-md-6 mb-2"><strong>Zona:</strong> <?= esc($zona['denominacion'] ?? '-'); ?></div>
+            <div class="col-md-6 mb-2"><strong>Recaudador asignado:</strong>
+                <?php if (!empty($recaudador)): ?>
+                    <?= esc(trim(($recaudador['apellido'] ?? '') . ', ' . ($recaudador['nombre'] ?? ''))); ?>
+                    <?php if (!empty($recaudador['caja_nombre'])): ?>
+                        <span class="text-muted">(Caja: <?= esc($recaudador['caja_nombre']); ?>)</span>
+                    <?php endif ?>
+                <?php else: ?>
+                    Sin asignar
+                <?php endif ?>
+            </div>
             <div class="col-md-6 mb-2"><strong>Fecha de alta:</strong>
                 <?= !empty($socio['fecha_alta']) ? esc(date('d/m/Y', strtotime($socio['fecha_alta']))) : '-'; ?>
             </div>

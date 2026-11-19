@@ -36,6 +36,10 @@ echo base_url();
 
     <label class="form-label" for="zona">Zona</label>
     <select class="form-control" id="id_zona" name="id_zona">
+
+    <label class="form-label" for="email">Email</label>
+    <input class="form-control" type="email" name="email" id="email" maxlength="80"
+        placeholder="Ingrese email" value="<?= esc(old('email')) ?>">
         <?php
         foreach ($zonas as $zona) {
             $selected = (string) old('id_zona') === (string) $zona['id'] ? ' selected' : '';

@@ -140,7 +140,8 @@ class Socios extends BaseController
         $this->sincronizarDisciplinas((int) $idSocio, $formulario['disciplinas']);
         if ($db->transStatus() === false) {
             $db->transRollback();
-            throw new \RuntimeException('No se pudieron guardar las inscripciones del socio.');
+            return redirect()->back()->withInput()
+                ->with('error', 'No se pudieron guardar las inscripciones del socio.');
         }
         $db->transCommit();
 
@@ -223,7 +224,8 @@ class Socios extends BaseController
         $this->sincronizarDisciplinas((int) $id, $formulario['disciplinas']);
         if ($db->transStatus() === false) {
             $db->transRollback();
-            throw new \RuntimeException('No se pudieron actualizar los datos del socio y sus inscripciones.');
+            return redirect()->back()->withInput()
+                ->with('error', 'No se pudieron actualizar los datos del socio y sus inscripciones.');
         }
         $db->transCommit();
 
@@ -243,16 +245,27 @@ class Socios extends BaseController
         }
 
         $zona = $this->zonas->find($socio['id_zona']);
+        $recaudador = null;
+        if (!empty($socio['id_recaudador'])) {
+            $recaudador = $this->recaudadores
+                ->select('recaudadores.*, cajas.denominacion AS caja_nombre')
+                ->join('cajas', 'cajas.id = recaudadores.id_caja', 'left')
+                ->where('recaudadores.id', (int) $socio['id_recaudador'])
+                ->first();
+        }
+
         $tutores = $this->obtenerTutoresSocio((int) $id);
         $disciplinasAsignadas = $this->sociosDisciplinas
             ->select('disciplinas.id, disciplinas.nombre, disciplinas.descripcion')
             ->join('disciplinas', 'disciplinas.id = socios_disciplinas.id_disciplina AND disciplinas.fecha_borrado IS NULL')
             ->where('socios_disciplinas.id_socio', $id)
+            ->where('socios_disciplinas.fecha_borrado', null)
             ->findAll();
         $planesAsignados = $this->sociosPlanes
             ->select('planes.id, planes.nombre, planes.descripcion')
             ->join('planes', 'planes.id = socios_planes.id_plan')
             ->where('socios_planes.id_socio', $id)
+            ->where('socios_planes.fecha_borrado', null)
             ->findAll();
 
         $fechaAlta = date('Y-m-d', strtotime($socio['fecha_alta']));
@@ -272,6 +285,7 @@ class Socios extends BaseController
 
         $pagos = $this->pagos
             ->where('id_socio', $id)
+            ->where('fecha_borrado', null)
             ->findAll();
         $informeLiquidaciones = [];
         foreach ($liquidaciones as $liquidacion) {
@@ -299,6 +313,7 @@ class Socios extends BaseController
         $context = [
             'socio' => $socio,
             'zona' => $zona,
+            'recaudador' => $recaudador,
             'planes' => $planesAsignados,
             'disciplinas' => $disciplinasAsignadas,
             'tutores' => $tutores,
@@ -471,7 +486,7 @@ class Socios extends BaseController
             'telefono' => trim((string) $this->request->getPost('telefono')),
             'fecha_nac' => $this->request->getPost('fecha_nac'),
             'dni' => trim((string) $this->request->getPost('dni')),
-            'email' => $this->request->getPost('email'),
+            'email' => trim((string) $this->request->getPost('email')) ?: null,
             'id_zona' => $this->request->getPost('id_zona'),
             'id_recaudador' => $this->request->getPost('id_recaudador') ?: null,
         ];

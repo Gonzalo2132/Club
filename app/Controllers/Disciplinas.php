@@ -31,6 +31,7 @@ class Disciplinas extends BaseController
     {
         $context = [
             'disciplina' => ['nombre' => '', 'descripcion' => ''],
+            'categorias' => [],
             'accion' => 'guardar',
             'titulo' => 'Nueva disciplina',
             'pagname' => 'Gestión/Nueva disciplina',
@@ -65,7 +66,13 @@ class Disciplinas extends BaseController
 
     public function editar($id)
     {
-        $disciplina = $this->disciplinas->find($id);
+        $disciplinaId = $this->normalizarId($id);
+        if ($disciplinaId === null) {
+            return redirect()->to(base_url('public/disciplinas'))
+                ->with('error', 'La disciplina indicada no es válida.');
+        }
+
+        $disciplina = $this->disciplinas->find($disciplinaId);
         if ($disciplina === null) {
             return redirect()->to(base_url('public/disciplinas'))
                 ->with('error', 'La disciplina no existe.');
@@ -73,7 +80,8 @@ class Disciplinas extends BaseController
 
         $context = [
             'disciplina' => $disciplina,
-            'accion' => 'actualizar/' . $id,
+            'categorias' => $this->obtenerCategoriasDisciplina($disciplinaId),
+            'accion' => 'actualizar/' . $disciplinaId,
             'titulo' => 'Editar disciplina',
             'pagname' => 'Gestión/Editar disciplina',
         ];
@@ -85,7 +93,13 @@ class Disciplinas extends BaseController
 
     public function jugadores($id)
     {
-        $disciplina = $this->disciplinas->find($id);
+        $disciplinaId = $this->normalizarId($id);
+        if ($disciplinaId === null) {
+            return redirect()->to(base_url('public/disciplinas'))
+                ->with('error', 'La disciplina indicada no es válida.');
+        }
+
+        $disciplina = $this->disciplinas->find($disciplinaId);
         if ($disciplina === null) {
             return redirect()->to(base_url('public/disciplinas'))
                 ->with('error', 'La disciplina no existe.');
@@ -101,13 +115,14 @@ class Disciplinas extends BaseController
             ->join('socios', 'socios.id = socios_disciplinas.id_socio')
             ->join('socios_tutores', 'socios_tutores.id_socio = socios.id AND socios_tutores.fecha_borrado IS NULL', 'left')
             ->join('tutores', 'tutores.id = socios_tutores.id_tutor', 'left')
-            ->where('socios_disciplinas.id_disciplina', $id)
+            ->where('socios_disciplinas.id_disciplina', $disciplinaId)
             ->where('socios_disciplinas.fecha_borrado', null)
             ->where('socios.activo', 1)
             ->orderBy('socios.apellido')
             ->orderBy('socios.nombre')
             ->get()
             ->getResultArray();
+
         $jugadoresPorId = [];
         foreach ($jugadores as $jugador) {
             $jugadorId = (int) $jugador['id'];
@@ -135,6 +150,7 @@ class Disciplinas extends BaseController
 
         $context = [
             'disciplina' => $disciplina,
+            'categorias' => $this->obtenerCategoriasDisciplina($disciplinaId),
             'jugadores' => array_values($jugadoresPorId),
             'titulo' => 'Jugadores inscriptos',
             'pagname' => 'Gestión/Disciplinas/Jugadores',
@@ -147,7 +163,13 @@ class Disciplinas extends BaseController
 
     public function actualizar($id)
     {
-        $disciplina = $this->disciplinas->find($id);
+        $disciplinaId = $this->normalizarId($id);
+        if ($disciplinaId === null) {
+            return redirect()->to(base_url('public/disciplinas'))
+                ->with('error', 'La disciplina indicada no es válida.');
+        }
+
+        $disciplina = $this->disciplinas->find($disciplinaId);
         if ($disciplina === null) {
             return redirect()->to(base_url('public/disciplinas'))
                 ->with('error', 'La disciplina no existe.');
@@ -159,14 +181,41 @@ class Disciplinas extends BaseController
                 ->with('error', 'El nombre es obligatorio y debe tener hasta 80 caracteres.');
         }
         $duplicada = $this->disciplinas->where('nombre', $nombre)
-            ->where('id !=', $id)
+            ->where('id !=', $disciplinaId)
             ->first();
         if ($duplicada) {
             return redirect()->back()->withInput()
                 ->with('error', 'Ya existe una disciplina con ese nombre.');
         }
 
-        $this->disciplinas->update($id, [
+        $nuevaCategoria = trim((string) $this->request->getPost('nueva_categoria'));
+        $db = db_connect();
+        if ($nuevaCategoria !== '') {
+            if (mb_strlen($nuevaCategoria) > 80) {
+                return redirect()->back()->withInput()
+                    ->with('error', 'El nombre de la categoría debe tener hasta 80 caracteres.');
+            }
+            if ($db->tableExists('categorias_disciplina')) {
+                $existeCategoria = $db->table('categorias_disciplina')
+                    ->where('id_disciplina', $disciplinaId)
+                    ->where('nombre', $nuevaCategoria)
+                    ->where('activo', 1)
+                    ->countAllResults();
+                if ($existeCategoria > 0) {
+                    return redirect()->back()->withInput()
+                        ->with('error', 'Ya existe esa categoría en la disciplina.');
+                }
+
+                $db->table('categorias_disciplina')->insert([
+                    'id_disciplina' => $disciplinaId,
+                    'nombre' => $nuevaCategoria,
+                    'activo' => 1,
+                    'fecha_alta' => date('Y-m-d H:i:s'),
+                ]);
+            }
+        }
+
+        $this->disciplinas->update($disciplinaId, [
             'nombre' => $nombre,
             'descripcion' => trim((string) $this->request->getPost('descripcion')) ?: null,
         ]);
@@ -177,14 +226,20 @@ class Disciplinas extends BaseController
 
     public function borrar($id)
     {
-        $disciplina = $this->disciplinas->find($id);
+        $disciplinaId = $this->normalizarId($id);
+        if ($disciplinaId === null) {
+            return redirect()->to(base_url('public/disciplinas'))
+                ->with('error', 'La disciplina indicada no es válida.');
+        }
+
+        $disciplina = $this->disciplinas->find($disciplinaId);
         if ($disciplina === null) {
             return redirect()->to(base_url('public/disciplinas'))
                 ->with('error', 'La disciplina no existe.');
         }
 
         $inscripciones = db_connect()->table('socios_disciplinas')
-            ->where('id_disciplina', $id)
+            ->where('id_disciplina', $disciplinaId)
             ->where('fecha_borrado', null)
             ->countAllResults();
         if ($inscripciones > 0) {
@@ -192,13 +247,38 @@ class Disciplinas extends BaseController
                 ->with('error', 'No se puede borrar una disciplina con socios inscriptos.');
         }
 
-        $this->disciplinas->delete($id);
+        $this->disciplinas->delete($disciplinaId);
         return redirect()->to(base_url('public/disciplinas'))
             ->with('mensaje', 'Disciplina borrada correctamente.');
+    }
+
+    private function normalizarId($id): ?int
+    {
+        $validado = filter_var($id, FILTER_VALIDATE_INT);
+        if ($validado === false || $validado < 1) {
+            return null;
+        }
+
+        return (int) $validado;
     }
 
     private function nombreValido(string $nombre): bool
     {
         return $nombre !== '' && mb_strlen($nombre) <= 80;
+    }
+
+    private function obtenerCategoriasDisciplina(int $disciplinaId): array
+    {
+        $db = db_connect();
+        if (!$db->tableExists('categorias_disciplina')) {
+            return [];
+        }
+
+        return $db->table('categorias_disciplina')
+            ->where('id_disciplina', $disciplinaId)
+            ->where('activo', 1)
+            ->orderBy('nombre')
+            ->get()
+            ->getResultArray();
     }
 }

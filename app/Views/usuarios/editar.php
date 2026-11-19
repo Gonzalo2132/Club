@@ -4,6 +4,7 @@ echo base_url();
 
 ?>public/usuarios/actualizar/<?php echo $usuario[0]['id'];?>
 " method="post">
+    <?= csrf_field() ?>
 
     <label class="form-label" for="nombre">Nombre</label>
     <input class="form-control" type="text" name="nombre" id="nombre" 
