@@ -14,9 +14,6 @@ Este sistema surge de la necesidad institucional de:
 - 💼 Asignar recaudadores a cada zona.
 - 📑 Generar liquidaciones periódicas con fecha de vencimiento.
 - 💵 Registrar pagos y controlar estados (pendiente / realizado).
-
----
-
 ## 🚀 Funcionalidades principales
 
 - 🔐 **Login de usuarios** para acceso seguro.  
@@ -25,16 +22,13 @@ Este sistema surge de la necesidad institucional de:
 - 📊 **Liquidaciones**: creación, listado y seguimiento.  
 - 💳 **Pagos**: registro de montos y actualización de estados.  
 - 📜 **Historial**: consulta de liquidaciones y pagos realizados.  
-
 ---
-
 ## ⚙️ Requisitos técnicos
 
 - 🐘 PHP 8.2.12  
 - 🖥️ XAMPP o servidor compatible  
 - 🗄️ MySQL/MariaDB  
 - 🛠️ Framework CodeIgniter 4  
-
 ---
 
 ## 📖 Instalación y uso
