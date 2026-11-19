@@ -14,9 +14,6 @@ Este sistema surge de la necesidad institucional de:
 - 💼 Asignar recaudadores a cada zona.
 - 📑 Generar liquidaciones periódicas con fecha de vencimiento.
 - 💵 Registrar pagos y controlar estados (pendiente / realizado).
-
----
-
 ## 🚀 Funcionalidades principales
 
 - 🔐 **Login de usuarios** para acceso seguro.  
