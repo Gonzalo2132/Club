@@ -74,6 +74,7 @@
         <div class="card-header bg-primary text-white">Registrar movimiento entre cajas</div>
         <div class="card-body">
             <form method="post" action="<?= base_url() ?>public/cajas/guardar-movimiento">
+                <?= csrf_field() ?>
                 <div class="row g-3 align-items-end">
                     <div class="col-md-3">
                         <label class="form-label">Caja origen</label>
@@ -124,12 +125,13 @@
                         <th>Monto</th>
                         <th>Concepto</th>
                         <th>Fecha</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (empty($movimientos)) : ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted py-4">No hay movimientos registrados todavía.</td>
+                            <td colspan="7" class="text-center text-muted py-4">No hay movimientos registrados todavía.</td>
                         </tr>
                     <?php else : ?>
                         <?php foreach ($movimientos as $movimiento) : ?>
@@ -140,6 +142,22 @@
                                 <td>$<?= number_format((float) ($movimiento['monto'] ?? 0), 2, ',', '.') ?></td>
                                 <td><?= esc($movimiento['concepto'] ?? 'Movimiento de caja') ?></td>
                                 <td><?= esc(date('d/m/Y H:i', strtotime($movimiento['fecha'] ?? 'now'))) ?></td>
+                                <td>
+                                    <?php if (can_action('cajas', 'editar') && is_numeric($movimiento['id'] ?? null)) : ?>
+                                        <a class="btn btn-sm btn-warning" href="<?= base_url('public/cajas/editar-movimiento/' . (int) $movimiento['id']) ?>" title="Editar movimiento">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    <?php endif; ?>
+                                    <?php if (can_action('cajas', 'eliminar') && is_numeric($movimiento['id'] ?? null)) : ?>
+                                        <form method="post" action="<?= base_url('public/cajas/borrar-movimiento/' . (int) $movimiento['id']) ?>"
+                                              class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este movimiento?');">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" class="btn btn-sm btn-danger" title="Eliminar movimiento">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php endif; ?>
