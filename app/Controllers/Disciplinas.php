@@ -81,6 +81,7 @@ class Disciplinas extends BaseController
         $context = [
             'disciplina' => $disciplina,
             'categorias' => $this->obtenerCategoriasDisciplina($disciplinaId),
+            'categoriaSeleccionada' => session()->getFlashdata('categoria_creada_id') ?? '',
             'accion' => 'actualizar/' . $disciplinaId,
             'titulo' => 'Editar disciplina',
             'pagname' => 'Gestión/Editar disciplina',
@@ -189,7 +190,9 @@ class Disciplinas extends BaseController
         }
 
         $nuevaCategoria = trim((string) $this->request->getPost('nueva_categoria'));
+        $categoriaCreadaId = null;
         $db = db_connect();
+
         if ($nuevaCategoria !== '') {
             if (mb_strlen($nuevaCategoria) > 80) {
                 return redirect()->back()->withInput()
@@ -212,6 +215,7 @@ class Disciplinas extends BaseController
                     'activo' => 1,
                     'fecha_alta' => date('Y-m-d H:i:s'),
                 ]);
+                $categoriaCreadaId = (int) $db->insertID();
             }
         }
 
@@ -219,6 +223,12 @@ class Disciplinas extends BaseController
             'nombre' => $nombre,
             'descripcion' => trim((string) $this->request->getPost('descripcion')) ?: null,
         ]);
+
+        if ($categoriaCreadaId !== null) {
+            return redirect()->to(base_url('public/disciplinas/editar/' . $disciplinaId))
+                ->with('mensaje', 'Categoría agregada y disciplina actualizada correctamente.')
+                ->with('categoria_creada_id', $categoriaCreadaId);
+        }
 
         return redirect()->to(base_url('public/disciplinas'))
             ->with('mensaje', 'Disciplina actualizada correctamente.');
