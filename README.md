@@ -37,6 +37,21 @@ Este sistema surge de la necesidad institucional de:
 3. ▶️ Acceder vía localhost/club/public.
 4. 🔑 Iniciar sesión en el sistema y comenzar a operar.
 
+### Datos de demostración
+
+Para reemplazar los datos de `club` por registros ficticios, desde la raíz del proyecto ejecuta en PowerShell:
+
+```powershell
+$env:DEMO_RESET_CONFIRMED = 'club'
+try {
+    & 'C:\xampp\php\php.exe' spark db:seed DemoSeeder
+} finally {
+    Remove-Item Env:DEMO_RESET_CONFIRMED -ErrorAction SilentlyContinue
+}
+```
+
+El seeder conserva las tablas y migraciones, agrega socios, pagos, liquidaciones y gastos ficticios, e incluye un comprobante PDF de ejemplo. Rechaza la ejecución si la base conectada no se llama `club`. Este proceso elimina los datos actuales de la aplicación; crea una copia de seguridad antes de ejecutarlo. La contraseña aleatoria para `demo_admin`, `demo_tesoreria` y `demo_consulta` se imprime al finalizar.
+
 ---
 
 ## 👥 Equipo
@@ -44,7 +59,7 @@ Este sistema surge de la necesidad institucional de:
 Proyecto elaborado por:
 Estudiantes de la Tecnicatura Superior en Análisis y Desarrollo de Software:
 
-- 👥 Arrosaygor Gonzalo
+- 👥 Arreseygor Gonzalo
 - 👥 Padularrosa Valentin
 - 👥 Santino Alonso
 

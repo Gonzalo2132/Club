@@ -71,6 +71,17 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
 <script>
+  document.querySelectorAll('#content table').forEach(function (table) {
+    if (table.closest('.table-responsive')) {
+      return;
+    }
+
+    var wrapper = document.createElement('div');
+    wrapper.className = 'table-responsive';
+    table.parentNode.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  });
+
   var tablaContenido = document.querySelector('#contenido-lista');
   if (tablaContenido) {
     new DataTable('#contenido-lista', {

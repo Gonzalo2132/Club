@@ -117,7 +117,7 @@ class Pagos extends BaseController
             return redirect()->back()->withInput()->with('error', 'Selecciona quién recibió el pago.');
         }
 
-        $this->pagos->save([
+        $pago = [
             'id_socio' => $idSocio,
             'id_liquidacion' => $idLiquidacion,
             'id_caja' => $idCaja,
@@ -126,10 +126,16 @@ class Pagos extends BaseController
             'monto' => $monto,
             'fecha_pago' => $fechaPago,
             'fecha_alta' => date('Y-m-d H:i:s')
-        ]);
+        ];
 
-        // Registrar movimiento en la tabla de movimientos de cajas si existe
         $db = \Config\Database::connect();
+        $db->transBegin();
+
+        if (!$this->pagos->save($pago) || !$db->transStatus()) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('error', 'No se pudo registrar el pago.');
+        }
+
         foreach (['movimientos_caja', 'movimientos_cajas'] as $tabla) {
             if ($db->tableExists($tabla)) {
                 $columnNames = $db->getFieldNames($tabla);
@@ -152,26 +158,32 @@ class Pagos extends BaseController
                     'fecha' => date('Y-m-d H:i:s')
                 ];
 
-                // Si la tabla tiene caja_destino_id, usarla para marcar la caja receptora
-                if (in_array('caja_destino_id', $columnNames)) {
+                if (in_array('caja_destino_id', $columnNames, true)) {
                     $data['caja_destino_id'] = (int) $idCaja;
                 }
 
-                // Si la tabla tiene caja_id (otro esquema), usarla
-                if (in_array('caja_id', $columnNames) && !isset($data['caja_id'])) {
+                if (in_array('caja_id', $columnNames, true) && !isset($data['caja_id'])) {
                     $data['caja_id'] = (int) $idCaja;
                 }
 
-                // Si la tabla sólo tiene caja_origen_id (esquema movimientos_caja),
-                // se usa la caja de destino en el concepto y el socio como origen visible.
-                if (in_array('caja_origen_id', $columnNames) && !in_array('caja_destino_id', $columnNames) && !in_array('caja_id', $columnNames)) {
+                if (in_array('caja_origen_id', $columnNames, true)
+                    && !in_array('caja_destino_id', $columnNames, true)
+                    && !in_array('caja_id', $columnNames, true)) {
                     $data['caja_origen_id'] = 0;
                 }
 
-                $db->table($tabla)->insert($data);
+                if (!$db->table($tabla)->insert($data) || !$db->transStatus()) {
+                    $db->transRollback();
+                    return redirect()->back()->withInput()->with('error', 'No se pudo registrar el movimiento de caja.');
+                }
 
                 break;
             }
+        }
+
+        if (!$db->transCommit()) {
+            $db->transRollback();
+            return redirect()->back()->withInput()->with('error', 'No se pudo confirmar el pago.');
         }
 
         return redirect()->to(base_url('public/liquidaciones/listado_socio/' . $idSocio));

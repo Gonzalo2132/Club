@@ -168,32 +168,46 @@ class Caja extends BaseController
         $db = \Config\Database::connect();
         $tablaMovimiento = $this->obtenerTablaMovimientos($db);
 
-        if ($tablaMovimiento) {
-            $origenNombre = $this->obtenerNombreCaja($origenId);
-            $destinoNombre = $this->obtenerNombreCaja($destinoId);
-            $detalle = $concepto !== '' ? $concepto : 'Transferencia entre cajas';
-            $mensaje = sprintf('%s -> %s | %s', $origenNombre, $destinoNombre, $detalle);
+        if ($tablaMovimiento === null) {
+            return redirect()->to(base_url() . 'public/cajas')
+                ->with('error', 'No se encontró la tabla de movimientos de caja.');
+        }
 
-            $data = [
-                'tipo_movimiento' => 'transferencia',
-                'monto' => $monto,
-                'concepto' => $mensaje,
-                'fecha' => date('Y-m-d H:i:s')
-            ];
+        $origenNombre = $this->obtenerNombreCaja($origenId);
+        $destinoNombre = $this->obtenerNombreCaja($destinoId);
+        $detalle = $concepto !== '' ? $concepto : 'Transferencia entre cajas';
+        $mensaje = sprintf('%s -> %s | %s', $origenNombre, $destinoNombre, $detalle);
 
-            $columnNames = $db->getFieldNames($tablaMovimiento);
+        $data = [
+            'tipo_movimiento' => 'transferencia',
+            'monto' => $monto,
+            'concepto' => $mensaje,
+            'fecha' => date('Y-m-d H:i:s')
+        ];
 
-            if (in_array('caja_origen_id', $columnNames)) {
-                $data['caja_origen_id'] = $origenId;
-            }
-            if (in_array('caja_destino_id', $columnNames)) {
-                $data['caja_destino_id'] = $destinoId;
-            }
-            if (in_array('caja_id', $columnNames)) {
-                $data['caja_id'] = $origenId;
-            }
+        $columnNames = $db->getFieldNames($tablaMovimiento);
 
-            $db->table($tablaMovimiento)->insert($data);
+        if (in_array('caja_origen_id', $columnNames, true)) {
+            $data['caja_origen_id'] = $origenId;
+        }
+        if (in_array('caja_destino_id', $columnNames, true)) {
+            $data['caja_destino_id'] = $destinoId;
+        }
+        if (in_array('caja_id', $columnNames, true)) {
+            $data['caja_id'] = $origenId;
+        }
+
+        $db->transBegin();
+        if (!$db->table($tablaMovimiento)->insert($data) || !$db->transStatus()) {
+            $db->transRollback();
+            return redirect()->to(base_url() . 'public/cajas')
+                ->with('error', 'No se pudo registrar la transferencia.');
+        }
+
+        if (!$db->transCommit()) {
+            $db->transRollback();
+            return redirect()->to(base_url() . 'public/cajas')
+                ->with('error', 'No se pudo confirmar la transferencia.');
         }
 
         return redirect()->to(base_url() . 'public/cajas')->with('success', 'Movimiento registrado correctamente.');
@@ -359,6 +373,7 @@ class Caja extends BaseController
             }
             return redirect()->back()->withInput()->with('error', 'No se pudo guardar el gasto.');
         }
+
         if (!$db->transCommit()) {
             $db->transRollback();
             if (isset($comprobante['ruta']) && is_file($comprobante['ruta'])) {
@@ -385,24 +400,36 @@ class Caja extends BaseController
         }
 
         $db = \Config\Database::connect();
-        $gasto = $db->table('gastos_caja')->where('id', $id)->get()->getRowArray();
+        $db->transBegin();
+        $gasto = $db->query('SELECT * FROM gastos_caja WHERE id = ? FOR UPDATE', [$id])->getRowArray();
         if (!$gasto) {
+            $db->transRollback();
             return redirect()->to(base_url('public/cajas/gastos'))->with('error', 'El gasto no existe.');
         }
         if ($gasto['fecha_anulacion'] !== null) {
+            $db->transRollback();
             return redirect()->to(base_url('public/cajas/gastos'))->with('error', 'Ese gasto ya está anulado.');
         }
 
+        $fechaAnulacion = date('Y-m-d H:i:s');
+        $actorId = (int) $this->sesion->id_usuario;
         $db->table('gastos_caja')
             ->where('id', $id)
             ->where('fecha_anulacion', null)
             ->update([
-                'anulado_por' => (int) $this->sesion->id_usuario,
-                'fecha_anulacion' => date('Y-m-d H:i:s'),
+                'anulado_por' => $actorId,
+                'fecha_anulacion' => $fechaAnulacion,
                 'motivo_anulacion' => $motivo,
             ]);
         if ($db->affectedRows() !== 1) {
+            $db->transRollback();
             return redirect()->to(base_url('public/cajas/gastos'))->with('error', 'No se pudo anular el gasto; puede que ya haya sido anulado.');
+        }
+
+        if (!$db->transCommit()) {
+            $db->transRollback();
+            return redirect()->to(base_url('public/cajas/gastos'))
+                ->with('error', 'No se pudo confirmar la anulación del gasto.');
         }
 
         return redirect()->to(base_url('public/cajas/gastos'))->with('success', 'Gasto anulado; quedó conservado en el historial.');
@@ -485,7 +512,10 @@ class Caja extends BaseController
             $data['caja_id'] = $caja_zonaId;
         }
 
-        $db->table($tablaMovimiento)->insert($data);
+        if (!$db->table($tablaMovimiento)->insert($data) || !$db->transStatus()) {
+            $db->transRollback();
+            return redirect()->back()->with('error', 'Error en la base de datos al procesar la rendición.');
+        }
 
         $db->transComplete();
 

@@ -1,3 +1,46 @@
 .cliente{
     color: #ff822f
 }
+
+#wrapper,
+#content-wrapper,
+#content {
+    min-width: 0;
+    width: 100%;
+}
+
+#content .container-fluid {
+    max-width: 100%;
+}
+
+#content .table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+#content .table-responsive table {
+    min-width: 100%;
+    width: max-content;
+}
+
+#content .dataTables_wrapper {
+    max-width: 100%;
+}
+
+@media (max-width: 767.98px) {
+    #content .container-fluid {
+        padding-right: 0.75rem;
+        padding-left: 0.75rem;
+    }
+
+    #content .table-responsive th,
+    #content .table-responsive td {
+        white-space: nowrap;
+    }
+
+    .topbar {
+        padding-right: 0.5rem;
+        padding-left: 0.5rem;
+    }
+}

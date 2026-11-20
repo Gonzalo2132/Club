@@ -87,7 +87,6 @@ $routes->get('/liquidaciones/editar/(:num)', 'Liquidaciones::editar/$1');
 $routes->post('/liquidaciones/actualizar/(:num)', 'Liquidaciones::actualizar/$1');
 $routes->get('/liquidaciones/listado_socio/(:num)', 'Liquidaciones::listado_socio/$1');
 
-
 //login
 $routes->get('/login', 'Login::index');
 $routes->post('/login/validar', 'Login::validar');
