@@ -74,14 +74,30 @@ class Caja extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->cajas->save(
-            [
-                'denominacion' => $this->request->getPost('denominacion'),
-                'descripcion' => $this->request->getPost('descripcion'),
-                'codigointerno' => $this->request->getPost('codigointerno')
-            ]
-        );
+        $codigoInterno = trim((string) $this->request->getPost('codigointerno'));
+        if ($codigoInterno === '') {
+            $codigoInterno = $this->generarCodigoRec();
+        }
+
+        $this->cajas->save([
+            'denominacion' => $this->request->getPost('denominacion'),
+            'descripcion' => $this->request->getPost('descripcion'),
+            'codigointerno' => $codigoInterno,
+        ]);
+
         return redirect()->to(base_url() . 'public/cajas/');
+    }
+
+    private function generarCodigoRec(): string
+    {
+        do {
+            $codigo = 'REC-' . strtoupper(bin2hex(random_bytes(4))); // Ej: REC-9F3A1C02
+            $existe = $this->cajas->withDeleted()
+                ->where('codigointerno', $codigo)
+                ->first();
+        } while ($existe !== null);
+
+        return $codigo;
     }
 
     public function borrar($id)
