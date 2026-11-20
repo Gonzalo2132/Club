@@ -1,9 +1,20 @@
+<?php $categorias = $categorias ?? []; ?>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Jugadores inscriptos: <?= esc($disciplina['nombre']) ?></h2>
     <a class="btn btn-secondary" href="<?= base_url('public/disciplinas') ?>">Volver a disciplinas</a>
 </div>
 
 <p><?= esc($disciplina['descripcion'] ?? '') ?></p>
+
+<?php if ($categorias !== []): ?>
+    <div class="mb-3">
+        <strong>Categorías:</strong>
+        <?php foreach ($categorias as $categoria): ?>
+            <span class="badge bg-primary"><?= esc($categoria['nombre']) ?></span>
+        <?php endforeach ?>
+    </div>
+<?php endif ?>
+
 <div class="table-responsive">
     <table class="table table-hover" id="contenido-lista">
         <thead>

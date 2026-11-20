@@ -74,14 +74,30 @@ class Caja extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $this->cajas->save(
-            [
-                'denominacion' => $this->request->getPost('denominacion'),
-                'descripcion' => $this->request->getPost('descripcion'),
-                'codigointerno' => $this->request->getPost('codigointerno')
-            ]
-        );
+        $codigoInterno = trim((string) $this->request->getPost('codigointerno'));
+        if ($codigoInterno === '') {
+            $codigoInterno = $this->generarCodigoRec();
+        }
+
+        $this->cajas->save([
+            'denominacion' => $this->request->getPost('denominacion'),
+            'descripcion' => $this->request->getPost('descripcion'),
+            'codigointerno' => $codigoInterno,
+        ]);
+
         return redirect()->to(base_url() . 'public/cajas/');
+    }
+
+    private function generarCodigoRec(): string
+    {
+        do {
+            $codigo = 'REC-' . strtoupper(bin2hex(random_bytes(4))); // Ej: REC-9F3A1C02
+            $existe = $this->cajas->withDeleted()
+                ->where('codigointerno', $codigo)
+                ->first();
+        } while ($existe !== null);
+
+        return $codigo;
     }
 
     public function borrar($id)
@@ -838,4 +854,220 @@ class Caja extends BaseController
 
         return 'Caja ' . $id;
     }
+    public function editarMovimiento($id)
+    {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $movimientoId = filter_var($id, FILTER_VALIDATE_INT);
+        if ($movimientoId === false || $movimientoId < 1) {
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'El movimiento indicado no es válido.');
+        }
+
+        $db = \Config\Database::connect();
+        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
+        if (!$tablaMovimiento) {
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'No se encontró la tabla de movimientos.');
+        }
+
+        $movimiento = $db->table($tablaMovimiento)->where('id', $movimientoId)->get()->getRowArray();
+        if (!$movimiento) {
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'El movimiento no existe.');
+        }
+
+        $columnNames = $db->getFieldNames($tablaMovimiento);
+        $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
+        $destinoId = in_array('caja_destino_id', $columnNames, true) ? ($movimiento['caja_destino_id'] ?? null) : null;
+        $concepto = trim((string) ($movimiento['concepto'] ?? ''));
+        $detalle = $concepto;
+
+        if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*(.*))?$/', $concepto, $matches)) {
+            $origenId = $this->obtenerIdCajaPorNombre(trim($matches[1])) ?? $origenId;
+            $destinoId = $this->obtenerIdCajaPorNombre(trim($matches[2])) ?? $destinoId;
+            $detalle = trim((string) ($matches[3] ?? ''));
+        }
+
+        $movimiento['caja_origen_id'] = $origenId !== null ? (int) $origenId : null;
+        $movimiento['caja_destino_id'] = $destinoId !== null ? (int) $destinoId : null;
+        $movimiento['detalle_concepto'] = $detalle;
+
+        $context = [
+            'movimiento' => $movimiento,
+            'cajas'      => $this->cajas->where('activo', 1)->orderBy('denominacion')->findAll(),
+            'titulo'     => 'Editar movimiento',
+            'pagname'    => 'Gestión/Editar movimiento',
+        ];
+
+        echo view('panel/header', $context);
+        echo view('caja/editar_movimiento', $context);
+        echo view('panel/footer');
+    }
+
+    public function actualizarMovimiento($id)
+    {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $movimientoId = filter_var($id, FILTER_VALIDATE_INT);
+        if ($movimientoId === false || $movimientoId < 1) {
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'El movimiento indicado no es válido.');
+        }
+
+        $origenId = filter_var($this->request->getPost('caja_origen_id'), FILTER_VALIDATE_INT);
+        $destinoId = filter_var($this->request->getPost('caja_destino_id'), FILTER_VALIDATE_INT);
+        $montoPost = $this->request->getPost('monto');
+        $conceptoPost = $this->request->getPost('concepto');
+        $concepto = is_scalar($conceptoPost) ? trim((string) $conceptoPost) : '';
+
+        if ($origenId === false || $origenId < 1 || $destinoId === false || $destinoId < 1) {
+            return redirect()->back()->withInput()
+                ->with('error', 'Seleccioná una caja de origen y una caja de destino válidas.');
+        }
+
+        if ($origenId === $destinoId) {
+            return redirect()->back()->withInput()
+                ->with('error', 'La caja de origen y destino no pueden ser la misma.');
+        }
+
+        if (!is_scalar($montoPost) || !preg_match('/^\d+(?:\.\d{1,2})?$/', (string) $montoPost) || (float) $montoPost <= 0) {
+            return redirect()->back()->withInput()
+                ->with('error', 'El monto debe ser mayor a 0 y tener hasta dos decimales.');
+        }
+
+        $monto = round((float) $montoPost, 2);
+
+        $db = \Config\Database::connect();
+        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
+        if (!$tablaMovimiento) {
+            return redirect()->back()->withInput()
+                ->with('error', 'No se encontró la tabla de movimientos.');
+        }
+
+        $db->transBegin();
+        $actual = $db->query("SELECT * FROM {$tablaMovimiento} WHERE id = ? FOR UPDATE", [$movimientoId])->getRowArray();
+        if (!$actual) {
+            $db->transRollback();
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'El movimiento no existe.');
+        }
+
+        // Revertimos temporalmente el impacto del movimiento anterior para validar el saldo real disponible
+        $saldoDisponibleOrigen = $this->obtenerSaldoCaja((int) $origenId);
+        $anteriorMonto = (float) ($actual['monto'] ?? 0);
+        $anteriorOrigen = $actual['caja_origen_id'] ?? ($actual['caja_id'] ?? null);
+        if ((int) $anteriorOrigen === (int) $origenId) {
+            $saldoDisponibleOrigen = round($saldoDisponibleOrigen + $anteriorMonto, 2);
+        }
+
+        if ($monto > $saldoDisponibleOrigen) {
+            $db->transRollback();
+            return redirect()->back()->withInput()
+                ->with('error', 'No hay saldo suficiente en la caja de origen para este monto.');
+        }
+
+        $origenNombre = $this->obtenerNombreCaja((int) $origenId);
+        $destinoNombre = $this->obtenerNombreCaja((int) $destinoId);
+        $detalle = $concepto !== '' ? $concepto : 'Transferencia entre cajas';
+        $mensaje = sprintf('%s -> %s | %s', $origenNombre, $destinoNombre, $detalle);
+
+        $updateData = [
+            'monto'    => $monto,
+            'concepto' => $mensaje,
+        ];
+
+        $columnNames = $db->getFieldNames($tablaMovimiento);
+        if (in_array('caja_origen_id', $columnNames, true)) {
+            $updateData['caja_origen_id'] = (int) $origenId;
+        }
+        if (in_array('caja_destino_id', $columnNames, true)) {
+            $updateData['caja_destino_id'] = (int) $destinoId;
+        }
+        if (in_array('caja_id', $columnNames, true)) {
+            $updateData['caja_id'] = (int) $origenId;
+        }
+
+        if (!$db->table($tablaMovimiento)->where('id', $movimientoId)->update($updateData) || !$db->transStatus()) {
+            $db->transRollback();
+            return redirect()->back()->withInput()
+                ->with('error', 'No se pudo actualizar el movimiento.');
+        }
+
+        if (!$db->transCommit()) {
+            $db->transRollback();
+            return redirect()->back()->withInput()
+                ->with('error', 'No se pudo confirmar la actualización en la base de datos.');
+        }
+
+        return redirect()->to(base_url('public/cajas/movimientos'))
+            ->with('success', 'Movimiento actualizado correctamente.');
+    }
+
+    public function borrarMovimiento($id)
+    {
+        if (!isset($this->sesion->id_usuario)) {
+            return redirect()->to(base_url() . 'public/login');
+        }
+
+        $movimientoId = filter_var($id, FILTER_VALIDATE_INT);
+        if ($movimientoId === false || $movimientoId < 1) {
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'El movimiento indicado no es válido.');
+        }
+
+        $db = \Config\Database::connect();
+        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
+        if (!$tablaMovimiento) {
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'No se encontró la tabla de movimientos.');
+        }
+
+        $db->transBegin();
+        $movimiento = $db->query("SELECT * FROM {$tablaMovimiento} WHERE id = ? FOR UPDATE", [$movimientoId])->getRowArray();
+        if (!$movimiento) {
+            $db->transRollback();
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'El movimiento no existe.');
+        }
+
+        // Si es una transferencia, verificamos que la caja destino tenga saldo suficiente para revertirla
+        $tipo = $movimiento['tipo_movimiento'] ?? ($movimiento['tipo'] ?? 'transferencia');
+        $monto = (float) ($movimiento['monto'] ?? 0);
+        if ($tipo === 'transferencia') {
+            $columnNames = $db->getFieldNames($tablaMovimiento);
+            $destinoId = in_array('caja_destino_id', $columnNames, true) ? ($movimiento['caja_destino_id'] ?? null) : null;
+            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
+
+            if ($destinoId === null && preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
+                $destinoId = $this->obtenerIdCajaPorNombre(trim($matches[2]));
+            }
+
+            if ($destinoId !== null && $monto > $this->obtenerSaldoCaja((int) $destinoId)) {
+                $db->transRollback();
+                return redirect()->to(base_url('public/cajas/movimientos'))
+                    ->with('error', 'No se puede eliminar el movimiento porque la caja destino ya utilizó ese saldo.');
+            }
+        }
+
+        if (!$db->table($tablaMovimiento)->where('id', $movimientoId)->delete() || !$db->transStatus()) {
+            $db->transRollback();
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'No se pudo eliminar el movimiento.');
+        }
+
+        if (!$db->transCommit()) {
+            $db->transRollback();
+            return redirect()->to(base_url('public/cajas/movimientos'))
+                ->with('error', 'No se pudo confirmar la eliminación en la base de datos.');
+        }
+
+        return redirect()->to(base_url('public/cajas/movimientos'))
+            ->with('success', 'Movimiento eliminado correctamente.');
+    }
+
 }

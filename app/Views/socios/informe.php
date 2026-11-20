@@ -31,6 +31,16 @@
             <div class="col-md-6 mb-2"><strong>Email:</strong> <?= esc($socio['email'] ?: '-'); ?></div>
             <div class="col-md-6 mb-2"><strong>Domicilio:</strong> <?= esc($socio['domicilio'] ?: '-'); ?></div>
             <div class="col-md-6 mb-2"><strong>Zona:</strong> <?= esc($zona['denominacion'] ?? '-'); ?></div>
+            <div class="col-md-6 mb-2"><strong>Recaudador asignado:</strong>
+                <?php if (!empty($recaudador)): ?>
+                    <?= esc(trim(($recaudador['apellido'] ?? '') . ', ' . ($recaudador['nombre'] ?? ''))); ?>
+                    <?php if (!empty($recaudador['caja_nombre'])): ?>
+                        <span class="text-muted">(Caja: <?= esc($recaudador['caja_nombre']); ?>)</span>
+                    <?php endif ?>
+                <?php else: ?>
+                    Sin asignar
+                <?php endif ?>
+            </div>
             <div class="col-md-6 mb-2"><strong>Fecha de alta:</strong>
                 <?= !empty($socio['fecha_alta']) ? esc(date('d/m/Y', strtotime($socio['fecha_alta']))) : '-'; ?>
             </div>
@@ -108,7 +118,18 @@
                             <td>$<?= number_format((float) $item['total_pagado'], 2, ',', '.'); ?></td>
                             <td>$<?= number_format((float) $item['saldo_pendiente'], 2, ',', '.'); ?></td>
                             <td><?= !empty($item['liquidacion']['fecha_vencimiento']) ? esc(date('d/m/Y', strtotime($item['liquidacion']['fecha_vencimiento']))) : '-'; ?></td>
-                            <td><?= esc($item['estado']); ?></td>
+                            <td>
+                                <?php $estado = $item['estado'] ?? 'Pendiente'; ?>
+                                <?php if ($estado === 'Pagado'): ?>
+                                    <span class="badge bg-success">Pagado</span>
+                                <?php elseif ($estado === 'Pago vencido'): ?>
+                                    <span class="badge bg-danger">Pago vencido</span>
+                                <?php elseif ($estado === 'Pago parcial'): ?>
+                                    <span class="badge bg-info text-dark">Pago parcial</span>
+                                <?php else: ?>
+                                    <span class="badge bg-warning text-dark">Pendiente</span>
+                                <?php endif; ?>
+                            </td>
                         </tr>
                     <?php } ?>
                 <?php } else { ?>

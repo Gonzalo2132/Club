@@ -10,6 +10,7 @@ if (!is_array($seleccionados)) {
 <?php endif ?>
 
 <form method="post" action="<?= base_url('public/roles/' . $accion) ?>">
+    <?= csrf_field() ?>
     <div class="mb-3">
         <label class="form-label" for="nombre">Nombre del rol</label>
         <input class="form-control" type="text" id="nombre" name="nombre" maxlength="80" required value="<?= esc($nombre) ?>">

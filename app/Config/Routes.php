@@ -67,6 +67,9 @@ $routes->get('/cajas/gastos/comprobante/(:num)', 'Caja::comprobanteGasto/$1');
 $routes->get('/cajas/borrar/(:num)', 'Caja::borrar/$1');
 $routes->get('/cajas/editar/(:num)', 'Caja::editar/$1');
 $routes->post('/cajas/actualizar/(:num)', 'Caja::actualizar/$1');
+$routes->get('/cajas/editar-movimiento/(:num)', 'Caja::editarMovimiento/$1');
+$routes->post('/cajas/actualizar-movimiento/(:num)', 'Caja::actualizarMovimiento/$1');
+$routes->post('/cajas/borrar-movimiento/(:num)', 'Caja::borrarMovimiento/$1');
 // movimientos (lista completa o por caja)
 $routes->get('/cajas/movimientos', 'Caja::movimientos');
 $routes->get('/cajas/movimientos/(:num)', 'Caja::movimientos/$1');

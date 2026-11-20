@@ -87,6 +87,10 @@ class AccessControl
 
     public function allowedModules(int $userId): array
     {
+        if ($this->isAdministrator($userId)) {
+            return array_keys(self::MODULES);
+        }
+
         $permissions = $this->database()
             ->table('roles_acciones')
             ->select('roles_acciones.modulo')

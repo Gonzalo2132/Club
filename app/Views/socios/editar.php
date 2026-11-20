@@ -36,8 +36,8 @@ echo base_url();
         placeholder="Ingrese D.N.I" value="<?= esc(old('dni', $socio[0]['dni'])) ?>" required>
 
     <label class="form-label" for="email">Email</label>
-    <input class="form-control" type="text" name="email" id="email" 
-    placeholder="dd/mm/AAAA" value="<?php echo $socio[0]['email'];?>">
+    <input class="form-control" type="email" name="email" id="email" maxlength="80"
+        placeholder="Ingrese email" value="<?= esc(old('email', $socio[0]['email'])) ?>">
 
     <label class="form-label" for="zona">Zona</label>
     <select class="form-control" id="id_zona" name="id_zona">

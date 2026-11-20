@@ -19,6 +19,9 @@ class PermissionFilter implements FilterInterface
         }
 
         $segments = $request->getUri()->getSegments();
+        if (isset($segments[0]) && strtolower($segments[0]) === 'public') {
+            array_shift($segments);
+        }
         $module = strtolower($segments[0] ?? '');
 
         if ($module === 'roles') {
@@ -59,13 +62,13 @@ class PermissionFilter implements FilterInterface
         $endpoint = strtolower($segments[1] ?? '');
         $method = strtoupper($request->getMethod());
 
-        if (in_array($endpoint, ['borrar', 'eliminar'], true)) {
+        if (in_array($endpoint, ['borrar', 'eliminar', 'borrar-movimiento'], true)) {
             return 'eliminar';
         }
         if (in_array($endpoint, ['nuevo', 'guardar', 'guardar-movimiento', 'nuevo-gasto', 'guardar-gasto'], true)) {
             return 'crear';
         }
-        if (in_array($endpoint, ['editar', 'actualizar', 'asignar-rol', 'anular-gasto'], true)) {
+        if (in_array($endpoint, ['editar', 'actualizar', 'editar-movimiento', 'actualizar-movimiento', 'asignar-rol', 'anular-gasto'], true)) {
             return 'editar';
         }
 
