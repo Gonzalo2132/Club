@@ -52,6 +52,28 @@ class Pagos extends BaseController
             static fn(array $recaudador): int => (int) $recaudador['id'],
             $recaudadores
         ), true) ? $recaudadorAsignado : '';
+        $recaudadorFormulario = old('id_recaudador', $recaudadorSeleccionado);
+        $cajaSeleccionada = '';
+        foreach ($recaudadores as $recaudador) {
+            if ((string) $recaudador['id'] === (string) $recaudadorFormulario) {
+                $cajaSeleccionada = $recaudador['id_caja'];
+                break;
+            }
+        }
+        if ($cajaSeleccionada === null || $cajaSeleccionada === '') {
+            $cajaAnterior = old('id_caja');
+            $cajaSeleccionada = in_array((string) $cajaAnterior, array_map(
+                static fn(array $caja): string => (string) $caja['id'],
+                $cajas
+            ), true) ? $cajaAnterior : ($cajas[0]['id'] ?? '');
+        }
+        $cajaSeleccionadaNombre = '';
+        foreach ($cajas as $caja) {
+            if ((string) $caja['id'] === (string) $cajaSeleccionada) {
+                $cajaSeleccionadaNombre = $caja['denominacion'];
+                break;
+            }
+        }
 
         $pagos = $this->pagos
             ->where('id_socio', $idSocio)
@@ -66,6 +88,8 @@ class Pagos extends BaseController
             'cajas' => $cajas,
             'recaudadores' => $recaudadores,
             'recaudadorSeleccionado' => $recaudadorSeleccionado,
+            'cajaSeleccionada' => $cajaSeleccionada,
+            'cajaSeleccionadaNombre' => $cajaSeleccionadaNombre,
         ];
 
         echo view('panel/header', $context);
@@ -98,6 +122,7 @@ class Pagos extends BaseController
 
         $recaudadoresDisponibles = $this->recaudadoresActivosDeZona($socio['id_zona'] ?? null);
         $idRecaudador = null;
+        $recaudadorValido = null;
         if ($idRecaudadorPost !== null && $idRecaudadorPost !== '') {
             $idRecaudador = filter_var($idRecaudadorPost, FILTER_VALIDATE_INT);
             $recaudadorValido = $idRecaudador !== false
@@ -111,10 +136,23 @@ class Pagos extends BaseController
                 return redirect()->back()->withInput()->with('error', 'El recaudador seleccionado no está activo en la zona del socio.');
             }
             $idRecaudador = (int) $idRecaudador;
+            $idCaja = (int) $recaudadorValido['id_caja'];
+            $cajaRecaudadorActiva = $this->cajas
+                ->where('id', $idCaja)
+                ->where('activo', 1)
+                ->first();
+            if (!$cajaRecaudadorActiva) {
+                return redirect()->back()->withInput()->with('error', 'La caja asignada al recaudador no está activa.');
+            }
         } elseif (!is_scalar($idRecaudadorPost) && $idRecaudadorPost !== null) {
             return redirect()->back()->withInput()->with('error', 'La selección del recaudador no es válida.');
         } elseif ($recaudadoresDisponibles !== []) {
             return redirect()->back()->withInput()->with('error', 'Selecciona quién recibió el pago.');
+        } else {
+            $idCaja = filter_var($idCaja, FILTER_VALIDATE_INT);
+            if ($idCaja === false || $idCaja < 1 || !$this->cajas->where('id', $idCaja)->where('activo', 1)->first()) {
+                return redirect()->back()->withInput()->with('error', 'Selecciona una caja activa para registrar el pago.');
+            }
         }
 
         $pago = [
@@ -208,11 +246,12 @@ class Pagos extends BaseController
         }
 
         return $this->recaudadores
-            ->select('id, nombre, apellido, id_zona')
-            ->where('id_zona', $idZona)
-            ->where('activo', 1)
-            ->orderBy('apellido')
-            ->orderBy('nombre')
+            ->select('recaudadores.id, recaudadores.nombre, recaudadores.apellido, recaudadores.id_zona, recaudadores.id_caja, cajas.denominacion AS caja_denominacion')
+            ->join('cajas', 'cajas.id = recaudadores.id_caja', 'left')
+            ->where('recaudadores.id_zona', $idZona)
+            ->where('recaudadores.activo', 1)
+            ->orderBy('recaudadores.apellido')
+            ->orderBy('recaudadores.nombre')
             ->findAll();
     }
 }

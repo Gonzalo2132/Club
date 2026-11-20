@@ -658,54 +658,10 @@ class Caja extends BaseController
             return redirect()->to(base_url() . 'public/login');
         }
 
-        $db = \Config\Database::connect();
-        $tablaMovimiento = $this->obtenerTablaMovimientos($db);
-
-        $movimientos = $tablaMovimiento
-            ? $db->table($tablaMovimiento)
-                ->orderBy('fecha', 'DESC')
-                ->get()
-                ->getResultArray()
-            : [];
-
         $cajaId = (int) $id;
         $cajaNombre = $this->obtenerNombreCaja($cajaId);
-        $cajaNormalizada = $this->normalizarNombreCaja($cajaNombre);
-        $resultado = [];
-
-        foreach ($movimientos as $movimiento) {
-            $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
-            $destinoId = $movimiento['caja_destino_id'] ?? null;
-            $origen = $this->obtenerNombreCaja($origenId);
-            $destino = $this->obtenerNombreCaja($destinoId);
-            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
-
-            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
-                $origen = trim($matches[1]);
-                $destino = trim($matches[2]);
-            }
-
-            // En 0 se muestran todos; si se solicita una caja, se contemplan
-            // origen, destino por id y destinos guardados dentro del concepto.
-            $esDeLaCaja = $cajaId === 0
-                || (int) $origenId === $cajaId
-                || (int) $destinoId === $cajaId
-                || $this->normalizarNombreCaja($origen) === $cajaNormalizada
-                || $this->normalizarNombreCaja($destino) === $cajaNormalizada;
-
-            if ($esDeLaCaja) {
-                $movimiento['origen'] = $origen;
-                $movimiento['destino'] = $destino;
-                $movimiento['tipo'] = $movimiento['tipo_movimiento'] ?? 'transferencia';
-                $movimiento['concepto'] = $concepto !== '' ? $concepto : 'Movimiento registrado';
-                $resultado[] = $movimiento;
-            }
-        }
-
-        $resultado = array_merge($resultado, $this->obtenerGastosParaMovimientos($cajaId));
-        usort($resultado, static fn(array $left, array $right): int => strcmp((string) ($right['fecha'] ?? ''), (string) ($left['fecha'] ?? '')));
         $context = [
-            'movimientos' => $resultado,
+            'movimientos' => $this->obtenerMovimientosDeCaja($cajaId),
             'cajaNombre' => $cajaId === 0 ? 'Todas las cajas' : $cajaNombre,
             'titulo' => 'Movimientos',
             'pagname' => 'Gestión/Movimientos'
@@ -718,38 +674,102 @@ class Caja extends BaseController
 
     private function obtenerMovimientos(): array
     {
+        return $this->obtenerMovimientosDeCaja(0);
+    }
+
+    private function obtenerMovimientosDeCaja(int $cajaId): array
+    {
         $db = \Config\Database::connect();
         $tablaMovimiento = $this->obtenerTablaMovimientos($db);
+        $cajaNombre = $cajaId > 0 ? $this->obtenerNombreCaja($cajaId) : '';
+        $cajaNormalizada = $this->normalizarNombreCaja($cajaNombre);
+        $result = [];
 
-        if (!$tablaMovimiento) {
-            return $this->obtenerGastosParaMovimientos(0);
-        }
+        if ($tablaMovimiento) {
+            $movimientos = $db->table($tablaMovimiento)
+                ->orderBy('fecha', 'DESC')
+                ->get()
+                ->getResultArray();
 
-        $result = $db->table($tablaMovimiento)
-            ->orderBy('fecha', 'DESC')
-            ->get()
-            ->getResultArray();
+            foreach ($movimientos as $movimiento) {
+                $tipo = $movimiento['tipo_movimiento'] ?? ($movimiento['tipo'] ?? 'transferencia');
+                $concepto = trim((string) ($movimiento['concepto'] ?? ''));
 
-        foreach ($result as &$movimiento) {
-            $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
-            $destinoId = $movimiento['caja_destino_id'] ?? null;
-            $origen = $this->obtenerNombreCaja($origenId);
-            $destino = $this->obtenerNombreCaja($destinoId);
-            $concepto = trim((string) ($movimiento['concepto'] ?? ''));
+                if ($tipo === 'ingreso' && stripos($concepto, 'Pago:') !== false) {
+                    continue;
+                }
 
-            if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
-                $origen = trim($matches[1]);
-                $destino = trim($matches[2]);
+                $origenId = $movimiento['caja_origen_id'] ?? ($movimiento['caja_id'] ?? null);
+                $destinoId = $movimiento['caja_destino_id'] ?? null;
+                $origen = $this->obtenerNombreCaja($origenId);
+                $destino = $this->obtenerNombreCaja($destinoId);
+
+                if (preg_match('/^(.*?)\s*->\s*(.*?)(?:\s*\|\s*.*)?$/', $concepto, $matches)) {
+                    $origen = trim($matches[1]);
+                    $destino = trim($matches[2]);
+                }
+
+                $perteneceALaCaja = $cajaId === 0
+                    || (int) $origenId === $cajaId
+                    || (int) $destinoId === $cajaId
+                    || $this->normalizarNombreCaja($origen) === $cajaNormalizada
+                    || $this->normalizarNombreCaja($destino) === $cajaNormalizada;
+
+                if (!$perteneceALaCaja) {
+                    continue;
+                }
+
+                $movimiento['origen'] = $origen;
+                $movimiento['destino'] = $destino;
+                $movimiento['tipo'] = $tipo;
+                $movimiento['concepto'] = $concepto !== '' ? $concepto : 'Movimiento registrado';
+                $result[] = $movimiento;
             }
-
-            $movimiento['origen'] = $origen;
-            $movimiento['destino'] = $destino;
-            $movimiento['tipo'] = $movimiento['tipo_movimiento'] ?? 'transferencia';
-            $movimiento['concepto'] = $concepto !== '' ? $concepto : 'Movimiento registrado';
         }
-        unset($movimiento);
 
-        $result = array_merge($result, $this->obtenerGastosParaMovimientos(0));
+        $pagosQuery = $db->table('pagos')
+            ->select(
+                'pagos.id AS pago_id, pagos.id_socio, pagos.id_caja, pagos.forma_pago, pagos.monto, pagos.fecha_pago, pagos.fecha_alta, ' .
+                'socios.nombre AS socio_nombre, socios.apellido AS socio_apellido, liquidaciones.nombre AS liquidacion_nombre, ' .
+                'cajas.denominacion AS caja_nombre, recaudadores.nombre AS recaudador_nombre, recaudadores.apellido AS recaudador_apellido'
+            )
+            ->join('socios', 'socios.id = pagos.id_socio', 'left')
+            ->join('liquidaciones', 'liquidaciones.id = pagos.id_liquidacion', 'left')
+            ->join('cajas', 'cajas.id = pagos.id_caja', 'left')
+            ->join('recaudadores', 'recaudadores.id = pagos.id_recaudador', 'left')
+            ->where('pagos.fecha_borrado', null);
+
+        if ($cajaId > 0) {
+            $pagosQuery->where('pagos.id_caja', $cajaId);
+        }
+
+        foreach ($pagosQuery->orderBy('pagos.fecha_pago', 'DESC')->get()->getResultArray() as $pago) {
+            $socioNombre = trim((string) ($pago['socio_apellido'] ?? '') . ' ' . (string) ($pago['socio_nombre'] ?? ''));
+            $recaudadorNombre = trim((string) ($pago['recaudador_apellido'] ?? '') . ' ' . (string) ($pago['recaudador_nombre'] ?? ''));
+            $cajaDestino = (string) ($pago['caja_nombre'] ?? $this->obtenerNombreCaja($pago['id_caja']));
+            $fecha = $pago['fecha_pago'] ?: $pago['fecha_alta'];
+
+            $result[] = [
+                'id' => 'pago-' . (int) $pago['pago_id'],
+                'caja_origen_id' => null,
+                'caja_destino_id' => (int) $pago['id_caja'],
+                'origen' => $recaudadorNombre !== '' ? 'Recaudador: ' . $recaudadorNombre : 'Socio: ' . $socioNombre,
+                'destino' => $cajaDestino,
+                'tipo_movimiento' => 'ingreso',
+                'tipo' => 'ingreso',
+                'monto' => $pago['monto'],
+                'concepto' => sprintf(
+                    'Pago: %s | Socio: %s | Recaudador: %s | Forma: %s',
+                    $pago['liquidacion_nombre'] ?? 'Liquidación',
+                    $socioNombre,
+                    $recaudadorNombre !== '' ? $recaudadorNombre : 'No registrado',
+                    $pago['forma_pago'] ?? 'No especificada'
+                ),
+                'fecha' => $fecha ?: date('Y-m-d H:i:s'),
+            ];
+        }
+
+        $result = array_merge($result, $this->obtenerGastosParaMovimientos($cajaId));
         usort($result, static fn(array $left, array $right): int => strcmp((string) ($right['fecha'] ?? ''), (string) ($left['fecha'] ?? '')));
 
         return $result;

@@ -38,6 +38,8 @@ echo base_url();
             <option value="">Selecciona quién recibió el pago</option>
             <?php foreach ($recaudadores as $recaudador): ?>
                 <option value="<?= (int) $recaudador['id'] ?>"
+                    data-caja-id="<?= (int) $recaudador['id_caja'] ?>"
+                    data-caja-nombre="<?= esc($recaudador['caja_denominacion'] ?? 'Caja no disponible', 'attr') ?>"
                     <?= (string) old('id_recaudador', $recaudadorSeleccionado) === (string) $recaudador['id'] ? 'selected' : '' ?>>
                     <?= esc($recaudador['apellido'] . ', ' . $recaudador['nombre']) ?>
                 </option>
@@ -46,13 +48,19 @@ echo base_url();
     </select>
 
     <label class="form-label" for="id_caja">Caja</label>
-    <select class="form-control" id="id_caja" name="id_caja">
-        <?php
-        foreach ($cajas as $c) {
-            echo '<option value="' . $c['id'] . '">' . $c['denominacion'] . '</option>';
-        }
-        ?>
-    </select>
+    <?php if (!empty($recaudadores)): ?>
+        <input type="hidden" id="id_caja" name="id_caja" value="<?= esc($cajaSeleccionada) ?>">
+        <input class="form-control" type="text" id="caja_nombre" value="<?= esc($cajaSeleccionadaNombre) ?>" readonly>
+        <small class="form-text text-muted">El cobro se registra en la caja asignada al recaudador.</small>
+    <?php else: ?>
+        <select class="form-control" id="id_caja" name="id_caja">
+            <?php foreach ($cajas as $c): ?>
+                <option value="<?= (int) $c['id'] ?>" <?= (string) $cajaSeleccionada === (string) $c['id'] ? 'selected' : '' ?>>
+                    <?= esc($c['denominacion']) ?>
+                </option>
+            <?php endforeach ?>
+        </select>
+    <?php endif ?>
 
     <label class="form-label" for="forma_pago">Forma de Pago</label>
     <select class="form-control" id="forma_pago" name="forma_pago">
@@ -64,3 +72,20 @@ echo base_url();
     <br>
     <button type="submit" class="btn btn-success">Registrar pago</button>
 </form>
+
+<script>
+    const recaudadorSelect = document.getElementById('id_recaudador');
+    const cajaSelect = document.getElementById('id_caja');
+    const cajaNombre = document.getElementById('caja_nombre');
+
+    recaudadorSelect.addEventListener('change', () => {
+        const recaudador = recaudadorSelect.selectedOptions[0];
+        const cajaId = recaudador.dataset.cajaId;
+        if (cajaId) {
+            cajaSelect.value = cajaId;
+            if (cajaNombre) {
+                cajaNombre.value = recaudador.dataset.cajaNombre;
+            }
+        }
+    });
+</script>
